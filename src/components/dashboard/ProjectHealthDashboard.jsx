@@ -1,339 +1,50 @@
 import React from 'react';
-import { Menu, Transition, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
-import { CalendarIcon, FunnelIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/20/solid';
-import { useState, Fragment } from 'react';
-import ReactECharts from 'echarts-for-react';
+import { Menu, Transition } from '@headlessui/react';
+import { ChevronDownIcon, ChevronUpIcon, ArrowsPointingOutIcon, ArrowsPointingInIcon } from '@heroicons/react/20/solid';
+import { useState, Fragment, useEffect } from 'react';
 
-// On-Time Delivery Rate component
-const OnTimeDeliveryRate = () => {
-    // Mock data - in a real application, this would come from your MongoDB data
-    const deliveryRateData = {
-        months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        onTimeRate: [88, 92, 87, 84, 77, 82],
-        totalTasks: [45, 52, 48, 56, 62, 58],
-        completedOnTime: [40, 48, 42, 47, 48, 48]
-    };
-
-    // Calculate current on-time rate
-    const currentRate = deliveryRateData.onTimeRate[deliveryRateData.onTimeRate.length - 1];
-
-    // Determine status based on thresholds
-    let status = 'bg-green-100 text-green-800';
-    let statusText = 'On Track';
-
-    if (currentRate < 70) {
-        status = 'bg-red-100 text-red-800';
-        statusText = 'Critical';
-    } else if (currentRate < 85) {
-        status = 'bg-yellow-100 text-yellow-800';
-        statusText = 'Warning';
-    }
-
-    // ECharts option configuration
-    const option = {
-        tooltip: {
-            trigger: 'axis',
-            formatter: function (params) {
-                const onTimeRate = params[0].value;
-                const totalTasks = deliveryRateData.totalTasks[params[0].dataIndex];
-                const completedOnTime = deliveryRateData.completedOnTime[params[0].dataIndex];
-
-                return `${params[0].axisValue}<br/>
-          <span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:#3b82f6;"></span>
-          On-Time Rate: ${onTimeRate}%<br/>
-          <span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:#10b981;"></span>
-          Completed On-Time: ${completedOnTime}<br/>
-          <span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:#6b7280;"></span>
-          Total Tasks: ${totalTasks}`;
-            }
-        },
-        grid: {
-            left: '3%',
-            right: '4%',
-            bottom: '3%',
-            top: '15%',
-            containLabel: true
-        },
-        xAxis: {
-            type: 'category',
-            data: deliveryRateData.months,
-            axisLine: {
-                lineStyle: {
-                    color: '#e5e7eb'
-                }
-            },
-            axisLabel: {
-                color: '#6b7280'
-            }
-        },
-        yAxis: [
-            {
-                type: 'value',
-                name: 'Rate (%)',
-                min: 50,
-                max: 100,
-                interval: 10,
-                axisLine: {
-                    show: false
-                },
-                axisLabel: {
-                    color: '#6b7280',
-                    formatter: '{value}%'
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: '#e5e7eb',
-                        type: 'dashed'
-                    }
-                }
-            },
-            {
-                type: 'value',
-                name: 'Tasks',
-                show: false
-            }
-        ],
-        series: [
-            {
-                name: 'On-Time Rate',
-                type: 'line',
-                smooth: true,
-                lineStyle: {
-                    width: 3,
-                    color: '#3b82f6'
-                },
-                symbol: 'circle',
-                symbolSize: 6,
-                itemStyle: {
-                    color: '#3b82f6'
-                },
-                data: deliveryRateData.onTimeRate
-            },
-            {
-                name: 'Tasks',
-                type: 'bar',
-                yAxisIndex: 1,
-                stack: 'Tasks',
-                barWidth: '30%',
-                itemStyle: {
-                    color: '#10b981'
-                },
-                z: 2,
-                data: deliveryRateData.completedOnTime
-            },
-            {
-                name: 'Delayed Tasks',
-                type: 'bar',
-                yAxisIndex: 1,
-                stack: 'Tasks',
-                barWidth: '30%',
-                itemStyle: {
-                    color: '#d1d5db'
-                },
-                data: deliveryRateData.totalTasks.map((total, index) =>
-                    total - deliveryRateData.completedOnTime[index]
-                )
-            }
-        ],
-        // Add warning threshold line
-        markLine: {
-            silent: true,
-            lineStyle: {
-                color: '#fbbf24'
-            },
-            data: [
-                {
-                    yAxis: 85,
-                    name: 'Warning',
-                    label: {
-                        formatter: 'Warning (85%)',
-                        position: 'middle',
-                        color: '#fbbf24'
-                    }
-                }
-            ]
-        }
-    };
-
-    return (
-        <div className="bg-white rounded-lg shadow p-5 border-t-4 border-blue-500">
-            <div className="flex justify-between items-start mb-4">
-                <div>
-                    <h3 className="font-medium text-gray-700">On-Time Delivery Rate</h3>
-                    <div className="text-xs text-gray-500 flex items-center">
-                        <span>HIGH PRIORITY</span>
-                    </div>
-                </div>
-                <div className={`${status} text-xs px-2 py-1 rounded flex items-center`}>
-                    {statusText}
-                </div>
-            </div>
-
-            <div className="mb-4">
-                <div className="flex justify-between items-end">
-                    <div className="text-3xl font-bold text-gray-800">{currentRate}%</div>
-                    <div className="text-sm text-gray-500">
-                        {deliveryRateData.completedOnTime[deliveryRateData.completedOnTime.length - 1]} /
-                        {deliveryRateData.totalTasks[deliveryRateData.totalTasks.length - 1]} tasks on time
-                    </div>
-                </div>
-                <div className="text-sm text-gray-500 mt-1">
-                    (Tasks completed by planned end date / Total completed tasks) × 100
-                </div>
-            </div>
-
-            <div className="h-64">
-                <ReactECharts
-                    option={option}
-                    style={{ height: '100%', width: '100%' }}
-                    opts={{ renderer: 'canvas' }}
-                />
-            </div>
-
-            <div className="mt-3 pt-3 border-t flex justify-between items-center text-xs">
-                <div className="flex items-center text-gray-500">
-                    <div className="w-2 h-2 rounded-full bg-yellow-500 mr-1"></div>
-                    <span>10 tasks completed late this month</span>
-                </div>
-                <a href="#" className="text-blue-600 flex items-center">
-                    Details
-                </a>
-            </div>
-        </div>
-    );
-};
-
-// Approval Cycle Efficiency component
-const ApprovalCycleEfficiency = () => {
-    // Mock data - would come from your MongoDB data in a real application
-    const approvalData = {
-        levels: ['Level 1 Approval', 'Level 2 Approval', 'Level 3 Approval', 'Final Approval'],
-        times: [2.5, 3.8, 2.1, 1.2],
-        total: 9.6
-    };
-
-    // Determine status based on thresholds
-    let status = 'bg-green-100 text-green-800';
-    let statusText = 'On Track';
-
-    if (approvalData.total > 7) {
-        status = 'bg-red-100 text-red-800';
-        statusText = 'Critical';
-    } else if (approvalData.total > 3) {
-        status = 'bg-yellow-100 text-yellow-800';
-        statusText = 'Warning';
-    }
-
-    // ECharts option configuration
-    const option = {
-        tooltip: {
-            trigger: 'item',
-            formatter: '{b}: {c} days'
-        },
-        color: ['#60a5fa', '#818cf8', '#a78bfa', '#c084fc'],
-        series: [
-            {
-                name: 'Approval Time',
-                type: 'funnel',
-                sort: 'none',
-                left: '10%',
-                top: 0,
-                bottom: 0,
-                width: '80%',
-                min: 0,
-                max: 10,
-                minSize: '20%',
-                maxSize: '100%',
-                gap: 2,
-                label: {
-                    show: true,
-                    position: 'right',
-                    formatter: function (param) {
-                        return `${param.name}: ${param.value} days`;
-                    }
-                },
-                labelLine: {
-                    length: 20,
-                    lineStyle: {
-                        width: 1,
-                        type: 'solid'
-                    }
-                },
-                itemStyle: {
-                    borderColor: '#fff',
-                    borderWidth: 1
-                },
-                emphasis: {
-                    label: {
-                        fontSize: 14
-                    }
-                },
-                data: [
-                    { value: approvalData.times[0], name: approvalData.levels[0] },
-                    { value: approvalData.times[1], name: approvalData.levels[1] },
-                    { value: approvalData.times[2], name: approvalData.levels[2] },
-                    { value: approvalData.times[3], name: approvalData.levels[3] }
-                ]
-            }
-        ]
-    };
-
-    return (
-        <div className="bg-white rounded-lg shadow p-5 border-t-4 border-purple-500">
-            <div className="flex justify-between items-start mb-4">
-                <div>
-                    <h3 className="font-medium text-gray-700">Signoff Approval Efficiency</h3>
-                    <div className="text-xs text-gray-500 flex items-center">
-                        <span>MEDIUM PRIORITY</span>
-                    </div>
-                </div>
-                <div className={`${status} text-xs px-2 py-1 rounded flex items-center`}>
-                    {statusText}
-                </div>
-            </div>
-
-            <div className="mb-4">
-                <div className="flex justify-between items-end">
-                    <div className="text-3xl font-bold text-gray-800">{approvalData.total} days</div>
-                    <div className="text-sm text-gray-500">
-                        Avg. approval cycle
-                    </div>
-                </div>
-                <div className="text-sm text-gray-500 mt-1">
-                    Formula: Average days from submission to final approval
-                </div>
-            </div>
-
-            <div className="h-64">
-                <ReactECharts
-                    option={option}
-                    style={{ height: '100%', width: '100%' }}
-                    opts={{ renderer: 'canvas' }}
-                />
-            </div>
-
-            <div className="mt-3 pt-3 border-t flex justify-between items-center text-xs">
-                <div className="flex flex-wrap gap-4">
-                    <div className="flex items-center text-gray-500">
-                        <div className="w-2 h-2 rounded-full bg-yellow-500 mr-1"></div>
-                        <span>Warning &gt;3 days</span>
-                    </div>
-                    <div className="flex items-center text-gray-500">
-                        <div className="w-2 h-2 rounded-full bg-red-500 mr-1"></div>
-                        <span>Critical &gt;7 days</span>
-                    </div>
-                </div>
-                <a href="#" className="text-blue-600 flex items-center">
-                    Details
-                </a>
-            </div>
-        </div>
-    );
-};
-
+// Component Imports
+import SPICard from './SPICard';
+import OnTimeDeliveryRate from './OnTimeDelivery';
+import ApprovalCycleEfficiency from './ApprovalCycleEfficiency';
+import ApprovalBottleneckIndicator from './ApprovalBottleneckIndicator';
+import MilestoneAdherenceCard from './MilestoneAdherenceCard';
+import GoLiveRiskCard from './GoLiveRiskCard';
+import RiskExposureCard from './RiskExposureCard';
+import IssueResolutionCard from './IssueResolutionCard';
+import DependencyCoverageCard from './DependencyCoverageCard';
 
 const ProjectHealthDashboard = () => {
     const [headerExpanded, setHeaderExpanded] = useState(true);
+
+    // Add this state for tracking fullscreen mode
+    const [isFullScreen, setIsFullScreen] = useState(false);
+
+    const toggleFullScreen = () => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.error(`Error attempting to enable fullscreen: ${err.message}`);
+            });
+            setIsFullScreen(true);
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+                setIsFullScreen(false);
+            }
+        }
+    };
+
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            setIsFullScreen(!!document.fullscreenElement);
+        };
+
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        return () => {
+            document.removeEventListener('fullscreenchange', handleFullscreenChange);
+        };
+    }, []);
+
 
     return (
         <div className="flex flex-col h-screen bg-gray-50">
@@ -371,7 +82,7 @@ const ProjectHealthDashboard = () => {
                         <h2 className="font-semibold">Motiva Quantum Leap</h2>
                     </div>
                     <div>
-                        <span className="text-gray-500 text-sm block">Current Phase</span>
+                        <span className="text-gray-500 text-sm block">Current Wave</span>
                         <Menu as="div" className="relative inline-block text-left mt-1">
                             <div>
                                 <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded bg-blue-100 px-3 py-1.5 text-sm font-medium text-blue-800 hover:bg-blue-200">
@@ -431,7 +142,7 @@ const ProjectHealthDashboard = () => {
                         </Menu>
                     </div>
                     <div>
-                        <span className="text-gray-500 text-sm">Next Milestone in</span>
+                        <span className="text-gray-500 text-sm">Next Milestone due in</span>
                         <div className="font-semibold flex items-center space-x-1">
                             <span>16 days</span>
                         </div>
@@ -463,6 +174,22 @@ const ProjectHealthDashboard = () => {
                             </>
                         )}
                     </button>
+                    <button
+                        className="flex items-center space-x-1 bg-gray-100 px-3 py-1 rounded"
+                        onClick={toggleFullScreen}
+                    >
+                        {isFullScreen ? (
+                            <>
+                                <ArrowsPointingInIcon className="h-4 w-4" />
+                                {/* <span>Exit Fullscreen</span> */}
+                            </>
+                        ) : (
+                            <>
+                                <ArrowsPointingOutIcon className="h-4 w-4" />
+                                {/* <span>Fullscreen</span> */}
+                            </>
+                        )}
+                    </button>
                 </div>
             </div>
 
@@ -475,146 +202,13 @@ const ProjectHealthDashboard = () => {
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {/* Go-Live Risk Index */}
-                        <div className="bg-white rounded-lg shadow p-5 border-t-4 border-red-500">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <h3 className="font-medium text-gray-700">Go-Live Risk Index</h3>
-                                    <div className="text-xs text-gray-500 flex items-center">
-                                        <span>HIGH PRIORITY</span>
-                                    </div>
-                                </div>
-                                <div className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded flex items-center">
-                                    At Risk
-                                </div>
-                            </div>
-
-                            {/* Simplified gauge */}
-                            <div className="flex justify-center mb-2">
-                                <div className="w-32 h-32 rounded-full border-8 border-red-500 flex items-center justify-center">
-                                    <span className="text-3xl font-bold text-gray-800">45%</span>
-                                </div>
-                            </div>
-
-                            <div className="flex justify-between text-xs text-gray-500">
-                                <span>Critical (0%)</span>
-                                <span>Good (100%)</span>
-                            </div>
-
-                            <div className="mt-4 text-sm">
-                                <div className="flex justify-between items-center text-gray-600">
-                                    <span>Previous Period</span>
-                                    <span className="font-medium">62%</span>
-                                </div>
-                                <div className="flex justify-between items-center text-gray-600">
-                                    <span>Change</span>
-                                    <span className="text-red-600 font-medium">-17%</span>
-                                </div>
-                            </div>
-
-                            <div className="mt-3 pt-3 border-t flex justify-between items-center text-xs">
-                                <div className="flex items-center text-gray-500">
-                                    <span>5 Critical Path Tasks Delayed</span>
-                                </div>
-                                <a href="#" className="text-blue-600 flex items-center">
-                                    Details
-                                </a>
-                            </div>
-                        </div>
+                        <GoLiveRiskCard />
 
                         {/* Schedule Performance Index */}
-                        <div className="bg-white rounded-lg shadow p-5 border-t-4 border-yellow-500">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <h3 className="font-medium text-gray-700">Schedule Performance Index</h3>
-                                    <div className="text-xs text-gray-500 flex items-center">
-                                        <span>HIGH PRIORITY</span>
-                                    </div>
-                                </div>
-                                <div className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded flex items-center">
-                                    Warning
-                                </div>
-                            </div>
-
-                            {/* Simplified gauge */}
-                            <div className="flex justify-center mb-2">
-                                <div className="w-32 h-32 rounded-full border-8 border-yellow-500 flex items-center justify-center">
-                                    <span className="text-3xl font-bold text-gray-800">0.89</span>
-                                </div>
-                            </div>
-
-                            <div className="flex justify-between text-xs text-gray-500">
-                                <span>&lt;0.8</span>
-                                <span>1.0</span>
-                                <span>&gt;1.2</span>
-                            </div>
-
-                            <div className="mt-4 text-sm">
-                                <div className="flex justify-between items-center text-gray-600">
-                                    <span>Previous Period</span>
-                                    <span className="font-medium">0.92</span>
-                                </div>
-                                <div className="flex justify-between items-center text-gray-600">
-                                    <span>Change</span>
-                                    <span className="text-red-600 font-medium">-0.03</span>
-                                </div>
-                            </div>
-
-                            <div className="mt-3 pt-3 border-t flex justify-between items-center text-xs">
-                                <div className="flex items-center text-gray-500">
-                                    <span>18 tasks behind schedule</span>
-                                </div>
-                                <a href="#" className="text-blue-600 flex items-center">
-                                    Details
-                                </a>
-                            </div>
-                        </div>
+                        <SPICard />
 
                         {/* Milestone Adherence Rate */}
-                        <div className="bg-white rounded-lg shadow p-5 border-t-4 border-orange-500">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <h3 className="font-medium text-gray-700">Milestone Adherence Rate</h3>
-                                    <div className="text-xs text-gray-500 flex items-center">
-                                        <span>HIGH PRIORITY</span>
-                                    </div>
-                                </div>
-                                <div className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded flex items-center">
-                                    At Risk
-                                </div>
-                            </div>
-
-                            {/* Simplified progress circle */}
-                            <div className="flex justify-center mb-2">
-                                <div className="w-32 h-32 rounded-full border-8 border-orange-500 flex flex-col items-center justify-center">
-                                    <span className="text-3xl font-bold text-gray-800">68%</span>
-                                    <span className="text-sm text-gray-500">On-time</span>
-                                </div>
-                            </div>
-
-                            <div className="flex justify-between text-xs text-gray-500">
-                                <span>Threshold: 80%</span>
-                            </div>
-
-                            <div className="mt-4 text-sm">
-                                <div className="flex justify-between items-center text-gray-600">
-                                    <span>Completed Milestones</span>
-                                    <span className="font-medium">17/25</span>
-                                </div>
-                                <div className="flex justify-between items-center text-gray-600">
-                                    <span>Next Milestone</span>
-                                    <span className="font-medium text-orange-600">UAT Completion</span>
-                                </div>
-                            </div>
-
-                            <div className="mt-3 pt-3 border-t flex justify-between items-center text-xs">
-                                <div className="flex items-center text-gray-500">
-                                    <span>3 Milestones at risk</span>
-                                </div>
-                                <a href="#" className="text-blue-600 flex items-center">
-                                    Details
-                                </a>
-                            </div>
-                        </div>
+                        <MilestoneAdherenceCard />
 
                         {/* Resource Capacity Gap */}
                         <div className="bg-white rounded-lg shadow p-5 border-t-4 border-purple-500">
@@ -803,21 +397,11 @@ const ProjectHealthDashboard = () => {
                         <h2 className="text-lg font-semibold mb-4 text-gray-700">
                             Project Management Discipline
                         </h2>
-                        <div className="mb-6">
+                        <div className="mb-4">
                             <OnTimeDeliveryRate />
                         </div>
-                        <div className="bg-white rounded-lg shadow p-5 mb-6">
-                            <h3 className="font-medium text-gray-700 mb-2">Dependency Coverage Rate</h3>
-                            <div className="mb-4 bg-gray-200 h-4 rounded-full overflow-hidden">
-                                <div className="bg-yellow-500 h-full rounded-full" style={{ width: '76%' }}></div>
-                            </div>
-                            <div className="flex justify-between text-sm mb-4">
-                                <span className="text-gray-500">76% coverage</span>
-                                <span className="text-yellow-700">6 milestones need dependencies</span>
-                            </div>
-                            <div className="border-t pt-3">
-                                <a href="#" className="text-blue-600 text-sm">View Details</a>
-                            </div>
+                        <div className="mb-4">
+                            <DependencyCoverageCard />
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
@@ -832,6 +416,9 @@ const ProjectHealthDashboard = () => {
                                 <div className="text-xs text-gray-500 mt-3 text-center">
                                     Last updated: Apr 5, 2024
                                 </div>
+                                <div className="mt-3 pt-2 border-t flex justify-end">
+                                    <a href="#" className="text-blue-600 text-xs">View Update History</a>
+                                </div>
                             </div>
 
                             <div className="bg-white rounded-lg shadow p-5">
@@ -845,6 +432,9 @@ const ProjectHealthDashboard = () => {
                                 <div className="text-xs text-gray-500 mt-3 text-center">
                                     Last change: Mar 28, 2024
                                 </div>
+                                <div className="mt-3 pt-2 border-t flex justify-end">
+                                    <a href="#" className="text-blue-600 text-xs">View Changes</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -854,91 +444,18 @@ const ProjectHealthDashboard = () => {
                         <h2 className="text-lg font-semibold mb-4 text-gray-700">
                             Risk & Issue Management
                         </h2>
-                        <div className="bg-white rounded-lg shadow p-5 mb-6">
-                            {/* <h3 className="font-medium text-gray-700 mb-4">Risk Management</h3> */}
+                        <RiskExposureCard />
 
-                            {/* Risk Exposure */}
-                            <div className="grid grid-cols-2 gap-4 mb-4">
-                                <div className="rounded bg-red-100 p-3 text-center">
-                                    <div className="text-2xl font-bold text-red-700">5</div>
-                                    <div className="text-xs text-gray-700">High Risks</div>
-                                </div>
-                                <div className="rounded bg-yellow-100 p-3 text-center">
-                                    <div className="text-2xl font-bold text-yellow-700">8</div>
-                                    <div className="text-xs text-gray-700">Medium Risks</div>
-                                </div>
-                            </div>
-
-                            {/* Risk Mitigation Rate */}
-                            <div className="mb-4 mt-5">
-                                <div className="flex justify-between items-center mb-1">
-                                    <span className="text-sm font-medium text-gray-700">Risk Mitigation Rate</span>
-                                    <span className="text-sm font-medium text-yellow-600">68%</span>
-                                </div>
-                                <div className="text-xs text-gray-500 mb-2">
-                                    (Mitigated risks / Identified risks) × 100%
-                                </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2.5">
-                                    <div className="bg-yellow-500 h-2.5 rounded-full" style={{ width: '68%' }}></div>
-                                </div>
-                                <div className="flex justify-between text-xs text-gray-500 mt-1">
-                                    <span>0%</span>
-                                    <div>
-                                        <span className="inline-block w-2 h-2 bg-yellow-500 rounded-full mr-1"></span>
-                                        <span>Warning &lt;75%</span>
-                                    </div>
-                                    <div>
-                                        <span className="inline-block w-2 h-2 bg-red-500 rounded-full mr-1"></span>
-                                        <span>Critical &lt;50%</span>
-                                    </div>
-                                    <span>100%</span>
-                                </div>
-                            </div>
-
-                            <div className="flex justify-between items-center mt-4">
-                                <div className="flex items-center space-x-4">
-                                    <div className="text-sm">
-                                        <div className="font-medium">17/25</div>
-                                        <div className="text-xs text-gray-500">Risks Mitigated</div>
-                                    </div>
-                                    <div className="text-sm">
-                                        <div className="font-medium">8</div>
-                                        <div className="text-xs text-gray-500">Pending Mitigation</div>
-                                    </div>
-                                </div>
-                                <a href="#" className="text-blue-600 text-sm">View All Risks</a>
-                            </div>
-                        </div>
-
-                        <div className="bg-white rounded-lg shadow p-5">
-                            <h3 className="font-medium text-gray-700 mb-2">Issue Resolution Efficiency</h3>
-                            <div className="flex justify-between mb-2">
-                                <span className="text-sm text-gray-600">Average Resolution Time</span>
-                                <span className="text-sm font-medium text-orange-600">6.2 days</span>
-                            </div>
-                            <div className="mb-4 bg-gray-200 h-1.5 rounded-full">
-                                <div className="bg-orange-500 h-full rounded-full" style={{ width: '62%' }}></div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 mb-4">
-                                <div className="text-center">
-                                    <div className="text-2xl font-bold text-gray-700">12</div>
-                                    <div className="text-xs text-gray-500">Open Issues</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-2xl font-bold text-green-600">87%</div>
-                                    <div className="text-xs text-gray-500">Resolution Rate</div>
-                                </div>
-                            </div>
-                            <div className="border-t pt-3">
-                                <a href="#" className="text-blue-600 text-sm">View Open Issues</a>
-                            </div>
-                        </div>
+                        <IssueResolutionCard />
                     </div>
-                    <div className="mb-8">
-                        <h2 className="text-lg font-semibold mb-4 text-gray-700">
-                            Approval & Governance
-                        </h2>
+                </div>
+                <div className="mb-8">
+                    <h2 className="text-lg font-semibold mb-4 text-gray-700">
+                        Approval & Governance
+                    </h2>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <ApprovalCycleEfficiency />
+                        <ApprovalBottleneckIndicator />
                     </div>
                 </div>
 
@@ -994,7 +511,7 @@ const ProjectHealthDashboard = () => {
 
                         <div className="border-t pt-4">
                             <div className="flex">
-                                <input type="text" placeholder="Ask a question this project..." className="flex-1 border rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                <input type="text" placeholder="Ask a question about your project..." className="flex-1 border rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                 <button className="bg-blue-600 text-white px-4 py-2 rounded-r-lg">Ask</button>
                             </div>
                             <div className="mt-2 text-xs text-gray-500">
