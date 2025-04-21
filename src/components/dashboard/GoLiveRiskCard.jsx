@@ -145,7 +145,7 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                         <span className="px-2 py-1 rounded-full bg-gray-100 text-xs text-gray-700">{task.level}</span>
                     </td>
                     <td className="p-3 text-center whitespace-nowrap text-sm">{task.plannedEnd}</td>
-                    <td className="p-3 text-center whitespace-nowrap">
+                    <td className="p-3 text-center whitespace-nowrap text-sm">
                         <div className="flex justify-center items-center">
                             <div className="w-16 bg-gray-200 rounded-full h-2.5 mr-2">
                                 <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: task.progress }}></div>
@@ -153,8 +153,8 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                             <span>{task.progress}</span>
                         </div>
                     </td>
-                    <td className="p-3 text-center whitespace-nowrap">
-                        <span className={`text-sm font-medium ${hasDelay ? 'text-red-600' : 'text-green-600'}`}>{task.delay}</span>
+                    <td className="p-3 text-center whitespace-nowrap text-sm">
+                        <span className={`font-medium ${hasDelay ? 'text-red-600' : 'text-green-600'}`}>{task.delay}</span>
                     </td>
                     <td className="p-3 text-center whitespace-nowrap">
                         <span className={`px-2 py-1 rounded-full text-xs ${getImpactColor(task.impact)}`}>
@@ -318,7 +318,7 @@ const GoLiveRiskCard = () => {
         <div className="bg-white rounded-lg shadow p-5 border-t-4 border-red-500">
             <div className="flex justify-between items-start mb-4">
                 <div>
-                    <h3 className="font-medium text-gray-700">Go-Live Risk Index</h3>
+                    <h3 className="font-medium text-gray-700">Go-Live Impact Index</h3>
                     <div className="text-xs text-gray-500 flex items-center">
                         <span>HIGH PRIORITY</span>
                     </div>
@@ -342,7 +342,7 @@ const GoLiveRiskCard = () => {
 
             <div className="mt-4 text-sm">
                 <div className="flex justify-between items-center text-gray-600">
-                    <span>Previous Period</span>
+                    <span>Last 30 days (Mar 19 - Apr 17)</span>
                     <span className="font-medium">62%</span>
                 </div>
                 <div className="flex justify-between items-center text-gray-600">

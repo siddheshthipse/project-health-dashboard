@@ -112,23 +112,23 @@ const MilestoneAdherenceDrilldownModal = ({ isOpen, closeModal }) => {
                             ) : (
                                 <span className="w-5"></span>
                             )}
-                            <span className={`ml-1 font-medium ${isChild ? 'text-gray-600 text-sm' : 'text-gray-800'}`}>
+                            <span className={`ml-1 font-medium text-sm ${isChild ? 'text-gray-600' : 'text-gray-800'}`}>
                                 {isChild ? milestone.name : `${milestone.id} - ${milestone.name}`}
                             </span>
                         </div>
                     </td>
-                    <td className="p-3 text-center whitespace-nowrap text-xs">{milestone.plannedEnd}</td>
+                    <td className="p-3 text-center whitespace-nowrap text-sm">{milestone.plannedEnd}</td>
                     <td className="p-3 text-center whitespace-nowrap">
                         <div className="flex justify-center items-center">
                             <div className="w-16 bg-gray-200 rounded-full h-2.5 mr-2">
                                 <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: milestone.progress }}></div>
                             </div>
-                            <span className='text-xs'>{milestone.progress}</span>
+                            <span className='text-sm'>{milestone.progress}</span>
                         </div>
                     </td>
                     <td className="p-3 whitespace-nowrap">
                         {isChild ? (
-                            <span className="text-gray-600 text-xs">Assigned to {milestone.assignedTo}</span>
+                            <span className="text-gray-600 text-sm">Assigned to {milestone.assignedTo}</span>
                         ) : (
                             <div className="flex flex-col">
                                 <span className={`font-medium ${getStatusColor(milestone.status)}`}>{milestone.status}</span>
@@ -145,7 +145,7 @@ const MilestoneAdherenceDrilldownModal = ({ isOpen, closeModal }) => {
                     </td>
                     <td className="p-3 text-center whitespace-nowrap">
                         {!isChild && (
-                            <span className={`font-medium ${milestone.waveImpact !== '0%' ? 'text-red-600' : 'text-gray-500'}`}>
+                            <span className={`font-medium text-sm ${milestone.waveImpact !== '0%' ? 'text-red-600' : 'text-gray-500'}`}>
                                 {milestone.waveImpact}
                             </span>
                         )}

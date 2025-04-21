@@ -129,13 +129,13 @@ const SPIDrilldownModal = ({ isOpen, closeModal }) => {
                             ) : (
                                 <span className="w-5"></span>
                             )}
-                            <span className="ml-1 font-medium text-gray-700">{task.name}</span>
+                            <span className="ml-1 font-medium text-gray-700 text-sm">{task.name}</span>
                         </div>
                     </td>
-                    <td className="p-2 text-center whitespace-nowrap">{task.planned}</td>
-                    <td className="p-2 text-center whitespace-nowrap">{task.actual}</td>
-                    <td className="p-2 text-center whitespace-nowrap text-red-500">{task.variance}</td>
-                    <td className="p-2 text-center whitespace-nowrap">
+                    <td className="p-2 text-center whitespace-nowrap text-sm">{task.planned}</td>
+                    <td className="p-2 text-center whitespace-nowrap text-sm">{task.actual}</td>
+                    <td className="p-2 text-center whitespace-nowrap text-red-500 text-sm">{task.variance}</td>
+                    <td className="p-2 text-center whitespace-nowrap text-sm">
                         <span className={`font-medium ${getSPIColor(task.spi)}`}>{task.spi.toFixed(2)}</span>
                     </td>
                     <td className="p-2 text-center whitespace-nowrap">

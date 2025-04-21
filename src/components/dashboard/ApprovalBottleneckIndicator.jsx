@@ -207,6 +207,11 @@ const ApprovalBottleneckIndicator = () => {
                     option={option}
                     style={{ height: '100%', width: '100%' }}
                     opts={{ renderer: 'canvas' }}
+                    onChartReady={(chart) => {
+                        setTimeout(() => {
+                            chart.resize();
+                        }, 100);
+                    }}
                 />
             </div>
 
