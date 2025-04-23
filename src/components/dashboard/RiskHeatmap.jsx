@@ -155,7 +155,7 @@ const RiskHeatmap = () => {
         <div className="bg-white rounded-lg shadow p-5 border-t-4 border-blue-500">
             <div className="flex justify-between items-start mb-4">
                 <div>
-                    <h3 className="font-medium text-gray-700">Risk Heatmap</h3>
+                    <h3 className="font-medium text-gray-700">Risk Heatmap - Impact vs Probablity</h3>
                     <div className="text-xs text-gray-500 flex items-center">
                         <span>HIGH PRIORITY</span>
                     </div>
