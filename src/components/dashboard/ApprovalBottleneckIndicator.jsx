@@ -1,31 +1,80 @@
 import React from 'react';
-import { Menu, Transition, MenuButton, MenuItem, MenuItems, Dialog } from '@headlessui/react';
-import { XMarkIcon, CalendarIcon, FunnelIcon, ChevronRightIcon, ChevronDownIcon, ChevronUpIcon, ArrowsPointingOutIcon, ArrowsPointingInIcon } from '@heroicons/react/20/solid';
-import { useState, Fragment, useEffect } from 'react';
+import { useState } from 'react';
 import ReactECharts from 'echarts-for-react';
 
 const ApprovalBottleneckIndicator = () => {
+    // Add state for view mode (total or average)
+    const [viewMode, setViewMode] = useState('total');
+    
     // Mock data - would come from your MongoDB data in a real application
     const bottleneckData = {
         stakeholders: ['John Smith', 'Sarah Williams', 'Michael Chen', 'Priya Sharma', 'Robert Taylor'],
         level1Delays: [1.2, 0.5, 0.8, 4.2, 2.1],
         level2Delays: [0.7, 1.8, 5.2, 2.6, 0.3],
-        level3Delays: [0.4, 3.2, 1.5, 0, 1.9]
+        level3Delays: [0.4, 3.2, 1.5, 0, 1.9],
+        // Mock data for counts (to calculate averages)
+        level1Counts: [3, 2, 1, 5, 4],
+        level2Counts: [2, 3, 4, 3, 1],
+        level3Counts: [1, 4, 2, 0, 2]
     };
 
-    // Calculate total delays for each stakeholder
+    // Calculate average delays
+    const avgLevel1Delays = bottleneckData.level1Delays.map((delay, index) => 
+        bottleneckData.level1Counts[index] > 0 ? 
+        +(delay / bottleneckData.level1Counts[index]).toFixed(1) : 0
+    );
+    
+    const avgLevel2Delays = bottleneckData.level2Delays.map((delay, index) => 
+        bottleneckData.level2Counts[index] > 0 ? 
+        +(delay / bottleneckData.level2Counts[index]).toFixed(1) : 0
+    );
+    
+    const avgLevel3Delays = bottleneckData.level3Delays.map((delay, index) => 
+        bottleneckData.level3Counts[index] > 0 ? 
+        +(delay / bottleneckData.level3Counts[index]).toFixed(1) : 0
+    );
+
+    // Get the appropriate data based on view mode
+    const getDelayData = () => {
+        if (viewMode === 'total') {
+            return {
+                level1: bottleneckData.level1Delays,
+                level2: bottleneckData.level2Delays,
+                level3: bottleneckData.level3Delays
+            };
+        } else {
+            return {
+                level1: avgLevel1Delays,
+                level2: avgLevel2Delays,
+                level3: avgLevel3Delays
+            };
+        }
+    };
+
+    const delayData = getDelayData();
+
+    // Calculate total delays for each stakeholder based on current view
     const totalDelays = bottleneckData.stakeholders.map((_, index) => {
-        return (
-            bottleneckData.level1Delays[index] +
-            bottleneckData.level2Delays[index] +
-            bottleneckData.level3Delays[index]
-        );
+        if (viewMode === 'total') {
+            return (
+                bottleneckData.level1Delays[index] +
+                bottleneckData.level2Delays[index] +
+                bottleneckData.level3Delays[index]
+            );
+        } else {
+            // For average view, sum up the averages
+            return (
+                avgLevel1Delays[index] +
+                avgLevel2Delays[index] +
+                avgLevel3Delays[index]
+            );
+        }
     });
 
     // Find maximum total delay for sorting
     const maxDelay = Math.max(...totalDelays);
-    const criticalThreshold = 10;
-    const warningThreshold = 5;
+    const criticalThreshold = viewMode === 'total' ? 10 : 3; // Adjust threshold for average view
+    const warningThreshold = viewMode === 'total' ? 5 : 1.5; // Adjust threshold for average view
 
     // ECharts option configuration
     const option = {
@@ -42,20 +91,20 @@ const ApprovalBottleneckIndicator = () => {
                 params.forEach(param => {
                     total += param.value;
                     result += `<div style="display:flex;justify-content:space-between;margin-top:4px;">
-              <div>
-                <span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${param.color};"></span>
-                ${param.seriesName}:
-              </div>
-              <div style="font-weight:bold;margin-left:20px;">${param.value} days</div>
-            </div>`;
+                      <div>
+                        <span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${param.color};"></span>
+                        ${param.seriesName}:
+                      </div>
+                      <div style="font-weight:bold;margin-left:20px;">${param.value} days</div>
+                    </div>`;
                 });
 
                 result += `<div style="margin-top:6px;border-top:1px solid rgba(0,0,0,0.1);padding-top:4px;">
-            <div style="display:flex;justify-content:space-between;">
-              <div>Total:</div>
-              <div style="font-weight:bold;">${total.toFixed(1)} days</div>
-            </div>
-          </div>`;
+                    <div style="display:flex;justify-content:space-between;">
+                      <div>Total:</div>
+                      <div style="font-weight:bold;">${total.toFixed(1)} days</div>
+                    </div>
+                  </div>`;
 
                 return result;
             }
@@ -115,7 +164,7 @@ const ApprovalBottleneckIndicator = () => {
                 emphasis: {
                     focus: 'series'
                 },
-                data: bottleneckData.level1Delays
+                data: delayData.level1
             },
             {
                 name: 'Level 2',
@@ -127,7 +176,7 @@ const ApprovalBottleneckIndicator = () => {
                 emphasis: {
                     focus: 'series'
                 },
-                data: bottleneckData.level2Delays
+                data: delayData.level2
             },
             {
                 name: 'Level 3',
@@ -139,7 +188,7 @@ const ApprovalBottleneckIndicator = () => {
                 emphasis: {
                     focus: 'series'
                 },
-                data: bottleneckData.level3Delays
+                data: delayData.level3
             }
         ],
         markLine: {
@@ -153,7 +202,7 @@ const ApprovalBottleneckIndicator = () => {
                         type: 'dashed'
                     },
                     label: {
-                        formatter: 'Warning (5 days)',
+                        formatter: `Warning (${warningThreshold} days)`,
                         position: 'insideEndTop',
                         color: '#fbbf24'
                     }
@@ -165,7 +214,7 @@ const ApprovalBottleneckIndicator = () => {
                         type: 'dashed'
                     },
                     label: {
-                        formatter: 'Critical (10 days)',
+                        formatter: `Critical (${criticalThreshold} days)`,
                         position: 'insideEndTop',
                         color: '#ef4444'
                     }
@@ -189,17 +238,30 @@ const ApprovalBottleneckIndicator = () => {
             </div>
 
             <div className="mb-4">
-                <div className="flex justify-between items-end">
+                <div className="flex justify-between items-center">
                     <div className="text-sm text-gray-700">
                         Stakeholder approval delays by level
                     </div>
-                    <div className="text-sm font-medium text-gray-700">
-                        3 bottlenecks identified
+                    <div className="flex bg-gray-100 rounded-md p-0.5">
+                        <button 
+                            className={`text-xs py-1 px-2 rounded-md ${viewMode === 'total' ? 'bg-white shadow-sm' : ''}`}
+                            onClick={() => setViewMode('total')}
+                        >
+                            Total Delay
+                        </button>
+                        <button 
+                            className={`text-xs py-1 px-2 rounded-md ${viewMode === 'average' ? 'bg-white shadow-sm' : ''}`}
+                            onClick={() => setViewMode('average')}
+                        >
+                            Average Delay
+                        </button>
                     </div>
                 </div>
-                {/* <div className="text-sm text-gray-500 mt-1">
-                    Formula: Number of days signoff is delayed by stakeholder
-                </div> */}
+                <div className="text-xs text-gray-500 mt-1">
+                    Formula: {viewMode === 'total' ? 
+                        "Sum of approval delay days per stakeholder across all levels" : 
+                        "Average days of delay per approval at each level"}
+                </div>
             </div>
 
             <div className="h-64">
@@ -219,11 +281,11 @@ const ApprovalBottleneckIndicator = () => {
                 <div className="flex flex-wrap gap-4">
                     <div className="flex items-center text-gray-500">
                         <div className="w-2 h-2 rounded-full bg-yellow-500 mr-1"></div>
-                        <span>Warning &gt;5 days</span>
+                        <span>Warning &gt;{warningThreshold} days</span>
                     </div>
                     <div className="flex items-center text-gray-500">
                         <div className="w-2 h-2 rounded-full bg-red-500 mr-1"></div>
-                        <span>Critical &gt;10 days</span>
+                        <span>Critical &gt;{criticalThreshold} days</span>
                     </div>
                 </div>
                 <a href="#" className="text-blue-600 flex items-center">

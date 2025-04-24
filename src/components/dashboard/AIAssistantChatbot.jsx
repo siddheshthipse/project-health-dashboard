@@ -105,7 +105,7 @@ const AIAssistantChatbot = () => {
           className="bg-indigo-900 text-white rounded-full p-3 shadow-lg hover:bg-indigo-800 flex items-center space-x-2"
         >
           <SparklesIcon className="h-6 w-6" />
-          <span className="mr-1">KTern.AI Assistant</span>
+          <span className="mr-1">Ask KTern.AI</span>
         </button>
       )}
     </div>

@@ -9,6 +9,10 @@ const TimelineComparisonChart = () => {
     const [selectedMilestone, setSelectedMilestone] = useState(null);
     const [milestoneModalOpen, setMilestoneModalOpen] = useState(false);
 
+    const [dataPointModalOpen, setDataPointModalOpen] = useState(false);
+    const [selectedMonth, setSelectedMonth] = useState(null);
+    const [selectedTaskView, setSelectedTaskView] = useState('planned');
+
     // Sample project progress data (percentages)
     const projectData = {
         months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
@@ -23,7 +27,7 @@ const TimelineComparisonChart = () => {
         {
             id: 'ms-1',
             name: 'Requirements Finalized',
-            date: 'Feb 15, 2025',
+            date: 'Jan 15, 2025',
             status: 'on-time', // on-time, delayed, ahead, at-risk
             planned: 15,
             actual: 15,
@@ -64,7 +68,7 @@ const TimelineComparisonChart = () => {
         {
             id: 'ms-2',
             name: 'Design Approval',
-            date: 'Mar 25, 2025',
+            date: 'Jan 25, 2025',
             status: 'delayed',
             planned: 28,
             actual: 24,
@@ -266,9 +270,35 @@ const TimelineComparisonChart = () => {
         }
     ];
 
+    const taskData = [
+        {
+            id: 'task-1',
+            title: 'Requirements Gathering',
+            level: 1,
+            status: 'Completed',
+            owner: 'John Doe',
+            plannedMilestonePercent: 100,
+            actualMilestonePercent: 100,
+            plannedEnd: 'Jan 20, 2025',
+            actualEnd: 'Jan 18, 2025'
+        },
+        {
+            id: 'task-2',
+            title: 'System Architecture',
+            level: 1,
+            status: 'Completed',
+            owner: 'Jane Smith',
+            plannedMilestonePercent: 100,
+            actualMilestonePercent: 95,
+            plannedEnd: 'Feb 10, 2025',
+            actualEnd: 'Feb 15, 2025'
+        },
+        // Add more task data
+    ];
+
     // Helper function to get milestone symbol based on status
     const getMilestoneSymbol = (status) => {
-        return 'circle';
+        return 'diamond';
     };
 
     // Helper function to get milestone color based on status
@@ -314,6 +344,7 @@ const TimelineComparisonChart = () => {
                     };
                 });
 
+            console.log('MILESTONE POINTS', milestonePoints)
             series.push({
                 name: 'Planned',
                 type: 'line',
@@ -331,7 +362,16 @@ const TimelineComparisonChart = () => {
                 markPoint: {
                     symbolSize: 14,
                     label: {
-                        show: false // Hide labels by default, only show on hover
+                        show: true // Hide labels by default
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            formatter: function (params) {
+                                return params.name;
+                            },
+                            position: 'top'
+                        }
                     },
                     data: milestonePoints
                 }
@@ -446,7 +486,13 @@ const TimelineComparisonChart = () => {
                 markPoint: {
                     symbolSize: 14,
                     label: {
-                        show: false // Hide labels by default, only show on hover
+                        show: false // Only show on hover
+                    },
+                    tooltip: {
+                        show: true,
+                        formatter: function (params) {
+                            return params.name;
+                        }
                     },
                     data: milestonePoints
                 }
@@ -532,6 +578,7 @@ const TimelineComparisonChart = () => {
     };
 
     // Handle milestone click
+    // Update the handleChartClick function
     const handleChartClick = (params) => {
         // Handle clicks on milestone points
         if (params.componentType === 'markPoint') {
@@ -539,6 +586,19 @@ const TimelineComparisonChart = () => {
             if (milestone) {
                 setSelectedMilestone(milestone);
                 setMilestoneModalOpen(true);
+            }
+            return;
+        }
+
+        // Handle clicks on line data points
+        if (params.seriesType === 'line') {
+            const monthIndex = params.dataIndex; // 0 for Jan, 1 for Feb, etc.
+            const seriesName = params.seriesName; // 'Planned' or 'Actual'
+
+            if (seriesName === 'Planned' || seriesName === 'Actual') {
+                setSelectedMonth(projectData.months[monthIndex]);
+                setSelectedTaskView(seriesName.toLowerCase());
+                setDataPointModalOpen(true);
             }
         }
     };
@@ -587,7 +647,7 @@ const TimelineComparisonChart = () => {
                                 <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all">
                                     <div className="flex justify-between items-center mb-4">
                                         <Dialog.Title as="h3" className="text-lg font-semibold text-gray-900">
-                                            {selectedMilestone.name} Details
+                                            Milestone - {selectedMilestone.name}
                                         </Dialog.Title>
                                         <button
                                             type="button"
@@ -751,6 +811,160 @@ const TimelineComparisonChart = () => {
         );
     };
 
+    // Add this new component
+    const TaskTableModal = () => {
+        const [activeTab, setActiveTab] = useState(selectedTaskView);
+
+        // Filter tasks based on selected month and view
+        const getTasksForMonth = (view) => {
+            const monthIndex = projectData.months.indexOf(selectedMonth);
+            if (monthIndex === -1) return [];
+
+            // Get the last day of the selected month (approximate)
+            const monthEndDate = new Date(2025, monthIndex + 1, 0).getDate();
+            const monthEndStr = `${selectedMonth} ${monthEndDate}, 2025`;
+
+            return taskData.filter(task => {
+                if (view === 'planned') {
+                    return new Date(task.plannedEnd) <= new Date(monthEndStr) &&
+                        ['Completed', 'Approved'].includes(task.status);
+                } else { // 'actual'
+                    return new Date(task.actualEnd) <= new Date(monthEndStr) &&
+                        ['Completed', 'Approved'].includes(task.status);
+                }
+            });
+        };
+
+        const plannedTasks = getTasksForMonth('planned');
+        const actualTasks = getTasksForMonth('actual');
+
+        if (!selectedMonth) return null;
+
+        return (
+            <Transition appear show={dataPointModalOpen} as={Fragment}>
+                <Dialog as="div" className="relative z-50" onClose={() => setDataPointModalOpen(false)}>
+                    <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                    >
+                        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+                    </Transition.Child>
+
+                    <div className="fixed inset-0 overflow-y-auto">
+                        <div className="flex min-h-full items-center justify-center p-4">
+                            <Transition.Child
+                                as={Fragment}
+                                enter="ease-out duration-300"
+                                enterFrom="opacity-0 scale-95"
+                                enterTo="opacity-100 scale-100"
+                                leave="ease-in duration-200"
+                                leaveFrom="opacity-100 scale-100"
+                                leaveTo="opacity-0 scale-95"
+                            >
+                                <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <Dialog.Title as="h3" className="text-md font-semibold text-gray-900">
+                                            Tasks as of {selectedMonth} 2025
+                                        </Dialog.Title>
+                                        <button
+                                            type="button"
+                                            onClick={() => setDataPointModalOpen(false)}
+                                            className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        >
+                                            <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                                        </button>
+                                    </div>
+
+                                    {/* Card filters at the top */}
+                                    <div className="grid grid-cols-2 gap-4 mb-6">
+                                        <div
+                                            className={`cursor-pointer rounded-lg p-4 border ${activeTab === 'planned' ? 'bg-blue-50 border-blue-300' : 'bg-gray-50 border-gray-200'}`}
+                                            onClick={() => setActiveTab('planned')}
+                                        >
+                                            <div className="text-xl font-bold text-gray-700">{plannedTasks.length}</div>
+                                            <div className="text-sm text-gray-500">Planned Tasks</div>
+                                        </div>
+                                        <div
+                                            className={`cursor-pointer rounded-lg p-4 border ${activeTab === 'actual' ? 'bg-green-50 border-green-300' : 'bg-gray-50 border-gray-200'}`}
+                                            onClick={() => setActiveTab('actual')}
+                                        >
+                                            <div className="text-xl font-bold text-gray-700">{actualTasks.length}</div>
+                                            <div className="text-sm text-gray-500">Actual Tasks</div>
+                                        </div>
+                                    </div>
+
+                                    {/* Tab content */}
+                                    <div className="border rounded-lg overflow-hidden max-h-[50vh] overflow-y-auto">
+                                        <table className="min-w-full divide-y divide-gray-200">
+                                            <thead className="bg-gray-50 sticky top-0">
+                                                <tr>
+                                                    <th scope="col" className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Title
+                                                    </th>
+                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Level
+                                                    </th>
+                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Status
+                                                    </th>
+                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Owner
+                                                    </th>
+                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Planned Milestone %
+                                                    </th>
+                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Actual Milestone %
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="bg-white divide-y divide-gray-200">
+                                                {(activeTab === 'planned' ? plannedTasks : actualTasks).map(task => (
+                                                    <tr key={task.id} className="hover:bg-gray-50">
+                                                        <td className="p-3">
+                                                            <div className="flex items-center">
+                                                                <span className="font-medium text-gray-700">{task.title}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td className="p-3 text-center whitespace-nowrap text-sm text-gray-600">
+                                                            {task.level}
+                                                        </td>
+                                                        <td className="p-3 text-center whitespace-nowrap">
+                                                            <span className={`px-2 py-1 text-xs rounded-full ${task.status === 'Completed' ? 'bg-green-100 text-green-800' :
+                                                                task.status === 'Approved' ? 'bg-blue-100 text-blue-800' :
+                                                                    'bg-gray-100 text-gray-800'
+                                                                }`}>
+                                                                {task.status}
+                                                            </span>
+                                                        </td>
+                                                        <td className="p-3 text-center whitespace-nowrap text-sm text-gray-600">
+                                                            {task.owner}
+                                                        </td>
+                                                        <td className="p-3 text-center whitespace-nowrap text-sm text-gray-600">
+                                                            {task.plannedMilestonePercent}%
+                                                        </td>
+                                                        <td className="p-3 text-center whitespace-nowrap text-sm text-gray-600">
+                                                            {task.actualMilestonePercent}%
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </Dialog.Panel>
+                            </Transition.Child>
+                        </div>
+                    </div>
+                </Dialog>
+            </Transition>
+        );
+    };
+
     return (
         <div className="bg-white rounded-lg shadow p-5">
             <div className="flex justify-between items-start mb-4">
@@ -811,24 +1025,25 @@ const TimelineComparisonChart = () => {
 
             <div className="mt-4 pt-3 border-t flex flex-wrap gap-4">
                 <div className="flex items-center text-xs text-gray-500">
-                    <div className="w-3 h-3 rounded-full bg-blue-500 mr-1"></div>
+                    <div className="w-3 h-3 bg-blue-500 mr-1 rotate-90 transform" style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }}></div>
                     <span>Ahead</span>
                 </div>
                 <div className="flex items-center text-xs text-gray-500">
-                    <div className="w-3 h-3 rounded-full bg-blue-500 mr-1"></div>
+                    <div className="w-3 h-3 bg-blue-500 mr-1 rotate-90 transform" style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }}></div>
                     <span>On Track</span>
                 </div>
                 <div className="flex items-center text-xs text-gray-500">
-                    <div className="w-3 h-3 rounded-full bg-amber-500 mr-1"></div>
+                    <div className="w-3 h-3 bg-amber-500 mr-1 rotate-90 transform" style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }}></div>
                     <span>At Risk</span>
                 </div>
                 <div className="flex items-center text-xs text-gray-500">
-                    <div className="w-3 h-3 rounded-full bg-red-500 mr-1"></div>
+                    <div className="w-3 h-3 bg-red-500 mr-1 rotate-90 transform" style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }}></div>
                     <span>Delayed</span>
                 </div>
             </div>
 
             <MilestoneModal />
+            <TaskTableModal />
         </div>
     );
 };
