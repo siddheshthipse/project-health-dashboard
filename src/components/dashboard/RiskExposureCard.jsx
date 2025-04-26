@@ -278,12 +278,12 @@ const RiskExposureCard = () => {
                 <div className="flex justify-between text-xs text-gray-500 mt-1">
                     <span>0%</span>
                     <div>
-                        <span className="inline-block w-2 h-2 bg-yellow-500 rounded-full mr-1"></span>
-                        <span>Warning &lt;75%</span>
-                    </div>
-                    <div>
                         <span className="inline-block w-2 h-2 bg-red-500 rounded-full mr-1"></span>
                         <span>Critical &lt;50%</span>
+                    </div>
+                    <div>
+                        <span className="inline-block w-2 h-2 bg-yellow-500 rounded-full mr-1"></span>
+                        <span>Warning &lt;75%</span>
                     </div>
                     <span>100%</span>
                 </div>

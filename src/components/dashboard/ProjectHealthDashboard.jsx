@@ -296,16 +296,25 @@ const ProjectHealthDashboard = () => {
                         Project Management Discipline
                     </h2>
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                        {/* First column - spans 2 columns */}
                         <div className="lg:col-span-2">
                             <OnTimeDeliveryRate />
                         </div>
-                        <div>
-                            <DependencyCoverageCard />
-                        </div>
-                        <div>
+
+                        {/* Second column - spans 2 columns with nested grid */}
+                        <div className="lg:col-span-2">
                             <div className="grid grid-cols-1 gap-6">
-                                <PlanRecencyCard />
-                                <BaselineChangesCard />   
+                                <div>
+                                    <DependencyCoverageCard />
+                                </div>
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div>
+                                        <PlanRecencyCard />
+                                    </div>
+                                    <div>
+                                        <BaselineChangesCard />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
