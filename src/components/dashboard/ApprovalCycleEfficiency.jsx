@@ -83,9 +83,9 @@ const ApprovalCycleEfficiency = () => {
             <div className="flex justify-between items-start mb-4">
                 <div>
                     <h3 className="font-medium text-gray-700">Signoff Approval Efficiency</h3>
-                    <div className="text-xs text-gray-500 flex items-center">
+                    {/* <div className="text-xs text-gray-500 flex items-center">
                         <span>MEDIUM PRIORITY</span>
-                    </div>
+                    </div> */}
                 </div>
                 <div className={`${status} text-xs px-2 py-1 rounded flex items-center`}>
                     {statusText}
@@ -100,7 +100,7 @@ const ApprovalCycleEfficiency = () => {
                     </div>
                 </div>
                 <div className="text-sm text-gray-500 mt-1">
-                    Formula: Average days from submission to final approval
+                    Average days from submission to final approval
                 </div>
             </div>
 

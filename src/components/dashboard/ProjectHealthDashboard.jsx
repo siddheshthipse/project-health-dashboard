@@ -56,7 +56,7 @@ const ProjectHealthDashboard = () => {
         <div className="flex flex-col h-screen bg-gray-50">
             {/* Header */}
             {headerExpanded && (
-                <header className="bg-indigo-800 text-white p-4 shadow-md">
+                <header className="bg-indigo-700 text-white p-4 shadow-md">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center">
                             {/* <img

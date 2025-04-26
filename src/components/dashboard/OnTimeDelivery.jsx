@@ -506,9 +506,9 @@ const OnTimeDeliveryRate = () => {
             <div className="flex justify-between items-start mb-4">
                 <div>
                     <h3 className="font-medium text-gray-700">On-Time Delivery Rate</h3>
-                    <div className="text-xs text-gray-500 flex items-center">
+                    {/* <div className="text-xs text-gray-500 flex items-center">
                         <span>HIGH PRIORITY</span>
-                    </div>
+                    </div> */}
                 </div>
                 <div className={`${status} text-xs px-2 py-1 rounded flex items-center`}>
                     {statusText}

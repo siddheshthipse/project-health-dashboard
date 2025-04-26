@@ -300,9 +300,9 @@ const MilestoneAdherenceCard = () => {
             <div className="flex justify-between items-start mb-4">
                 <div>
                     <h3 className="font-medium text-gray-700">Milestone Adherence Rate</h3>
-                    <div className="text-xs text-gray-500 flex items-center">
+                    {/* <div className="text-xs text-gray-500 flex items-center">
                         <span>HIGH PRIORITY</span>
-                    </div>
+                    </div> */}
                 </div>
                 <div className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded flex items-center">
                     At Risk
@@ -312,14 +312,14 @@ const MilestoneAdherenceCard = () => {
             {/* Simplified progress circle */}
             <div className="flex justify-center mb-2">
                 <div className="w-32 h-32 rounded-full border-8 border-orange-500 flex flex-col items-center justify-center">
-                    <span className="text-3xl font-bold text-gray-800">68%</span>
-                    <span className="text-sm text-gray-500">On-time</span>
+                    <span className="text-2xl font-bold text-gray-800">68%</span>
+                    <span className="text-xs text-gray-500">Completed on time</span>
                 </div>
             </div>
 
-            <div className="flex justify-between text-xs text-gray-500">
+            {/* <div className="flex justify-between text-xs text-gray-500">
                 <span>Threshold: 80%</span>
-            </div>
+            </div> */}
 
             <div className="mt-4 text-sm">
                 <div className="flex justify-between items-center text-gray-600">

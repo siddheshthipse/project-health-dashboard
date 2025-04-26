@@ -319,9 +319,9 @@ const GoLiveRiskCard = () => {
             <div className="flex justify-between items-start mb-4">
                 <div>
                     <h3 className="font-medium text-gray-700">Go-Live Impact Index</h3>
-                    <div className="text-xs text-gray-500 flex items-center">
+                    {/* <div className="text-xs text-gray-500 flex items-center">
                         <span>HIGH PRIORITY</span>
-                    </div>
+                    </div> */}
                 </div>
                 <div className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded flex items-center">
                     At Risk
@@ -330,19 +330,20 @@ const GoLiveRiskCard = () => {
 
             {/* Simplified gauge */}
             <div className="flex justify-center mb-2">
-                <div className="w-32 h-32 rounded-full border-8 border-red-500 flex items-center justify-center">
-                    <span className="text-3xl font-bold text-gray-800">45%</span>
+                <div className="w-32 h-32 rounded-full border-8 border-red-500 flex flex-col items-center justify-center">
+                <span className="text-2xl font-bold text-gray-800">45%</span>
+                <span className="text-xs text-gray-500">On-time Go-live</span>
                 </div>
             </div>
 
-            <div className="flex justify-between text-xs text-gray-500">
+            {/* <div className="flex justify-between text-xs text-gray-500">
                 <span>Critical (0%)</span>
                 <span>Good (100%)</span>
-            </div>
+            </div> */}
 
             <div className="mt-4 text-sm">
                 <div className="flex justify-between items-center text-gray-600">
-                    <span>Last 30 days (Mar 19 - Apr 17)</span>
+                    <span>Last 30 days as on March 25th</span>
                     <span className="font-medium">62%</span>
                 </div>
                 <div className="flex justify-between items-center text-gray-600">
