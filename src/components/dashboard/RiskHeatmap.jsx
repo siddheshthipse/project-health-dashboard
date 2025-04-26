@@ -386,7 +386,7 @@ const RiskHeatmap = () => {
                     <div className="flex flex-col"> {/* Main container for the grid */}
                         <div className="flex"> {/* Row for the heatmap grid */}
                             {/* Impact label column */}
-                            <div className="w-6 bg-gray-200 relative">
+                            <div className="w-10 bg-gray-200 relative">
                                 <div className="absolute inset-0 flex items-center justify-center h-full">
                                     <span className="transform -rotate-90 font-medium text-xs text-gray-700 whitespace-nowrap">Impact</span>
                                 </div>
@@ -484,14 +484,29 @@ const RiskHeatmap = () => {
                 </div>
             </div>
 
-            {/* <div className="mt-3 pt-3 border-t flex justify-between items-center text-xs">
+            <div className="mt-3 pt-3 border-t flex justify-between items-center text-xs">
                 <div className="flex items-center text-gray-500">
                     <span>{riskData.totals.all} total risk items</span>
                 </div>
-                <a href="#" className="text-blue-600 flex items-center">
-                    Manage Risks
-                </a>
-            </div> */}
+                <button
+                    onClick={() => {
+                        // Get all risks from all cells
+                        const allRisks = riskData.cells.reduce((acc, cell) => {
+                            if (cell.risks && cell.risks.length > 0) {
+                                return [...acc, ...cell.risks];
+                            }
+                            return acc;
+                        }, []);
+
+                        setSelectedRisks(allRisks);
+                        setModalTitle("All Project Risks");
+                        setIsModalOpen(true);
+                    }}
+                    className="text-blue-600 flex items-center hover:underline cursor-pointer"
+                >
+                    Details
+                </button>
+            </div>
 
             {/* Make sure the modal component is included */}
             <RiskModal
