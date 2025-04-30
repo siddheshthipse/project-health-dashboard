@@ -1,350 +1,411 @@
 import React, { useState, Fragment } from 'react';
-import { Dialog, Transition } from '@headlessui/react';
-import { XMarkIcon, SparklesIcon } from '@heroicons/react/20/solid';
+import { Dialog, Transition, Listbox } from '@headlessui/react';
+import { XMarkIcon, SparklesIcon, ArrowsPointingInIcon, ArrowsPointingOutIcon, ChevronDownIcon, ChevronRightIcon, CheckIcon } from '@heroicons/react/20/solid';
 import ReactECharts from 'echarts-for-react';
 
-const TimelineComparisonChart = () => {
-    const [comparisonMode, setComparisonMode] = useState('planned-actual');
-    const [showForecast, setShowForecast] = useState(false);
-    const [selectedMilestone, setSelectedMilestone] = useState(null);
-    const [milestoneModalOpen, setMilestoneModalOpen] = useState(false);
+const BaselineVersionDropdown = ({
+    selectedBaselineVersion,
+    setSelectedBaselineVersion,
+    baselineVersions,
+    comparisonMode
+}) => {
+    const showDropdown = comparisonMode === 'planned-baseline' ||
+        comparisonMode === 'actual-baseline' ||
+        comparisonMode === 'planned-actual-baseline';
 
+    if (!showDropdown) return null;
+
+    const selectedVersion = baselineVersions.find(v => v.id === selectedBaselineVersion) || baselineVersions[0];
+
+    return (
+        <div className="flex items-center w-56">
+            <span className="text-xs text-gray-500 mr-2">Baseline Version:</span>
+            <Listbox value={selectedBaselineVersion} onChange={setSelectedBaselineVersion}>
+                <div className="relative flex-1">
+                    <Listbox.Button className="relative w-full flex items-center justify-between text-xs border border-gray-300 rounded py-1.5 px-2 focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white shadow-sm">
+                        <span className="block truncate">{selectedVersion.name}</span>
+                        <ChevronDownIcon className="h-4 w-4 text-gray-400" aria-hidden="true" />
+                    </Listbox.Button>
+                    <Transition
+                        as={Fragment}
+                        leave="transition ease-in duration-100"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                    >
+                        <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-xs shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                            {baselineVersions.map((version) => (
+                                <Listbox.Option
+                                    key={version.id}
+                                    value={version.id}
+                                    className={({ active }) =>
+                                        `relative cursor-default select-none py-2 px-3 ${active ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700'
+                                        }`
+                                    }
+                                >
+                                    {({ selected, active }) => (
+                                        <>
+                                            <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
+                                                {version.name}
+                                            </span>
+                                            {selected && (
+                                                <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-indigo-600">
+                                                    <CheckIcon className="h-4 w-4" aria-hidden="true" />
+                                                </span>
+                                            )}
+                                        </>
+                                    )}
+                                </Listbox.Option>
+                            ))}
+                        </Listbox.Options>
+                    </Transition>
+                </div>
+            </Listbox>
+        </div>
+    );
+}
+
+const TaskTableModal = ({
+    dataPointModalOpen,
+    setDataPointModalOpen,
+    selectedMonth,
+    selectedTaskView,
+    taskData
+}) => {
+    const [activeTab, setActiveTab] = useState(selectedTaskView);
+    const [isFullScreen, setIsFullScreen] = useState(false);
+    const [expandedNodes, setExpandedNodes] = useState({});
+
+    // Get all tasks for the tree structure
+    const getTasksForMonth = () => {
+        return taskData;
+    };
+
+    const plannedTasks = getTasksForMonth();
+    const actualTasks = getTasksForMonth();
+
+    // Toggle node expansion
+    const toggleNodeExpansion = (nodeId) => {
+        setExpandedNodes(prev => ({
+            ...prev,
+            [nodeId]: !prev[nodeId]
+        }));
+    };
+
+    // Render table rows recursively to create a tree structure
+    const renderTreeRows = (tasks, level = 0) => {
+        return tasks.map(task => {
+            // Check if this node has children
+            const hasChildren = task.children && task.children.length > 0;
+            // Check if this node is expanded
+            const isExpanded = expandedNodes[task.id];
+
+            return (
+                <Fragment key={task.id}>
+                    <tr className={`hover:bg-gray-50 ${level > 0 ? 'bg-gray-50' : ''}`}>
+                        <td className="p-3">
+                            <div className="flex items-center" style={{ paddingLeft: `${level * 20}px` }}>
+                                {hasChildren && (
+                                    <button
+                                        onClick={() => toggleNodeExpansion(task.id)}
+                                        className="mr-2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                                    >
+                                        {isExpanded ?
+                                            <ChevronDownIcon className="h-4 w-4 text-gray-500" /> :
+                                            <ChevronRightIcon className="h-4 w-4 text-gray-500" />
+                                        }
+                                    </button>
+                                )}
+                                <span className="font-medium text-sm text-gray-700">{task.title}</span>
+                            </div>
+                        </td>
+                        <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">
+                            {task.level}
+                        </td>
+                        <td className="p-3 text-center whitespace-nowrap">
+                            <span className={`px-2 py-1 text-xs rounded-full ${task.status === 'Completed' ? 'bg-green-100 text-green-800' :
+                                task.status === 'In Progress' ? 'bg-blue-100 text-blue-800' :
+                                    'bg-gray-100 text-gray-800'
+                                }`}>
+                                {task.status}
+                            </span>
+                        </td>
+                        <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">
+                            {task.owner}
+                        </td>
+                        <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">
+                            {task.plannedMilestonePercent}%
+                        </td>
+                        <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">
+                            {task.actualMilestonePercent}%
+                        </td>
+                    </tr>
+                    {/* Render children recursively if expanded */}
+                    {hasChildren && isExpanded && renderTreeRows(task.children, level + 1)}
+                </Fragment>
+            );
+        });
+    };
+
+    if (!selectedMonth) return null;
+
+    return (
+        <Transition appear show={dataPointModalOpen} as={Fragment}>
+            <Dialog
+                as="div"
+                className="relative z-50"
+                onClose={() => {
+                    setDataPointModalOpen(false);
+                    // Reset full screen state when closing
+                    setIsFullScreen(false);
+                }}
+            >
+                <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                >
+                    <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+                </Transition.Child>
+
+                <div className="fixed inset-0 overflow-y-auto">
+                    <div className={`flex min-h-full items-center justify-center ${isFullScreen ? 'p-0' : 'p-4'}`}>
+                        <Transition.Child
+                            as={Fragment}
+                            enter="ease-out duration-300"
+                            enterFrom="opacity-0 scale-95"
+                            enterTo="opacity-100 scale-100"
+                            leave="ease-in duration-200"
+                            leaveFrom="opacity-100 scale-100"
+                            leaveTo="opacity-0 scale-95"
+                        >
+                            <Dialog.Panel
+                                className={`${isFullScreen ? 'w-full h-full' : 'w-full max-w-4xl'} transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all`}
+                            >
+                                <div className="flex justify-between items-center mb-4">
+                                    <Dialog.Title as="h3" className="text-md font-semibold text-gray-900">
+                                        Planned vs Actual Tasks as of {selectedMonth} 2025
+                                    </Dialog.Title>
+                                    <div className="flex items-center space-x-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsFullScreen(!isFullScreen)}
+                                            className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        >
+                                            {isFullScreen ?
+                                                <ArrowsPointingInIcon className="h-4 w-6" aria-hidden="true" /> :
+                                                <ArrowsPointingOutIcon className="h-4 w-6" aria-hidden="true" />
+                                            }
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setDataPointModalOpen(false);
+                                                setIsFullScreen(false);
+                                            }}
+                                            className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        >
+                                            <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Card filters at the top */}
+                                <div className="grid grid-cols-2 gap-4 mb-6">
+                                    <div
+                                        className={`cursor-pointer rounded-lg p-4 border ${activeTab === 'planned' ? 'bg-blue-50 border-blue-300' : 'bg-gray-50 border-gray-200'}`}
+                                        onClick={() => setActiveTab('planned')}
+                                    >
+                                        <div className="text-xl font-bold text-gray-700">{plannedTasks.length}</div>
+                                        <div className="text-sm text-gray-500">Planned Tasks</div>
+                                    </div>
+                                    <div
+                                        className={`cursor-pointer rounded-lg p-4 border ${activeTab === 'actual' ? 'bg-green-50 border-green-300' : 'bg-gray-50 border-gray-200'}`}
+                                        onClick={() => setActiveTab('actual')}
+                                    >
+                                        <div className="text-xl font-bold text-gray-700">{actualTasks.length}</div>
+                                        <div className="text-sm text-gray-500">Actual Tasks</div>
+                                    </div>
+                                </div>
+
+                                {/* Tab content */}
+                                <div className={`border rounded-lg overflow-hidden ${isFullScreen ? 'h-[calc(100vh-200px)]' : 'max-h-[50vh]'} overflow-y-auto`}>
+                                    <table className="min-w-full divide-y divide-gray-200">
+                                        <thead className="bg-gray-50 sticky top-0">
+                                            <tr>
+                                                <th scope="col" className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Title
+                                                </th>
+                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Level
+                                                </th>
+                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Status
+                                                </th>
+                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Owner
+                                                </th>
+                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Planned Milestone %
+                                                </th>
+                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Actual Milestone %
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="bg-white divide-y divide-gray-200">
+                                            {renderTreeRows(activeTab === 'planned' ? plannedTasks : actualTasks)}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </Dialog.Panel>
+                        </Transition.Child>
+                    </div>
+                </div>
+            </Dialog>
+        </Transition>
+    );
+};
+
+const TimelineComparisonChart = () => {
+    const [comparisonMode, setComparisonMode] = useState('planned-actual-baseline');
+    const [showForecast, setShowForecast] = useState(false);
     const [dataPointModalOpen, setDataPointModalOpen] = useState(false);
     const [selectedMonth, setSelectedMonth] = useState(null);
     const [selectedTaskView, setSelectedTaskView] = useState('planned');
+
+    // Selected baseline version 
+    const [selectedBaselineVersion, setSelectedBaselineVersion] = useState('baseline-1');
+
+    // Sample baseline versions
+    const baselineVersions = [
+        { id: 'baseline-1', name: 'Baseline 1', data: [10, 22, 35, 50, 65, 80, 90, 100, null] },
+        { id: 'baseline-2', name: 'Baseline 2', data: [8, 20, 32, 48, 62, 78, 88, 98, null] },
+        { id: 'baseline-3', name: 'Baseline 3', data: [12, 25, 38, 52, 68, 82, 92, 102, null] }
+    ];
 
     // Sample project progress data (percentages)
     const projectData = {
         months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
         planned: [5, 15, 30, 45, 60, 75, 85, 95, 100],
         actual: [5, 13, 25, 38, 48, 60, null, null, null], // null for future months
-        baseline: [10, 22, 35, 50, 65, 80, 90, 100, null],
         forecast: [5, 13, 25, 38, 48, 60, 69, 80, 92] // AI-generated forecast
     };
 
-    // Sample milestone data
-    const milestoneData = [
-        {
-            id: 'ms-1',
-            name: 'Requirements Finalized',
-            date: 'Jan 15, 2025',
-            status: 'on-time', // on-time, delayed, ahead, at-risk
-            planned: 15,
-            actual: 15,
-            xAxis: 1.5, // Position on the x-axis (between Jan and Feb)
-            plannedStart: 'Jan 15, 2025',
-            plannedEnd: 'Feb 15, 2025',
-            actualStart: 'Jan 15, 2025',
-            actualEnd: 'Feb 15, 2025',
-            baselineStart: 'Jan 10, 2025',
-            baselineEnd: 'Feb 10, 2025',
-            forecastStart: 'Jan 15, 2025',
-            forecastEnd: 'Feb 15, 2025',
-            forecastInsights: {
-                delayRiskScore: 'high', // 'low', 'medium', 'high', 'critical'
-                delayDays: 5, // number of days delayed
-                reasons: [
-                    {
-                        reason: 'Frontend implementation behind schedule',
-                        impact: 3,
-                        recommendation: 'Consider adding 1-2 additional developers to the frontend team',
-                        trend: 'worsening' // 'improving', 'stable', 'worsening'
-                    },
-                    {
-                        reason: 'API integration taking longer than expected',
-                        impact: 2,
-                        recommendation: 'Schedule daily sync meetings between frontend and backend teams',
-                        trend: 'stable'
-                    }
-                ],
-                dependencies: [
-                    'Backend API readiness from Team Alpha',
-                    'Third-party integration approval'
-                ],
-                resourceBottlenecks: ['Frontend Development']
-            },
-            tasks: []
-        },
-        {
-            id: 'ms-2',
-            name: 'Design Approval',
-            date: 'Jan 25, 2025',
-            status: 'delayed',
-            planned: 28,
-            actual: 24,
-            xAxis: 2.8, // Position on the x-axis (near end of March)
-            plannedStart: 'Feb 25, 2025',
-            plannedEnd: 'Mar 20, 2025',
-            actualStart: 'Feb 25, 2025',
-            actualEnd: 'Mar 25, 2025',
-            baselineStart: 'Feb 20, 2025',
-            baselineEnd: 'Mar 15, 2025',
-            forecastStart: 'Feb 25, 2025',
-            forecastEnd: 'Mar 25, 2025',
-            forecastInsights: {
-                delayRiskScore: 'high', // 'low', 'medium', 'high', 'critical'
-                delayDays: 5, // number of days delayed
-                reasons: [
-                    {
-                        reason: 'Frontend implementation behind schedule',
-                        impact: 3,
-                        recommendation: 'Consider adding 1-2 additional developers to the frontend team',
-                        trend: 'worsening' // 'improving', 'stable', 'worsening'
-                    },
-                    {
-                        reason: 'API integration taking longer than expected',
-                        impact: 2,
-                        recommendation: 'Schedule daily sync meetings between frontend and backend teams',
-                        trend: 'stable'
-                    }
-                ],
-                dependencies: [
-                    'Backend API readiness from Team Alpha',
-                    'Third-party integration approval'
-                ],
-                resourceBottlenecks: ['Frontend Development']
-            },
-            tasks: [
-                // Add these properties to your task objects
-                {
-                    id: 'task-1',
-                    title: 'UI Design Review',
-                    status: 'Delayed',
-                    plannedStart: 'Mar 1, 2025',
-                    plannedEnd: 'Mar 10, 2025',
-                    actualStart: 'Mar 15, 2025',
-                    actualEnd: 'Mar 25, 2025',
-                    delayContribution: 3,
-                    // Add these two new properties:
-                    forecastDelay: 2,
-                    forecastDelayReason: 'Resource availability issue with design team and dependency on marketing approval'
-                },
-                {
-                    id: 'task-2',
-                    title: 'Architecture Review',
-                    status: 'Delayed',
-                    plannedStart: 'Mar 1, 2025',
-                    plannedEnd: 'Mar 10, 2025',
-                    actualStart: 'Mar 10, 2025',
-                    actualEnd: 'Mar 22, 2025',
-                    delayContribution: 2,
-                    forecastDelay: 2,
-                    forecastDelayReason: 'Resource availability issue with design team and dependency on marketing approval'
-                },
-                {
-                    id: 'task-3',
-                    title: 'Integration Design',
-                    status: 'On Track',
-                    plannedStart: 'Mar 1, 2025',
-                    plannedEnd: 'Mar 15, 2025',
-                    actualStart: 'Mar 5, 2025',
-                    actualEnd: 'Mar 18, 2025',
-                    delayContribution: 0,
-                    forecastDelay: 2,
-                    forecastDelayReason: 'Resource availability issue with design team and dependency on marketing approval'
-                }
-            ]
-        },
-        {
-            id: 'ms-3',
-            name: 'Development Complete',
-            date: 'May 20, 2025',
-            status: 'at-risk',
-            planned: 58,
-            actual: 48,
-            xAxis: 4.7, // Position on the x-axis (near end of May)
-            plannedStart: 'Apr 1, 2025',
-            plannedEnd: 'May 20, 2025',
-            actualStart: 'Apr 5, 2025',
-            actualEnd: null,
-            baselineStart: 'Mar 25, 2025',
-            baselineEnd: 'May 15, 2025',
-            forecastStart: 'Apr 5, 2025',
-            forecastEnd: 'May 25, 2025',
-            forecastInsights: {
-                delayRiskScore: 'high', // 'low', 'medium', 'high', 'critical'
-                delayDays: 5, // number of days delayed
-                reasons: [
-                    {
-                        reason: 'Frontend implementation behind schedule',
-                        impact: 3,
-                        recommendation: 'Consider adding 1-2 additional developers to the frontend team',
-                        trend: 'worsening' // 'improving', 'stable', 'worsening'
-                    },
-                    {
-                        reason: 'API integration taking longer than expected',
-                        impact: 2,
-                        recommendation: 'Schedule daily sync meetings between frontend and backend teams',
-                        trend: 'stable'
-                    }
-                ],
-                dependencies: [
-                    'Backend API readiness from Team Alpha',
-                    'Third-party integration approval'
-                ],
-                resourceBottlenecks: ['Frontend Development']
-            },
-            tasks: []
-        },
-        {
-            id: 'ms-4',
-            name: 'UAT Complete',
-            date: 'Jul 10, 2025',
-            status: 'at-risk',
-            planned: 82,
-            forecast: 69,
-            xAxis: 6.3, // Position on the x-axis (early July)
-            plannedStart: 'Jun 1, 2025',
-            plannedEnd: 'Jul 10, 2025',
-            actualStart: null,
-            actualEnd: null,
-            baselineStart: 'May 25, 2025',
-            baselineEnd: 'Jul 5, 2025',
-            forecastStart: 'Jun 5, 2025',
-            forecastEnd: 'Jul 15, 2025',
-            forecastInsights: {
-                delayRiskScore: 'high', // 'low', 'medium', 'high', 'critical'
-                delayDays: 5, // number of days delayed
-                reasons: [
-                    {
-                        reason: 'Frontend implementation behind schedule',
-                        impact: 3,
-                        recommendation: 'Consider adding 1-2 additional developers to the frontend team',
-                        trend: 'worsening' // 'improving', 'stable', 'worsening'
-                    },
-                    {
-                        reason: 'API integration taking longer than expected',
-                        impact: 2,
-                        recommendation: 'Schedule daily sync meetings between frontend and backend teams',
-                        trend: 'stable'
-                    }
-                ],
-                dependencies: [
-                    'Backend API readiness from Team Alpha',
-                    'Third-party integration approval'
-                ],
-                resourceBottlenecks: ['Frontend Development']
-            },
-            tasks: []
-        },
-        {
-            id: 'ms-5',
-            name: 'Go-Live',
-            date: 'Aug 25, 2025',
-            status: 'at-risk',
-            planned: 98,
-            forecast: 82,
-            xAxis: 7.8, // Position on the x-axis (late August)
-            plannedStart: 'Jul 20, 2025',
-            plannedEnd: 'Aug 25, 2025',
-            actualStart: null,
-            actualEnd: null,
-            baselineStart: 'Jul 15, 2025',
-            baselineEnd: 'Aug 20, 2025',
-            forecastStart: 'Jul 25, 2025',
-            forecastEnd: 'Aug 30, 2025',
-            forecastInsights: {
-                delayRiskScore: 'high', // 'low', 'medium', 'high', 'critical'
-                delayDays: 5, // number of days delayed
-                reasons: [
-                    {
-                        reason: 'Frontend implementation behind schedule',
-                        impact: 3,
-                        recommendation: 'Consider adding 1-2 additional developers to the frontend team',
-                        trend: 'worsening' // 'improving', 'stable', 'worsening'
-                    },
-                    {
-                        reason: 'API integration taking longer than expected',
-                        impact: 2,
-                        recommendation: 'Schedule daily sync meetings between frontend and backend teams',
-                        trend: 'stable'
-                    }
-                ],
-                dependencies: [
-                    'Backend API readiness from Team Alpha',
-                    'Third-party integration approval'
-                ],
-                resourceBottlenecks: ['Frontend Development']
-            },
-            tasks: []
-        }
-    ];
-
+    // Enhanced task data with hierarchical structure
     const taskData = [
         {
-            id: 'task-1',
-            title: 'Requirements Gathering',
-            level: 1,
+            id: 'phase-1',
+            title: 'Project Initiation',
+            level: 'Phase',
             status: 'Completed',
             owner: 'John Doe',
             plannedMilestonePercent: 100,
             actualMilestonePercent: 100,
             plannedEnd: 'Jan 20, 2025',
-            actualEnd: 'Jan 18, 2025'
+            actualEnd: 'Jan 18, 2025',
+            children: [
+                {
+                    id: 'milestone-1',
+                    title: 'Requirements Gathering',
+                    level: 'Milestone',
+                    status: 'Completed',
+                    owner: 'Jane Smith',
+                    plannedMilestonePercent: 100,
+                    actualMilestonePercent: 100,
+                    plannedEnd: 'Jan 10, 2025',
+                    actualEnd: 'Jan 8, 2025',
+                    children: [
+                        {
+                            id: 'deliv-group-1',
+                            title: 'Business Requirements',
+                            level: 'Deliverable Group',
+                            status: 'Completed',
+                            owner: 'Mike Johnson',
+                            plannedMilestonePercent: 100,
+                            actualMilestonePercent: 100,
+                            plannedEnd: 'Jan 5, 2025',
+                            actualEnd: 'Jan 4, 2025',
+                            children: []
+                        }
+                    ]
+                }
+            ]
         },
         {
-            id: 'task-2',
-            title: 'System Architecture',
-            level: 1,
+            id: 'phase-2',
+            title: 'Design & Planning',
+            level: 'Phase',
             status: 'Completed',
-            owner: 'Jane Smith',
+            owner: 'Sarah Williams',
             plannedMilestonePercent: 100,
             actualMilestonePercent: 95,
             plannedEnd: 'Feb 10, 2025',
-            actualEnd: 'Feb 15, 2025'
+            actualEnd: 'Feb 15, 2025',
+            children: [
+                {
+                    id: 'milestone-2',
+                    title: 'System Architecture',
+                    level: 'Milestone',
+                    status: 'Completed',
+                    owner: 'David Lee',
+                    plannedMilestonePercent: 100,
+                    actualMilestonePercent: 95,
+                    plannedEnd: 'Feb 5, 2025',
+                    actualEnd: 'Feb 8, 2025',
+                    children: []
+                }
+            ]
         },
-        // Add more task data
-    ];
-
-    // Helper function to get milestone symbol based on status
-    const getMilestoneSymbol = (status) => {
-        return 'diamond';
-    };
-
-    // Helper function to get milestone color based on status
-    const getMilestoneColor = (status) => {
-        switch (status) {
-            case 'ahead': return '#10b981'; // green
-            case 'on-time': return '#3b82f6'; // blue
-            case 'at-risk': return '#f59e0b'; // amber
-            case 'delayed': return '#ef4444'; // red
-            default: return '#3b82f6'; // blue
+        {
+            id: 'phase-3',
+            title: 'Development',
+            level: 'Phase',
+            status: 'In Progress',
+            owner: 'Alex Chen',
+            plannedMilestonePercent: 60,
+            actualMilestonePercent: 45,
+            plannedEnd: 'May 15, 2025',
+            actualEnd: null,
+            children: [
+                {
+                    id: 'milestone-3',
+                    title: 'Backend Development',
+                    level: 'Milestone',
+                    status: 'In Progress',
+                    owner: 'Robert Taylor',
+                    plannedMilestonePercent: 70,
+                    actualMilestonePercent: 60,
+                    plannedEnd: 'Apr 20, 2025',
+                    actualEnd: null,
+                    children: []
+                },
+                {
+                    id: 'milestone-4',
+                    title: 'Frontend Development',
+                    level: 'Milestone',
+                    status: 'In Progress',
+                    owner: 'Lisa Brown',
+                    plannedMilestonePercent: 50,
+                    actualMilestonePercent: 35,
+                    plannedEnd: 'May 5, 2025',
+                    actualEnd: null,
+                    children: []
+                }
+            ]
         }
-    };
+    ];
 
     // Generate chart options based on selected comparison mode
     const getChartOptions = () => {
         // Base series for the selected comparison mode
         let series = [];
 
-        // Track which milestones have been already added to avoid duplicates
-        const addedMilestones = new Set();
-
         // Add planned line
-        if (comparisonMode === 'planned-actual' || comparisonMode === 'planned-baseline') {
-            // Only add milestones for planned line when comparing planned-actual
-            // We'll only show labels on hover
-            const milestonePoints = milestoneData
-                .filter(ms => ms.planned !== undefined)
-                .map(ms => {
-                    addedMilestones.add(ms.id);
-                    return {
-                        name: ms.name,
-                        coord: [ms.xAxis, ms.planned],
-                        value: '',  // Empty value to prevent labels from showing always
-                        symbol: getMilestoneSymbol(ms.status),
-                        symbolOffset: [0, 0], // Ensure it's on the line
-                        itemStyle: {
-                            color: getMilestoneColor(ms.status),
-                            borderColor: '#fff',
-                            borderWidth: 2,
-                            shadowBlur: 4,
-                            shadowColor: 'rgba(0, 0, 0, 0.2)'
-                        }
-                    };
-                });
-
-            console.log('MILESTONE POINTS', milestonePoints)
+        if (comparisonMode === 'planned-actual' || comparisonMode === 'planned-baseline' || comparisonMode === 'planned-actual-baseline') {
             series.push({
                 name: 'Planned',
                 type: 'line',
@@ -358,49 +419,13 @@ const TimelineComparisonChart = () => {
                     color: '#3b82f6'
                 },
                 symbol: 'circle',
-                symbolSize: 6,
-                markPoint: {
-                    symbolSize: 14,
-                    label: {
-                        show: true // Hide labels by default
-                    },
-                    emphasis: {
-                        label: {
-                            show: true,
-                            formatter: function (params) {
-                                return params.name;
-                            },
-                            position: 'top'
-                        }
-                    },
-                    data: milestonePoints
-                }
+                symbolSize: 6
+                // Milestone markPoints removed as requested
             });
         }
 
         // Add actual line
-        if (comparisonMode === 'planned-actual' || comparisonMode === 'actual-baseline') {
-            // Only add milestones that haven't been added to the planned line
-            const milestonePoints = milestoneData
-                .filter(ms => ms.actual !== undefined && (comparisonMode === 'actual-baseline' || !addedMilestones.has(ms.id)))
-                .map(ms => {
-                    addedMilestones.add(ms.id);
-                    return {
-                        name: ms.name,
-                        coord: [ms.xAxis, ms.actual],
-                        value: '',  // Empty value to prevent labels from showing always
-                        symbol: getMilestoneSymbol(ms.status),
-                        symbolOffset: [0, 0], // Ensure it's on the line
-                        itemStyle: {
-                            color: getMilestoneColor(ms.status),
-                            borderColor: '#fff',
-                            borderWidth: 2,
-                            shadowBlur: 4,
-                            shadowColor: 'rgba(0, 0, 0, 0.2)'
-                        }
-                    };
-                });
-
+        if (comparisonMode === 'planned-actual' || comparisonMode === 'actual-baseline' || comparisonMode === 'planned-actual-baseline') {
             series.push({
                 name: 'Actual',
                 type: 'line',
@@ -414,23 +439,22 @@ const TimelineComparisonChart = () => {
                     color: '#10b981'
                 },
                 symbol: 'circle',
-                symbolSize: 6,
-                markPoint: {
-                    symbolSize: 14,
-                    label: {
-                        show: false // Hide labels by default, only show on hover
-                    },
-                    data: milestonePoints
-                }
+                symbolSize: 6
+                // Milestone markPoints removed as requested
             });
         }
 
+        // Get selected baseline data
+        const selectedBaseline = baselineVersions.find(b => b.id === selectedBaselineVersion);
+        const baselineData = selectedBaseline ? selectedBaseline.data : baselineVersions[0].data;
+
         // Add baseline line
-        if (comparisonMode === 'planned-baseline' || comparisonMode === 'actual-baseline') {
+        if (comparisonMode === 'planned-baseline' || comparisonMode === 'actual-baseline' || comparisonMode === 'planned-actual-baseline') {
+            const baselineName = selectedBaseline ? selectedBaseline.name : 'Baseline 1';
             series.push({
-                name: 'Baseline',
+                name: baselineName,
                 type: 'line',
-                data: projectData.baseline,
+                data: baselineData,
                 smooth: true,
                 lineStyle: {
                     width: 3,
@@ -447,27 +471,6 @@ const TimelineComparisonChart = () => {
 
         // Add forecast line if enabled
         if (showForecast) {
-            // Only add milestones that haven't been added to other lines
-            const milestonePoints = milestoneData
-                .filter(ms => ms.forecast !== undefined && !addedMilestones.has(ms.id))
-                .map(ms => {
-                    addedMilestones.add(ms.id);
-                    return {
-                        name: ms.name,
-                        coord: [ms.xAxis, ms.forecast],
-                        value: '',  // Empty value to prevent labels from showing always
-                        symbol: getMilestoneSymbol(ms.status),
-                        symbolOffset: [0, 0], // Ensure it's on the line
-                        itemStyle: {
-                            color: getMilestoneColor(ms.status),
-                            borderColor: '#fff',
-                            borderWidth: 2,
-                            shadowBlur: 4,
-                            shadowColor: 'rgba(0, 0, 0, 0.2)'
-                        }
-                    };
-                });
-
             series.push({
                 name: 'KTern.AI Forecast',
                 type: 'line',
@@ -482,20 +485,8 @@ const TimelineComparisonChart = () => {
                     color: '#f97316'
                 },
                 symbol: 'circle',
-                symbolSize: 4,
-                markPoint: {
-                    symbolSize: 14,
-                    label: {
-                        show: false // Only show on hover
-                    },
-                    tooltip: {
-                        show: true,
-                        formatter: function (params) {
-                            return params.name;
-                        }
-                    },
-                    data: milestonePoints
-                }
+                symbolSize: 4
+                // Milestone markPoints removed as requested
             });
         }
 
@@ -504,18 +495,6 @@ const TimelineComparisonChart = () => {
             tooltip: {
                 trigger: 'item',
                 formatter: function (params) {
-                    // For milestone points
-                    if (params.componentSubType === 'markPoint') {
-                        const milestone = milestoneData.find(ms => ms.name === params.name);
-                        if (milestone) {
-                            return `<div style="font-weight:bold">${milestone.name}</div>` +
-                                `<div>Date: ${milestone.date}</div>` +
-                                `<div>Status: ${milestone.status.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>` +
-                                `<div style="font-size:10px;margin-top:5px;color:#666">Click for details</div>`;
-                        }
-                        return params.name;
-                    }
-
                     // For regular data points
                     if (params.seriesType === 'line') {
                         if (params.value === null) return params.name + ': N/A';
@@ -577,19 +556,8 @@ const TimelineComparisonChart = () => {
         };
     };
 
-    // Handle milestone click
-    // Update the handleChartClick function
+    // Handle chart click
     const handleChartClick = (params) => {
-        // Handle clicks on milestone points
-        if (params.componentType === 'markPoint') {
-            const milestone = milestoneData.find(ms => ms.name === params.name);
-            if (milestone) {
-                setSelectedMilestone(milestone);
-                setMilestoneModalOpen(true);
-            }
-            return;
-        }
-
         // Handle clicks on line data points
         if (params.seriesType === 'line') {
             const monthIndex = params.dataIndex; // 0 for Jan, 1 for Feb, etc.
@@ -603,376 +571,21 @@ const TimelineComparisonChart = () => {
         }
     };
 
-    // Milestone Drilldown Modal
-    const MilestoneModal = () => {
-
-        if (!selectedMilestone) return null;
-
-        // Helper function to get status color for tasks
-        const getTaskStatusColor = (status) => {
-            switch (status.toLowerCase()) {
-                case 'on track': return 'bg-green-100 text-green-800';
-                case 'at risk': return 'bg-amber-100 text-amber-800';
-                case 'delayed': return 'bg-red-100 text-red-800';
-                default: return 'bg-gray-100 text-gray-800';
-            }
-        };
-
-        return (
-            <Transition appear show={milestoneModalOpen} as={Fragment}>
-                <Dialog as="div" className="relative z-50" onClose={() => setMilestoneModalOpen(false)}>
-                    <Transition.Child
-                        as={Fragment}
-                        enter="ease-out duration-300"
-                        enterFrom="opacity-0"
-                        enterTo="opacity-100"
-                        leave="ease-in duration-200"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                    >
-                        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-                    </Transition.Child>
-
-                    <div className="fixed inset-0 overflow-y-auto">
-                        <div className="flex min-h-full items-center justify-center p-4">
-                            <Transition.Child
-                                as={Fragment}
-                                enter="ease-out duration-300"
-                                enterFrom="opacity-0 scale-95"
-                                enterTo="opacity-100 scale-100"
-                                leave="ease-in duration-200"
-                                leaveFrom="opacity-100 scale-100"
-                                leaveTo="opacity-0 scale-95"
-                            >
-                                <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all">
-                                    <div className="flex justify-between items-center mb-4">
-                                        <Dialog.Title as="h3" className="text-lg font-semibold text-gray-900">
-                                            Milestone - {selectedMilestone.name}
-                                        </Dialog.Title>
-                                        <button
-                                            type="button"
-                                            onClick={() => setMilestoneModalOpen(false)}
-                                            className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                        >
-                                            <XMarkIcon className="h-6 w-6" aria-hidden="true" />
-                                        </button>
-                                    </div>
-
-                                    {/* Milestone Dates Summary */}
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                                        <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
-                                            <div className="text-xs text-blue-700 font-medium mb-1">Planned</div>
-                                            <div className="text-sm text-gray-700">
-                                                <div>Start: {selectedMilestone.plannedStart || "N/A"}</div>
-                                                <div>End: {selectedMilestone.plannedEnd || "N/A"}</div>
-                                            </div>
-                                        </div>
-
-                                        <div className="bg-green-50 rounded-lg p-3 border border-green-200">
-                                            <div className="text-xs text-green-700 font-medium mb-1">Actual</div>
-                                            <div className="text-sm text-gray-700">
-                                                <div>Start: {selectedMilestone.actualStart || "N/A"}</div>
-                                                <div>End: {selectedMilestone.actualEnd || "N/A"}</div>
-                                            </div>
-                                        </div>
-
-                                        <div className="bg-purple-50 rounded-lg p-3 border border-purple-200">
-                                            <div className="text-xs text-purple-700 font-medium mb-1">Baseline</div>
-                                            <div className="text-sm text-gray-700">
-                                                <div>Start: {selectedMilestone.baselineStart || "N/A"}</div>
-                                                <div>End: {selectedMilestone.baselineEnd || "N/A"}</div>
-                                            </div>
-                                        </div>
-
-                                        <div className="bg-orange-50 rounded-lg p-3 border border-orange-200">
-                                            <div className="text-xs text-orange-700 font-medium mb-1">Forecast</div>
-                                            <div className="text-sm text-gray-700">
-                                                <div>Start: {selectedMilestone.forecastStart || "N/A"}</div>
-                                                <div>End: {selectedMilestone.forecastEnd || "N/A"}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="border-t border-b py-3 mb-4">
-                                        <div className="flex items-center">
-                                            <div className={`py-1 px-3 rounded-full text-sm font-medium ${selectedMilestone.status === 'delayed' ? 'bg-red-100 text-red-800' :
-                                                selectedMilestone.status === 'at-risk' ? 'bg-amber-100 text-amber-800' :
-                                                    selectedMilestone.status === 'on-time' ? 'bg-blue-100 text-blue-800' :
-                                                        'bg-green-100 text-green-800'
-                                                }`}>
-                                                Status: {selectedMilestone.status.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                                            </div>
-                                            {selectedMilestone.status === 'delayed' && selectedMilestone.tasks && selectedMilestone.tasks.length > 0 && (
-                                                <span className="ml-3 text-sm text-red-600 font-medium">
-                                                    Total delay: {selectedMilestone.tasks.reduce((total, task) => total + (task.delayContribution || 0), 0)} days
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    {selectedMilestone.tasks && selectedMilestone.tasks.length > 0 ? (
-                                        <div className="border rounded-lg overflow-hidden max-h-[50vh] overflow-y-auto">
-                                            <table className="min-w-full divide-y divide-gray-200">
-                                                <thead className="bg-gray-50 sticky top-0">
-                                                    <tr>
-                                                        <th scope="col" className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                            Task
-                                                        </th>
-                                                        <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                            Status
-                                                        </th>
-                                                        <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                            Planned Start
-                                                        </th>
-                                                        <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                            Planned End
-                                                        </th>
-                                                        {/* <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                            Actual Start
-                                                        </th>
-                                                        <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                            Actual End
-                                                        </th> */}
-                                                        <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                            Delay Contribution
-                                                        </th>
-                                                        <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                            <div className="flex items-center justify-center">
-                                                                <SparklesIcon className="h-3.5 w-3.5 mr-1 text-orange-500" />
-                                                                Forecasted Delay
-                                                            </div>
-                                                        </th>
-                                                        <th scope="col" className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                            <div className="flex items-center">
-                                                                <SparklesIcon className="h-3.5 w-3.5 mr-1 text-orange-500" />
-                                                                Reason for Forecast Delay
-                                                            </div>
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="bg-white divide-y divide-gray-200">
-                                                    {selectedMilestone.tasks.map(task => (
-                                                        <tr key={task.id} className={`border-b hover:bg-gray-50 ${task.status.toLowerCase() === 'delayed' ? 'bg-red-50' : ''}`}>
-                                                            <td className="p-3">
-                                                                <div className="flex items-center">
-                                                                    <span className="font-medium text-gray-700">{task.title}</span>
-                                                                </div>
-                                                            </td>
-                                                            <td className="p-3 text-center whitespace-nowrap">
-                                                                <span className={`px-2 py-1 text-xs rounded-full ${getTaskStatusColor(task.status)}`}>
-                                                                    {task.status}
-                                                                </span>
-                                                            </td>
-                                                            <td className="p-3 text-center whitespace-nowrap text-sm text-gray-600">
-                                                                {task.plannedStart}
-                                                            </td>
-                                                            <td className="p-3 text-center whitespace-nowrap text-sm text-gray-600">
-                                                                {task.plannedEnd}
-                                                            </td>
-                                                            {/* <td className="p-3 text-center whitespace-nowrap text-sm text-gray-600">
-                                                                {task.actualStart || "-"}
-                                                            </td>
-                                                            <td className="p-3 text-center whitespace-nowrap text-sm text-gray-600">
-                                                                {task.actualEnd || "-"}
-                                                            </td> */}
-                                                            <td className="p-3 text-center whitespace-nowrap">
-                                                                {task.delayContribution > 0 ? (
-                                                                    <span className="text-sm font-medium text-red-600">+{task.delayContribution} days</span>
-                                                                ) : (
-                                                                    <span className="text-sm text-gray-500">0 days</span>
-                                                                )}
-                                                            </td>
-                                                            <td className="p-3 text-center whitespace-nowrap">
-                                                                {task.forecastDelay > 0 ? (
-                                                                    <span className="text-sm font-medium text-orange-600">+{task.forecastDelay} days</span>
-                                                                ) : (
-                                                                    <span className="text-sm text-gray-500">0 days</span>
-                                                                )}
-                                                            </td>
-                                                            <td className="p-3 text-sm text-gray-600">
-                                                                {task.forecastDelayReason || "-"}
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    ) : (
-                                        <div className="text-center py-6 text-gray-500">
-                                            No tasks associated with this milestone.
-                                        </div>
-                                    )}
-                                </Dialog.Panel>
-                            </Transition.Child>
-                        </div>
-                    </div>
-                </Dialog>
-            </Transition>
-        );
-    };
-
-    // Add this new component
-    const TaskTableModal = () => {
-        const [activeTab, setActiveTab] = useState(selectedTaskView);
-
-        // Filter tasks based on selected month and view
-        const getTasksForMonth = (view) => {
-            const monthIndex = projectData.months.indexOf(selectedMonth);
-            if (monthIndex === -1) return [];
-
-            // Get the last day of the selected month (approximate)
-            const monthEndDate = new Date(2025, monthIndex + 1, 0).getDate();
-            const monthEndStr = `${selectedMonth} ${monthEndDate}, 2025`;
-
-            return taskData.filter(task => {
-                if (view === 'planned') {
-                    return new Date(task.plannedEnd) <= new Date(monthEndStr) &&
-                        ['Completed', 'Approved'].includes(task.status);
-                } else { // 'actual'
-                    return new Date(task.actualEnd) <= new Date(monthEndStr) &&
-                        ['Completed', 'Approved'].includes(task.status);
-                }
-            });
-        };
-
-        const plannedTasks = getTasksForMonth('planned');
-        const actualTasks = getTasksForMonth('actual');
-
-        if (!selectedMonth) return null;
-
-        return (
-            <Transition appear show={dataPointModalOpen} as={Fragment}>
-                <Dialog as="div" className="relative z-50" onClose={() => setDataPointModalOpen(false)}>
-                    <Transition.Child
-                        as={Fragment}
-                        enter="ease-out duration-300"
-                        enterFrom="opacity-0"
-                        enterTo="opacity-100"
-                        leave="ease-in duration-200"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                    >
-                        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-                    </Transition.Child>
-
-                    <div className="fixed inset-0 overflow-y-auto">
-                        <div className="flex min-h-full items-center justify-center p-4">
-                            <Transition.Child
-                                as={Fragment}
-                                enter="ease-out duration-300"
-                                enterFrom="opacity-0 scale-95"
-                                enterTo="opacity-100 scale-100"
-                                leave="ease-in duration-200"
-                                leaveFrom="opacity-100 scale-100"
-                                leaveTo="opacity-0 scale-95"
-                            >
-                                <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all">
-                                    <div className="flex justify-between items-center mb-4">
-                                        <Dialog.Title as="h3" className="text-md font-semibold text-gray-900">
-                                            Tasks as of {selectedMonth} 2025
-                                        </Dialog.Title>
-                                        <button
-                                            type="button"
-                                            onClick={() => setDataPointModalOpen(false)}
-                                            className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                        >
-                                            <XMarkIcon className="h-6 w-6" aria-hidden="true" />
-                                        </button>
-                                    </div>
-
-                                    {/* Card filters at the top */}
-                                    <div className="grid grid-cols-2 gap-4 mb-6">
-                                        <div
-                                            className={`cursor-pointer rounded-lg p-4 border ${activeTab === 'planned' ? 'bg-blue-50 border-blue-300' : 'bg-gray-50 border-gray-200'}`}
-                                            onClick={() => setActiveTab('planned')}
-                                        >
-                                            <div className="text-xl font-bold text-gray-700">{plannedTasks.length}</div>
-                                            <div className="text-sm text-gray-500">Planned Tasks</div>
-                                        </div>
-                                        <div
-                                            className={`cursor-pointer rounded-lg p-4 border ${activeTab === 'actual' ? 'bg-green-50 border-green-300' : 'bg-gray-50 border-gray-200'}`}
-                                            onClick={() => setActiveTab('actual')}
-                                        >
-                                            <div className="text-xl font-bold text-gray-700">{actualTasks.length}</div>
-                                            <div className="text-sm text-gray-500">Actual Tasks</div>
-                                        </div>
-                                    </div>
-
-                                    {/* Tab content */}
-                                    <div className="border rounded-lg overflow-hidden max-h-[50vh] overflow-y-auto">
-                                        <table className="min-w-full divide-y divide-gray-200">
-                                            <thead className="bg-gray-50 sticky top-0">
-                                                <tr>
-                                                    <th scope="col" className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Title
-                                                    </th>
-                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Level
-                                                    </th>
-                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Status
-                                                    </th>
-                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Owner
-                                                    </th>
-                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Planned Milestone %
-                                                    </th>
-                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Actual Milestone %
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="bg-white divide-y divide-gray-200">
-                                                {(activeTab === 'planned' ? plannedTasks : actualTasks).map(task => (
-                                                    <tr key={task.id} className="hover:bg-gray-50">
-                                                        <td className="p-3">
-                                                            <div className="flex items-center">
-                                                                <span className="font-medium text-gray-700">{task.title}</span>
-                                                            </div>
-                                                        </td>
-                                                        <td className="p-3 text-center whitespace-nowrap text-sm text-gray-600">
-                                                            {task.level}
-                                                        </td>
-                                                        <td className="p-3 text-center whitespace-nowrap">
-                                                            <span className={`px-2 py-1 text-xs rounded-full ${task.status === 'Completed' ? 'bg-green-100 text-green-800' :
-                                                                task.status === 'Approved' ? 'bg-blue-100 text-blue-800' :
-                                                                    'bg-gray-100 text-gray-800'
-                                                                }`}>
-                                                                {task.status}
-                                                            </span>
-                                                        </td>
-                                                        <td className="p-3 text-center whitespace-nowrap text-sm text-gray-600">
-                                                            {task.owner}
-                                                        </td>
-                                                        <td className="p-3 text-center whitespace-nowrap text-sm text-gray-600">
-                                                            {task.plannedMilestonePercent}%
-                                                        </td>
-                                                        <td className="p-3 text-center whitespace-nowrap text-sm text-gray-600">
-                                                            {task.actualMilestonePercent}%
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </Dialog.Panel>
-                            </Transition.Child>
-                        </div>
-                    </div>
-                </Dialog>
-            </Transition>
-        );
-    };
-
     return (
         <div className="bg-white rounded-lg shadow p-5">
             <div className="flex justify-between items-start mb-4">
-                <div>
-                    <h3 className="font-medium text-gray-800">Milestone Timeline & Project Progress</h3>
-                    <p className="text-xs text-gray-500">Track project progress against plan, baseline and forecasts</p>
+                <div className="flex items-center gap-3">
+                    <h3 className="font-medium text-gray-800">Project Progress Timeline</h3>
+                    <span className="text-xs text-gray-500">Track project progress against plan, baseline and forecasts</span>
                 </div>
                 <div className="flex space-x-2">
+                    <button
+                        onClick={() => setComparisonMode('planned-actual-baseline')}
+                        className={`px-2 py-1 text-xs rounded ${comparisonMode === 'planned-actual-baseline' ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-700'
+                            }`}
+                    >
+                        Planned vs Actual vs Baseline
+                    </button>
                     <button
                         onClick={() => setComparisonMode('planned-actual')}
                         className={`px-2 py-1 text-xs rounded ${comparisonMode === 'planned-actual' ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-700'
@@ -997,15 +610,29 @@ const TimelineComparisonChart = () => {
                 </div>
             </div>
 
-            <div className="mb-4">
-                <button
-                    onClick={() => setShowForecast(!showForecast)}
-                    className={`flex items-center px-3 py-1.5 text-sm rounded-md ${showForecast ? 'bg-orange-100 text-orange-700 border border-orange-200' : 'bg-gray-100 text-gray-700 border border-gray-200'
-                        }`}
-                >
-                    <SparklesIcon className="h-4 w-4 mr-1" />
-                    {showForecast ? 'Hide AI Forecast' : 'Generate KTern.AI Forecast'}
-                </button>
+            {/* Baseline version selection for baseline comparisons */}
+            <div className="mb-4 flex justify-between items-center">
+                {/* Left-aligned forecast button */}
+                <div>
+                    <button
+                        onClick={() => setShowForecast(!showForecast)}
+                        className={`flex items-center px-3 py-1.5 text-sm rounded-md ${showForecast
+                            ? 'bg-orange-100 text-orange-700 border border-orange-200'
+                            : 'bg-gray-100 text-gray-700 border border-gray-200'
+                            }`}
+                    >
+                        <SparklesIcon className="h-4 w-4 mr-1" />
+                        {showForecast ? 'Hide AI Forecast' : 'Generate KTern.AI Forecast'}
+                    </button>
+                </div>
+
+                {/* Right-aligned baseline dropdown */}
+                <BaselineVersionDropdown
+                    selectedBaselineVersion={selectedBaselineVersion}
+                    setSelectedBaselineVersion={setSelectedBaselineVersion}
+                    baselineVersions={baselineVersions}
+                    comparisonMode={comparisonMode}
+                />
             </div>
 
             <div className="h-80">
@@ -1023,27 +650,18 @@ const TimelineComparisonChart = () => {
                 />
             </div>
 
-            <div className="mt-4 pt-3 border-t flex flex-wrap gap-4">
-                <div className="flex items-center text-xs text-gray-500">
-                    <div className="w-3 h-3 bg-blue-500 mr-1 rotate-90 transform" style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }}></div>
-                    <span>Ahead</span>
-                </div>
-                <div className="flex items-center text-xs text-gray-500">
-                    <div className="w-3 h-3 bg-blue-500 mr-1 rotate-90 transform" style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }}></div>
-                    <span>On Track</span>
-                </div>
-                <div className="flex items-center text-xs text-gray-500">
-                    <div className="w-3 h-3 bg-amber-500 mr-1 rotate-90 transform" style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }}></div>
-                    <span>At Risk</span>
-                </div>
-                <div className="flex items-center text-xs text-gray-500">
-                    <div className="w-3 h-3 bg-red-500 mr-1 rotate-90 transform" style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }}></div>
-                    <span>Delayed</span>
-                </div>
-            </div>
+            {/* Milestone legend section removed as requested */}
+            {/* <div className="mt-4 pt-3 border-t flex justify-end items-center text-xs text-gray-500">
+            </div> */}
 
-            <MilestoneModal />
-            <TaskTableModal />
+            {/* Task Table Modal */}
+            <TaskTableModal
+                dataPointModalOpen={dataPointModalOpen}
+                setDataPointModalOpen={setDataPointModalOpen}
+                selectedMonth={selectedMonth}
+                selectedTaskView={selectedTaskView}
+                taskData={taskData}
+            />
         </div>
     );
 };

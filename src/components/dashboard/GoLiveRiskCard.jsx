@@ -757,6 +757,7 @@ const GoLiveRiskCard = () => {
             <div className="flex justify-center mb-2">
                 <div className="w-32 h-32 rounded-full border-8 border-red-500 flex flex-col items-center justify-center">
                     <span className="text-2xl font-bold text-gray-800">45%</span>
+                    <span className="text-xs text-gray-500">Chance of</span>
                     <span className="text-xs text-gray-500">On-time Go-live</span>
                 </div>
             </div>
