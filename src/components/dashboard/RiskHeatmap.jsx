@@ -146,14 +146,13 @@ const RiskModal = ({ isOpen, closeModal, selectedRisks, modalTitle }) => {
     // Compact Filter Dropdown (for non-fullscreen mode)
     const CompactFilterDropdown = ({ category, label, options }) => {
         const hasFilters = filters[category].length > 0;
-        
+
         return (
             <div className="relative filter-dropdown">
                 <Menu as="div" className="relative inline-block text-left">
                     <Menu.Button
-                        className={`flex items-center justify-between px-3 py-2 text-xs rounded-md border ${
-                            hasFilters ? 'bg-blue-50 border-blue-300 text-blue-700' : 'bg-white border-gray-300 text-gray-700'
-                        }`}
+                        className={`flex items-center justify-between px-3 py-2 text-xs rounded-md border ${hasFilters ? 'bg-blue-50 border-blue-300 text-blue-700' : 'bg-white border-gray-300 text-gray-700'
+                            }`}
                     >
                         <div className="flex items-center">
                             <FunnelIcon className={`h-3.5 w-3.5 mr-1.5 ${hasFilters ? 'text-blue-500' : 'text-gray-400'}`} />
@@ -165,7 +164,7 @@ const RiskModal = ({ isOpen, closeModal, selectedRisks, modalTitle }) => {
                             )}
                         </div>
                     </Menu.Button>
-                    
+
                     <Transition
                         as={Fragment}
                         enter="transition ease-out duration-100"
@@ -179,8 +178,8 @@ const RiskModal = ({ isOpen, closeModal, selectedRisks, modalTitle }) => {
                             <div className="py-1 border-b flex justify-between items-center px-3">
                                 <div className="text-xs font-medium text-gray-700">Filter by {label}</div>
                                 {hasFilters && (
-                                    <button 
-                                        className="text-xs text-blue-600 hover:text-blue-800" 
+                                    <button
+                                        className="text-xs text-blue-600 hover:text-blue-800"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             clearFilters(category);
@@ -195,15 +194,13 @@ const RiskModal = ({ isOpen, closeModal, selectedRisks, modalTitle }) => {
                                     options.map(option => (
                                         <Menu.Item key={option}>
                                             {() => (
-                                                <div 
-                                                    className={`flex items-center px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 ${
-                                                        filters[category].includes(option) ? 'bg-blue-50' : ''
-                                                    }`}
+                                                <div
+                                                    className={`flex items-center px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 ${filters[category].includes(option) ? 'bg-blue-50' : ''
+                                                        }`}
                                                     onClick={() => toggleFilter(category, option)}
                                                 >
-                                                    <div className={`w-4 h-4 mr-2 border rounded flex items-center justify-center ${
-                                                        filters[category].includes(option) ? 'bg-blue-500 border-blue-500' : 'border-gray-300'
-                                                    }`}>
+                                                    <div className={`w-4 h-4 mr-2 border rounded flex items-center justify-center ${filters[category].includes(option) ? 'bg-blue-500 border-blue-500' : 'border-gray-300'
+                                                        }`}>
                                                         {filters[category].includes(option) && (
                                                             <CheckIcon className="h-3 w-3 text-white" />
                                                         )}
@@ -344,7 +341,7 @@ const RiskModal = ({ isOpen, closeModal, selectedRisks, modalTitle }) => {
                                 <div className={`${isFullScreen ? 'p-6' : ''}`}>
                                     {/* Replace the existing summary cards section with this conditional rendering */}
                                     <div className="mb-4 flex justify-between">
-                                        {!isFullScreen ? (
+                                        {true ? (
                                             <div className="flex gap-4">
                                                 <div
                                                     className={`cursor-pointer rounded-lg p-3 border transition-all ${showMitigated === true ? 'bg-green-100 border-green-300 ring-2 ring-green-200' : 'bg-green-50 border-green-200 hover:bg-green-100'
@@ -844,13 +841,13 @@ const RiskHeatmap = () => {
                             <div className="w-10"></div> {/* Spacer for Impact label column */}
                             <div className="w-16"></div> {/* Spacer for Impact level labels */}
                             <div className="flex-1">
-                                <div className="h-6 bg-gray-200 flex items-center justify-center font-medium text-xs text-gray-700">
-                                    Probability
-                                </div>
                                 <div className="flex h-8">
                                     <div className={`flex-1 ${getProbabilityColumnColor('low')} flex items-center justify-center font-medium text-xs text-gray-800`}>Low</div>
                                     <div className={`flex-1 ${getProbabilityColumnColor('medium')} flex items-center justify-center font-medium text-xs text-gray-800`}>Medium</div>
                                     <div className={`flex-1 ${getProbabilityColumnColor('high')} flex items-center justify-center font-medium text-xs text-white`}>High</div>
+                                </div>
+                                <div className="h-6 bg-gray-200 flex items-center justify-center font-medium text-xs text-gray-700">
+                                    Probability
                                 </div>
                             </div>
                         </div>

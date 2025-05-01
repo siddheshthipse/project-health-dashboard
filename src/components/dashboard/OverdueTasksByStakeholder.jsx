@@ -186,7 +186,7 @@ const OverdueTasksByStakeholder = () => {
                 type: 'bar',
                 stack: 'total',
                 itemStyle: {
-                    color: '#6b7280' // Gray
+                    color: '#6C8893' // Gray
                 },
                 emphasis: {
                     focus: 'series'
@@ -198,7 +198,7 @@ const OverdueTasksByStakeholder = () => {
                 type: 'bar',
                 stack: 'total',
                 itemStyle: {
-                    color: '#3b82f6' // Blue
+                    color: '#5899DA' // Blue
                 },
                 emphasis: {
                     focus: 'series'
@@ -210,7 +210,7 @@ const OverdueTasksByStakeholder = () => {
                 type: 'bar',
                 stack: 'total',
                 itemStyle: {
-                    color: '#ef4444' // Red
+                    color: '#E60017' // Red
                 },
                 emphasis: {
                     focus: 'series'
@@ -371,7 +371,7 @@ const OverdueTasksByStakeholder = () => {
                             >
                                 <Dialog.Panel className="w-full max-w-6xl transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all">
                                     <div className="flex justify-between items-center mb-4">
-                                        <Dialog.Title as="h3" className="text-lg font-semibold text-gray-900">
+                                        <Dialog.Title as="h3" className="text-md font-semibold text-gray-900">
                                             Overdue Tasks: {selectedStakeholder}
                                         </Dialog.Title>
                                         <button

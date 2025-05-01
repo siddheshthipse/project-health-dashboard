@@ -265,7 +265,7 @@ const ProjectHealthDashboard = () => {
             {/* Main Content */}
             <div className="flex-1 p-6 overflow-auto">
                 {/* Executive Overview Section */}
-                <div className="mb-8">
+                <div className="mb-4">
                     <h2 className="text-lg font-semibold mb-4 text-gray-700 flex items-center">
                         Executive Overview
                     </h2>

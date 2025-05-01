@@ -30,7 +30,7 @@ const ApprovalCycleEfficiency = () => {
             trigger: 'item',
             formatter: '{b}: {c} days'
         },
-        color: ['#60a5fa', '#818cf8', '#a78bfa', '#c084fc'],
+        color: ['#93c5fd', '#a78bfa', '#f9a8d4', '#8e44ad'],
         series: [
             {
                 name: 'Approval Time',
@@ -94,7 +94,7 @@ const ApprovalCycleEfficiency = () => {
 
             <div className="mb-4">
                 <div className="flex justify-between items-end">
-                    <div className="text-3xl font-bold text-gray-800">{approvalData.total} days</div>
+                    <div className="text-xl text-gray-800">{approvalData.total} days</div>
                     <div className="text-sm text-gray-500">
                         Avg. approval cycle
                     </div>
