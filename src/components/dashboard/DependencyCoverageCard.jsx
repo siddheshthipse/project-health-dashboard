@@ -5,18 +5,32 @@ import { XMarkIcon, ChevronRightIcon, ChevronDownIcon } from '@heroicons/react/2
 // Dependency Coverage Card with Drilldown
 const DependencyCoverageCard = () => {
     const [showDrilldown, setShowDrilldown] = useState(false);
-
+    
     return (
-        <div className="bg-white rounded-lg shadow p-4">
-            <h3 className="font-medium text-gray-700 mb-2">Dependency Coverage Rate</h3>
-            <div className="mb-3 bg-gray-200 h-2 rounded-full overflow-hidden">
-                <div className="bg-yellow-500 h-full rounded-full" style={{ width: '76%' }}></div>
+        <div className="bg-white rounded-lg shadow p-5 h-full flex flex-col justify-between">
+            {/* Title Section */}
+            <div>
+                <h3 className="font-medium text-gray-700 mb-3">Dependency Coverage Rate</h3>
+                
+                {/* Progress Bar */}
+                <div className="mb-3 bg-gray-200 h-2.5 rounded-full overflow-hidden">
+                    <div className="bg-yellow-500 h-full rounded-full" style={{ width: '76%' }}></div>
+                </div>
+                
+                {/* Coverage Info */}
+                <div className="flex justify-between text-xs mb-5">
+                    <span className="text-gray-500">76% coverage</span>
+                    <span className="text-yellow-700">6 milestones need dependencies</span>
+                </div>
             </div>
-            <div className="flex justify-between text-xs mb-3">
-                <span className="text-gray-500">76% coverage</span>
-                <span className="text-yellow-700">6 milestones need dependencies</span>
+            
+            {/* Additional Content to Fill Space */}
+            <div className="flex-grow my-4">
+                {/* You can add additional content here if needed */}
             </div>
-            <div className="border-t pt-2 flex justify-end">
+            
+            {/* Action Button */}
+            <div className="border-t pt-3 flex justify-end mt-auto">
                 <button
                     onClick={() => setShowDrilldown(true)}
                     className="text-blue-600 text-xs hover:underline focus:outline-none"
@@ -24,7 +38,7 @@ const DependencyCoverageCard = () => {
                     View Tasks without Dependencies
                 </button>
             </div>
-
+            
             {/* Drilldown Modal */}
             <DependencyCoverageDrilldownModal
                 isOpen={showDrilldown}

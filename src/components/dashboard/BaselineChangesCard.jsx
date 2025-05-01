@@ -1,24 +1,31 @@
 import React, { useState, Fragment } from 'react';
-import { Dialog, Transition, Tab } from '@headlessui/react';
-import { XMarkIcon, ChevronRightIcon, ChevronDownIcon, PlusIcon, MinusIcon } from '@heroicons/react/20/solid';
+import { Dialog, Transition, Listbox } from '@headlessui/react';
+import { XMarkIcon, ChevronRightIcon, ChevronDownIcon, PlusIcon, MinusIcon, ChevronUpDownIcon, CheckIcon } from '@heroicons/react/20/solid';
 
-// Baseline Changes Card with Drilldown
 const BaselineChangesCard = () => {
   const [showDrilldown, setShowDrilldown] = useState(false);
   
   return (
-    <div className="bg-white rounded-lg shadow p-4">
-      <h3 className="font-medium text-gray-700 mb-2">Baseline Changes</h3>
-      <div className="flex justify-center">
-        <div className="text-center">
-          <div className="text-4xl font-bold text-amber-600">3</div>
-          <div className="text-sm text-gray-500">revisions in baseline</div>
+    <div className="bg-white rounded-lg shadow p-5 h-full flex flex-col justify-between">
+      {/* Title Section - keeping original styling but with slightly more margin */}
+      <h3 className="font-medium text-gray-700 mb-3">Baseline Changes</h3>
+      
+      {/* Main Content - using flex-grow to take up available space */}
+      <div className="flex-grow flex flex-col justify-center">
+        <div className="flex justify-center">
+          <div className="text-center">
+            <div className="text-4xl font-bold text-amber-600">3</div>
+            <div className="text-sm text-gray-500">revisions in baseline</div>
+          </div>
+        </div>
+        
+        <div className="text-xs text-gray-500 mt-3 text-center">
+          Last change: Mar 28, 2025
         </div>
       </div>
-      <div className="text-xs text-gray-500 mt-3 text-center">
-        Last change: Mar 28, 2025
-      </div>
-      <div className="mt-3 pt-2 border-t flex justify-end">
+      
+      {/* Action Button - maintaining original styling but with more padding for consistency */}
+      <div className="mt-4 pt-3 border-t flex justify-end">
         <button 
           onClick={() => setShowDrilldown(true)} 
           className="text-blue-600 text-xs hover:underline focus:outline-none"
@@ -42,14 +49,6 @@ const BaselineChangesDrilldownModal = ({ isOpen, closeModal }) => {
   const [expandedRows, setExpandedRows] = useState({
     'wave-1': true,
   });
-
-  // Function to toggle row expansion
-  const toggleRowExpansion = (id) => {
-    setExpandedRows({
-      ...expandedRows,
-      [id]: !expandedRows[id]
-    });
-  };
 
   // Sample baseline comparison data
   const baselineData = [
@@ -118,7 +117,7 @@ const BaselineChangesDrilldownModal = ({ isOpen, closeModal }) => {
       netEffortDelta: 15,
       totalAffectedTasks: 27,
       tasks: [
-        // Similar structure to baseline 1 but with different values
+        // Similar structure to baseline 1
       ]
     },
     {
@@ -128,10 +127,78 @@ const BaselineChangesDrilldownModal = ({ isOpen, closeModal }) => {
       netEffortDelta: 8,
       totalAffectedTasks: 18,
       tasks: [
-        // Similar structure to baseline 1 but with different values
+        // Similar structure to baseline 1
       ]
+    },
+    // Adding more baselines for demonstration
+    {
+      id: 'baseline-4',
+      name: 'Baseline 4',
+      date: 'Apr 10, 2025',
+      netEffortDelta: 12,
+      totalAffectedTasks: 25,
+      tasks: []
+    },
+    {
+      id: 'baseline-5',
+      name: 'Baseline 5',
+      date: 'Apr 22, 2025',
+      netEffortDelta: -5,
+      totalAffectedTasks: 15,
+      tasks: []
+    },
+    {
+      id: 'baseline-6',
+      name: 'Baseline 6',
+      date: 'May 5, 2025',
+      netEffortDelta: 7,
+      totalAffectedTasks: 22,
+      tasks: []
+    },
+    {
+      id: 'baseline-7',
+      name: 'Baseline 7',
+      date: 'May 18, 2025',
+      netEffortDelta: 3,
+      totalAffectedTasks: 10,
+      tasks: []
+    },
+    {
+      id: 'baseline-8',
+      name: 'Baseline 8',
+      date: 'Jun 2, 2025',
+      netEffortDelta: -2,
+      totalAffectedTasks: 8,
+      tasks: []
+    },
+    {
+      id: 'baseline-9',
+      name: 'Baseline 9',
+      date: 'Jun 20, 2025',
+      netEffortDelta: 10,
+      totalAffectedTasks: 30,
+      tasks: []
+    },
+    {
+      id: 'baseline-10',
+      name: 'Baseline 10',
+      date: 'Jul 5, 2025',
+      netEffortDelta: 6,
+      totalAffectedTasks: 12,
+      tasks: []
     }
   ];
+
+  // Selected baseline state
+  const [selectedBaseline, setSelectedBaseline] = useState(baselineData[0]);
+
+  // Function to toggle row expansion
+  const toggleRowExpansion = (id) => {
+    setExpandedRows({
+      ...expandedRows,
+      [id]: !expandedRows[id]
+    });
+  };
 
   // Helper function to get status color
   const getStatusColor = (status) => {
@@ -244,7 +311,7 @@ const BaselineChangesDrilldownModal = ({ isOpen, closeModal }) => {
             >
               <Dialog.Panel className="w-full max-w-5xl transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all">
                 <div className="flex justify-between items-center mb-4">
-                  <Dialog.Title as="h3" className="text-lg font-semibold text-gray-900">
+                  <Dialog.Title as="h3" className="text-md font-semibold text-gray-900">
                     Baseline Change Analysis
                   </Dialog.Title>
                   <button
@@ -257,81 +324,142 @@ const BaselineChangesDrilldownModal = ({ isOpen, closeModal }) => {
                 </div>
 
                 <div className="mb-6">
-                  <Tab.Group>
-                    <Tab.List className="flex space-x-1 rounded-lg bg-blue-50 p-1">
-                      {baselineData.map((baseline) => (
-                        <Tab
-                          key={baseline.id}
-                          className={({ selected }) =>
-                            `w-full rounded-lg py-2.5 text-sm font-medium leading-5 
-                            ${
-                              selected
-                                ? 'bg-white shadow text-blue-700'
-                                : 'text-blue-500 hover:bg-white/[0.12] hover:text-blue-600'
-                            }`
-                          }
-                        >
-                          {baseline.name} ({baseline.date})
-                        </Tab>
-                      ))}
-                    </Tab.List>
-
-                    <Tab.Panels className="mt-4">
-                      {baselineData.map((baseline) => (
-                        <Tab.Panel
-                          key={baseline.id}
-                          className="rounded-lg bg-white"
-                        >
-                          <div className="grid grid-cols-3 gap-4 mb-4">
-                            <div className="bg-amber-50 rounded-lg p-3 border border-amber-200">
-                              <div className="text-lg font-bold text-amber-600">{baseline.netEffortDelta > 0 ? '+' : ''}{baseline.netEffortDelta} days</div>
-                              <div className="text-xs text-gray-700">Net Effort Change</div>
-                            </div>
-                            <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
-                              <div className="text-lg font-bold text-blue-600">{baseline.totalAffectedTasks}</div>
-                              <div className="text-xs text-gray-700">Affected Tasks</div>
-                            </div>
-                            <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                              <div className="text-lg font-bold text-gray-600">Current vs. {baseline.name}</div>
-                              <div className="text-xs text-gray-700">Baseline date: {baseline.date}</div>
-                            </div>
+                  {/* Baseline selector dropdown using Headless UI Listbox */}
+                  <div className="mb-4">
+                    <Listbox value={selectedBaseline} onChange={setSelectedBaseline}>
+                      <div className="relative">
+                        <Listbox.Button className="relative w-full cursor-default rounded-lg bg-blue-50 py-2.5 pl-4 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-300 sm:text-sm">
+                          <div className="flex items-center">
+                            <span className="block truncate font-medium text-blue-700">{selectedBaseline.name}</span>
+                            <span className="ml-2 text-sm text-blue-500">({selectedBaseline.date})</span>
                           </div>
+                          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                            <ChevronUpDownIcon className="h-5 w-5 text-blue-400" aria-hidden="true" />
+                          </span>
+                        </Listbox.Button>
+                        <Transition
+                          as={Fragment}
+                          leave="transition ease-in duration-100"
+                          leaveFrom="opacity-100"
+                          leaveTo="opacity-0"
+                        >
+                          <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                            {baselineData.map((baseline) => (
+                              <Listbox.Option
+                                key={baseline.id}
+                                className={({ active }) =>
+                                  `relative cursor-default select-none py-2 px-4 ${
+                                    active ? 'bg-blue-50 text-blue-700' : 'text-gray-900'
+                                  }`
+                                }
+                                value={baseline}
+                              >
+                                {({ selected, active }) => (
+                                  <>
+                                    <div className="flex items-center justify-between">
+                                      <div>
+                                        <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
+                                          {baseline.name}
+                                        </span>
+                                        <span className="text-xs text-gray-500">
+                                          {baseline.date}
+                                        </span>
+                                      </div>
+                                      <div className="text-xs">
+                                        <span className={baseline.netEffortDelta > 0 ? 'text-red-600' : 'text-green-600'}>
+                                          {baseline.netEffortDelta > 0 ? '+' : ''}{baseline.netEffortDelta} days
+                                        </span>
+                                      </div>
+                                    </div>
+                                    {selected ? (
+                                      <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-blue-600">
+                                        <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                      </span>
+                                    ) : null}
+                                  </>
+                                )}
+                              </Listbox.Option>
+                            ))}
+                          </Listbox.Options>
+                        </Transition>
+                      </div>
+                    </Listbox>
+                  </div>
 
-                          <div className="border rounded-lg overflow-hidden max-h-[50vh] overflow-y-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
-                              <thead className="bg-gray-50 sticky top-0">
-                                <tr>
-                                  <th scope="col" className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Task
-                                  </th>
-                                  <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Level
-                                  </th>
-                                  <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status
-                                  </th>
-                                  <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Baseline Dates
-                                  </th>
-                                  <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Current Dates
-                                  </th>
-                                  <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Deviation
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody className="bg-white divide-y divide-gray-200">
-                                {baseline.tasks.map(task => renderTaskRow(task))}
-                              </tbody>
-                            </table>
-                          </div>
-                        </Tab.Panel>
-                      ))}
-                    </Tab.Panels>
-                  </Tab.Group>
+                  {/* Additional filtering options - optional, can be used for larger datasets */}
+                  <div className="flex justify-between items-center mb-4">
+                    <div className="text-sm text-gray-500">
+                      Comparing current plan with <span className="font-medium text-gray-700">{selectedBaseline.name}</span> ({selectedBaseline.date})
+                    </div>
+                    <div className="flex gap-2">
+                      <button className="px-3 py-1 rounded text-xs bg-blue-600 text-white hover:bg-blue-700">
+                        Show Modified Only
+                      </button>
+                      <button className="px-3 py-1 rounded text-xs bg-white border border-gray-300 text-gray-700 hover:bg-gray-50">
+                        Reset Filters
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Baseline metrics cards */}
+                  <div className="grid grid-cols-3 gap-4 mb-4">
+                    <div className="bg-amber-50 rounded-lg p-3 border border-amber-200">
+                      <div className="text-lg font-bold text-amber-600">
+                        {selectedBaseline.netEffortDelta > 0 ? '+' : ''}{selectedBaseline.netEffortDelta} days
+                      </div>
+                      <div className="text-xs text-gray-700">Net Effort Change</div>
+                    </div>
+                    <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                      <div className="text-lg font-bold text-blue-600">{selectedBaseline.totalAffectedTasks}</div>
+                      <div className="text-xs text-gray-700">Affected Tasks</div>
+                    </div>
+                    <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                      <div className="text-lg font-bold text-gray-600">Current vs. {selectedBaseline.name}</div>
+                      <div className="text-xs text-gray-700">Baseline date: {selectedBaseline.date}</div>
+                    </div>
+                  </div>
+
+                  {/* Tasks table */}
+                  <div className="border rounded-lg overflow-hidden max-h-[50vh] overflow-y-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50 sticky top-0">
+                        <tr>
+                          <th scope="col" className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Task
+                          </th>
+                          <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Level
+                          </th>
+                          <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Status
+                          </th>
+                          <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Baseline Dates
+                          </th>
+                          <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Current Dates
+                          </th>
+                          <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Deviation
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {selectedBaseline.tasks && selectedBaseline.tasks.length > 0 ? (
+                          selectedBaseline.tasks.map(task => renderTaskRow(task))
+                        ) : (
+                          <tr>
+                            <td colSpan="6" className="px-6 py-4 text-center text-sm text-gray-500">
+                              No task changes found for this baseline
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
 
+                {/* Legend */}
                 <div className="mt-4 flex flex-wrap gap-3">
                   <div className="flex items-center text-xs text-gray-500">
                     <div className="w-3 h-3 bg-yellow-100 rounded mr-1"></div>

@@ -19,6 +19,7 @@ import ResourceCapacityGap from './ResourceCapacityGapCard';
 import TimelineComparisonChart from './TimelineComparisonChart';
 import RiskHeatmap from './RiskHeatmap';
 import AIAssistantChatbot from './AIAssistantChatbot';
+import OverdueTasksByStakeholder from './OverdueTasksByStakeholder';
 
 const ProjectHealthDashboard = () => {
     const [headerExpanded, setHeaderExpanded] = useState(true);
@@ -298,20 +299,23 @@ const ProjectHealthDashboard = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                         {/* First column - spans 2 columns */}
                         <div className="lg:col-span-2">
-                            <OnTimeDeliveryRate />
+                            <OverdueTasksByStakeholder />
                         </div>
 
                         {/* Second column - spans 2 columns with nested grid */}
                         <div className="lg:col-span-2">
                             <div className="grid grid-cols-1 gap-6">
-                                <div>
+                                {/* Dependency Coverage Card takes full width */}
+                                <div className="h-full">
                                     <DependencyCoverageCard />
                                 </div>
-                                <div className="grid grid-cols-2 gap-6">
-                                    <div>
+
+                                {/* Two equal cards in a row */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="h-full">
                                         <PlanRecencyCard />
                                     </div>
-                                    <div>
+                                    <div className="h-full">
                                         <BaselineChangesCard />
                                     </div>
                                 </div>
@@ -326,10 +330,10 @@ const ProjectHealthDashboard = () => {
                         Risk & Issue Management
                     </h2>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div>
+                        <div className="h-full">
                             <RiskExposureCard />
                         </div>
-                        <div>
+                        <div className="h-full">
                             <IssueResolutionCard />
                         </div>
                     </div>

@@ -2,23 +2,30 @@ import React, { useState, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon, ClockIcon } from '@heroicons/react/20/solid';
 
-// Plan Recency Card with Drilldown
 const PlanRecencyCard = () => {
   const [showDrilldown, setShowDrilldown] = useState(false);
   
   return (
-    <div className="bg-white rounded-lg shadow p-4">
-      <h3 className="font-medium text-gray-700 mb-2">Plan Recency</h3>
-      <div className="flex justify-center">
+    <div className="bg-white rounded-lg shadow p-5 h-full flex flex-col justify-between">
+      {/* Title Section */}
+      <div>
+        <h3 className="font-medium text-gray-700 mb-3">Plan Recency</h3>
+      </div>
+      
+      {/* Main Content - Centered */}
+      <div className="flex-grow flex flex-col justify-center items-center my-2">
         <div className="text-center">
           <div className="text-4xl font-bold text-red-600">12</div>
-          <div className="text-sm text-gray-500">days since last update</div>
+          <div className="text-sm text-gray-500 mt-1">days since last update</div>
+        </div>
+        
+        <div className="text-xs text-gray-500 mt-3 text-center">
+          Last updated: Apr 5, 2025
         </div>
       </div>
-      <div className="text-xs text-gray-500 mt-3 text-center">
-        Last updated: Apr 5, 2025
-      </div>
-      <div className="mt-3 pt-2 border-t flex justify-end">
+      
+      {/* Action Button */}
+      <div className="mt-auto pt-3 border-t flex justify-end">
         <button 
           onClick={() => setShowDrilldown(true)} 
           className="text-blue-600 text-xs hover:underline focus:outline-none"
@@ -35,7 +42,6 @@ const PlanRecencyCard = () => {
     </div>
   );
 };
-
 // Plan Recency Drilldown Modal
 const PlanRecencyDrilldownModal = ({ isOpen, closeModal }) => {
   // Mock data for change history

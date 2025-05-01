@@ -247,12 +247,12 @@ const RiskDrilldownModal = ({ isOpen, closeModal }) => {
     );
 };
 
-// Usage in your Risk Exposure Card
 const RiskExposureCard = () => {
     const [showDrilldown, setShowDrilldown] = useState(false);
 
     return (
-        <div className="bg-white rounded-lg shadow p-5 mb-6">
+        <div className="bg-white rounded-lg shadow p-5 h-full flex flex-col">
+            {/* Risk counts */}
             <div className="grid grid-cols-2 gap-4 mb-4">
                 <div className="rounded bg-red-100 p-3 text-center">
                     <div className="text-2xl font-bold text-red-700">5</div>
@@ -264,32 +264,36 @@ const RiskExposureCard = () => {
                 </div>
             </div>
 
-            <div className="mb-4 mt-5">
-                <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm font-medium text-gray-700">Risk Mitigation Rate</span>
-                    <span className="text-sm font-medium text-yellow-600">68%</span>
-                </div>
-                <div className="text-xs text-gray-500 mb-2">
-                    (Mitigated risks / Identified risks) × 100%
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div className="bg-yellow-500 h-2.5 rounded-full" style={{ width: '68%' }}></div>
-                </div>
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>0%</span>
-                    <div>
-                        <span className="inline-block w-2 h-2 bg-red-500 rounded-full mr-1"></span>
-                        <span>Critical &lt;50%</span>
+            {/* Risk mitigation section - flex-grow will help fill available space */}
+            <div className="flex-grow mb-4">
+                <div className="mb-4 mt-5">
+                    <div className="flex justify-between items-center mb-1">
+                        <span className="text-sm font-medium text-gray-700">Risk Mitigation Rate</span>
+                        <span className="text-sm font-medium text-yellow-600">68%</span>
                     </div>
-                    <div>
-                        <span className="inline-block w-2 h-2 bg-yellow-500 rounded-full mr-1"></span>
-                        <span>Warning &lt;75%</span>
+                    <div className="text-xs text-gray-500 mb-2">
+                        (Mitigated risks / Identified risks) × 100%
                     </div>
-                    <span>100%</span>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                        <div className="bg-yellow-500 h-2.5 rounded-full" style={{ width: '68%' }}></div>
+                    </div>
+                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>0%</span>
+                        <div>
+                            <span className="inline-block w-2 h-2 bg-red-500 rounded-full mr-1"></span>
+                            <span>Critical &lt;50%</span>
+                        </div>
+                        <div>
+                            <span className="inline-block w-2 h-2 bg-yellow-500 rounded-full mr-1"></span>
+                            <span>Warning &lt;75%</span>
+                        </div>
+                        <span>100%</span>
+                    </div>
                 </div>
             </div>
 
-            <div className="flex justify-between items-center mt-4">
+            {/* Bottom section with metrics and button */}
+            <div className="flex justify-between items-center border-t pt-3 mt-auto">
                 <div className="flex items-center space-x-4">
                     <div className="text-sm">
                         <div className="font-medium">17/25</div>
