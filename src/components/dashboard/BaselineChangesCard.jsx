@@ -251,7 +251,7 @@ const BaselineChangesDrilldownModal = ({ isOpen, closeModal }) => {
               ) : (
                 <span className="w-5"></span>
               )}
-              <span className="ml-1 font-medium text-gray-700 text-sm">{task.title}</span>
+              <span className="ml-1 font-medium text-gray-700 text-xs">{task.title}</span>
             </div>
           </td>
           <td className="p-3 text-center whitespace-nowrap">
@@ -388,7 +388,7 @@ const BaselineChangesDrilldownModal = ({ isOpen, closeModal }) => {
 
                   {/* Additional filtering options - optional, can be used for larger datasets */}
                   <div className="flex justify-between items-center mb-4">
-                    <div className="text-sm text-gray-500">
+                    <div className="text-xs text-gray-500">
                       Comparing current plan with <span className="font-medium text-gray-700">{selectedBaseline.name}</span> ({selectedBaseline.date})
                     </div>
                     <div className="flex gap-2">

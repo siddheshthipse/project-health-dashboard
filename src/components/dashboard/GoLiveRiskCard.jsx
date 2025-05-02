@@ -24,10 +24,10 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
     const [showSlicers, setShowSlicers] = useState(true);
     const [filters, setFilters] = useState({
         type: [],
-        progress: [],
+        plannedPercent: [],
+        actualPercent: [],
         slackDays: [],
-        baselineVariance: [],
-        overdueDays: []
+        baselineOverdueDays: []
     });
 
     // Function to toggle row expansion
@@ -64,101 +64,89 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
         }));
     };
 
-    // Sample critical path task data with new columns
+    // Sample critical path task data with updated columns
     const criticalPathData = [
         {
             id: 'CP-1',
-            name: 'Data Migration Completion',
+            wbs: '1',
+            title: 'Data Migration Completion',
             type: 'Milestone',
             baselineEnd: 'Apr 25, 2025',
             plannedEnd: 'May 5, 2025',
-            progress: '35%',
+            plannedPercent: '40%',
+            actualPercent: '35%',
             slackDays: '-2',
-            baselineVariance: '10 days',
-            overdueDays: '12',
+            baselineOverdueDays: '12',
+            delayLog: 'Source data quality issues; Additional data mapping required',
             children: [
                 {
                     id: 'CP-1-1',
-                    name: 'Data Cleansing',
+                    wbs: '1.1',
+                    title: 'Data Cleansing',
                     type: 'Activity',
                     baselineEnd: 'Apr 15, 2025',
                     plannedEnd: 'Apr 20, 2025',
-                    progress: '60%',
+                    plannedPercent: '60%',
+                    actualPercent: '60%',
                     slackDays: '0',
-                    baselineVariance: '5 days',
-                    overdueDays: '5',
+                    baselineOverdueDays: '5',
+                    delayLog: 'Unexpected issues with duplicate records',
                 },
                 {
                     id: 'CP-1-2',
-                    name: 'Data Transformation Scripts',
+                    wbs: '1.2',
+                    title: 'Data Transformation Scripts',
                     type: 'Activity',
                     baselineEnd: 'Apr 20, 2025',
                     plannedEnd: 'Apr 25, 2025',
-                    progress: '25%',
+                    plannedPercent: '30%',
+                    actualPercent: '25%',
                     slackDays: '-1',
-                    baselineVariance: '5 days',
-                    overdueDays: '7',
+                    baselineOverdueDays: '7',
+                    delayLog: 'Resource constraints; Complex transformation logic',
                 }
             ]
         },
         {
             id: 'CP-2',
-            name: 'UAT Completion',
+            wbs: '2',
+            title: 'UAT Completion',
             type: 'Milestone',
             baselineEnd: 'May 10, 2025',
             plannedEnd: 'May 15, 2025',
-            progress: '20%',
+            plannedPercent: '25%',
+            actualPercent: '20%',
             slackDays: '0',
-            baselineVariance: '5 days',
-            overdueDays: '8',
+            baselineOverdueDays: '8',
+            delayLog: 'Stakeholder availability is limited',
             children: [
                 {
                     id: 'CP-2-1',
-                    name: 'Test Script Preparation',
+                    wbs: '2.1',
+                    title: 'Test Script Preparation',
                     type: 'Activity',
                     baselineEnd: 'Apr 25, 2025',
                     plannedEnd: 'Apr 30, 2025',
-                    progress: '45%',
+                    plannedPercent: '50%',
+                    actualPercent: '45%',
                     slackDays: '1',
-                    baselineVariance: '5 days',
-                    overdueDays: '3',
+                    baselineOverdueDays: '3',
+                    delayLog: '',
                 },
                 {
                     id: 'CP-2-2',
-                    name: 'User Training for UAT',
+                    wbs: '2.2',
+                    title: 'User Training for UAT',
                     type: 'Activity',
                     baselineEnd: 'May 1, 2025',
                     plannedEnd: 'May 5, 2025',
-                    progress: '15%',
+                    plannedPercent: '20%',
+                    actualPercent: '15%',
                     slackDays: '-1',
-                    baselineVariance: '4 days',
-                    overdueDays: '5',
+                    baselineOverdueDays: '5',
+                    delayLog: 'Training materials revision required',
                 }
             ]
-        },
-        {
-            id: 'CP-3',
-            name: 'Security Compliance Sign-off',
-            type: 'Milestone',
-            baselineEnd: 'May 5, 2025',
-            plannedEnd: 'May 10, 2025',
-            progress: '10%',
-            slackDays: '0',
-            baselineVariance: '5 days',
-            overdueDays: '6',
-            children: []
-        },
-        {
-            id: 'CP-4',
-            name: 'Production Environment Setup',
-            type: 'Phase',
-            baselineEnd: 'May 20, 2025',
-            plannedEnd: 'May 20, 2025',
-            progress: '50%',
-            slackDays: '3',
-            baselineVariance: '0 days',
-            overdueDays: '0',
-            children: []
         }
     ];
 
@@ -182,10 +170,10 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
     // Filter options
     const filterOptions = {
         type: getUniqueOptions('type'),
-        progress: ['0-25%', '26-50%', '51-75%', '76-100%'],
+        plannedPercent: ['0-25%', '26-50%', '51-75%', '76-100%'],
+        actualPercent: ['0-25%', '26-50%', '51-75%', '76-100%'],
         slackDays: ['Negative', 'Zero', 'Positive'],
-        baselineVariance: ['None', '1-5 days', '6-10 days', '10+ days'],
-        overdueDays: ['None', '1-5 days', '6-10 days', '10+ days']
+        baselineOverdueDays: ['None', '1-5 days', '6-10 days', '10+ days']
     };
 
     // Filter the tasks based on selected filters
@@ -195,15 +183,15 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
             for (const [category, values] of Object.entries(filters)) {
                 if (values.length === 0) continue; // Skip if no filter for this category
 
-                if (category === 'progress') {
-                    const progressValue = parseInt(task.progress);
+                if (category === 'plannedPercent' || category === 'actualPercent') {
+                    const percentValue = parseInt(task[category]);
                     let matchesAny = false;
 
                     for (const range of values) {
-                        if (range === '0-25%' && progressValue <= 25) matchesAny = true;
-                        else if (range === '26-50%' && progressValue > 25 && progressValue <= 50) matchesAny = true;
-                        else if (range === '51-75%' && progressValue > 50 && progressValue <= 75) matchesAny = true;
-                        else if (range === '76-100%' && progressValue > 75) matchesAny = true;
+                        if (range === '0-25%' && percentValue <= 25) matchesAny = true;
+                        else if (range === '26-50%' && percentValue > 25 && percentValue <= 50) matchesAny = true;
+                        else if (range === '51-75%' && percentValue > 50 && percentValue <= 75) matchesAny = true;
+                        else if (range === '76-100%' && percentValue > 75) matchesAny = true;
                     }
 
                     if (!matchesAny) return false;
@@ -220,21 +208,8 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
 
                     if (!matchesAny) return false;
                 }
-                else if (category === 'baselineVariance') {
-                    const varianceValue = parseInt(task.baselineVariance);
-                    let matchesAny = false;
-
-                    for (const range of values) {
-                        if (range === 'None' && varianceValue === 0) matchesAny = true;
-                        else if (range === '1-5 days' && varianceValue > 0 && varianceValue <= 5) matchesAny = true;
-                        else if (range === '6-10 days' && varianceValue > 5 && varianceValue <= 10) matchesAny = true;
-                        else if (range === '10+ days' && varianceValue > 10) matchesAny = true;
-                    }
-
-                    if (!matchesAny) return false;
-                }
-                else if (category === 'overdueDays') {
-                    const overdueValue = parseInt(task.overdueDays);
+                else if (category === 'baselineOverdueDays') {
+                    const overdueValue = parseInt(task.baselineOverdueDays);
                     let matchesAny = false;
 
                     for (const range of values) {
@@ -288,13 +263,16 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
         const hasChildren = task.children && task.children.length > 0;
         const isExpanded = expandedRows[task.id];
         const indentPadding = depth * 12; // 12px per level of depth
-        const hasOverdue = parseInt(task.overdueDays) > 0;
+        const hasOverdue = parseInt(task.baselineOverdueDays) > 0;
         const slackStatus = parseInt(task.slackDays) < 0 ? 'negative' :
             parseInt(task.slackDays) === 0 ? 'zero' : 'positive';
 
         return (
             <React.Fragment key={task.id}>
                 <tr className={`border-b ${hasOverdue ? 'bg-red-50' : ''}`}>
+                    <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">
+                        {task.wbs}
+                    </td>
                     <td className="p-3 whitespace-nowrap">
                         <div className="flex items-center" style={{ paddingLeft: `${indentPadding}px` }}>
                             {hasChildren ? (
@@ -310,32 +288,28 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                             ) : (
                                 <span className="w-5"></span>
                             )}
-                            <span className="ml-1 font-medium text-gray-700 text-sm">{task.name}</span>
+                            <span className="ml-1 font-medium text-gray-700 text-xs">{task.title}</span>
                         </div>
                     </td>
                     <td className="p-3 text-center whitespace-nowrap">
                         <span className="px-2 py-1 rounded-full bg-gray-100 text-xs text-gray-700">{task.type}</span>
                     </td>
-                    <td className="p-3 text-center whitespace-nowrap text-sm">{task.baselineEnd}</td>
-                    <td className="p-3 text-center whitespace-nowrap text-sm">{task.plannedEnd}</td>
-                    <td className="p-3 text-center whitespace-nowrap text-sm">
-                        <div className="flex justify-center items-center">
-                            <div className="w-16 bg-gray-200 rounded-full h-2.5 mr-2">
-                                <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: task.progress }}></div>
-                            </div>
-                            <span>{task.progress}</span>
-                        </div>
-                    </td>
-                    <td className="p-3 text-center whitespace-nowrap text-sm">
+                    <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">{task.baselineEnd}</td>
+                    <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">{task.plannedEnd}</td>
+                    <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">{task.plannedPercent}</td>
+                    <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">{task.actualPercent}</td>
+                    <td className="p-3 text-center whitespace-nowrap text-xs">
                         <span className={`font-medium ${slackStatus === 'negative' ? 'text-red-600' :
                                 slackStatus === 'zero' ? 'text-yellow-600' : 'text-green-600'
                             }`}>{task.slackDays}</span>
                     </td>
-                    <td className="p-3 text-center whitespace-nowrap text-sm">{task.baselineVariance}</td>
-                    <td className="p-3 text-center whitespace-nowrap text-sm">
-                        <span className={`font-medium ${parseInt(task.overdueDays) > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                            {task.overdueDays}
+                    <td className="p-3 text-center whitespace-nowrap text-xs">
+                        <span className={`font-medium ${parseInt(task.baselineOverdueDays) > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                            {task.baselineOverdueDays}
                         </span>
+                    </td>
+                    <td className="p-3 whitespace-nowrap text-xs text-gray-600">
+                        {task.delayLog}
                     </td>
                 </tr>
                 {hasChildren && isExpanded && task.children.map(child => renderTaskRow(child, depth + 1))}
@@ -564,10 +538,10 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                                                     onClick={() => {
                                                         setFilters({
                                                             type: [],
-                                                            progress: [],
+                                                            plannedPercent: [],
+                                                            actualPercent: [],
                                                             slackDays: [],
-                                                            baselineVariance: [],
-                                                            overdueDays: []
+                                                            baselineOverdueDays: []
                                                         });
                                                     }}
                                                 >
@@ -606,9 +580,14 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                                                     options={filterOptions.type}
                                                 />
                                                 <ExpandedFilterPanel
-                                                    category="progress"
-                                                    label="Progress"
-                                                    options={filterOptions.progress}
+                                                    category="plannedPercent"
+                                                    label="Planned %"
+                                                    options={filterOptions.plannedPercent}
+                                                />
+                                                <ExpandedFilterPanel
+                                                    category="actualPercent"
+                                                    label="Actual %"
+                                                    options={filterOptions.actualPercent}
                                                 />
                                                 <ExpandedFilterPanel
                                                     category="slackDays"
@@ -616,14 +595,9 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                                                     options={filterOptions.slackDays}
                                                 />
                                                 <ExpandedFilterPanel
-                                                    category="baselineVariance"
-                                                    label="Baseline Variance"
-                                                    options={filterOptions.baselineVariance}
-                                                />
-                                                <ExpandedFilterPanel
-                                                    category="overdueDays"
-                                                    label="Overdue Days"
-                                                    options={filterOptions.overdueDays}
+                                                    category="baselineOverdueDays"
+                                                    label="Baseline Overdue Days"
+                                                    options={filterOptions.baselineOverdueDays}
                                                 />
                                             </div>
                                         ) : (
@@ -635,9 +609,14 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                                                     options={filterOptions.type}
                                                 />
                                                 <CompactFilterDropdown
-                                                    category="progress"
-                                                    label="Progress"
-                                                    options={filterOptions.progress}
+                                                    category="plannedPercent"
+                                                    label="Planned %"
+                                                    options={filterOptions.plannedPercent}
+                                                />
+                                                <CompactFilterDropdown
+                                                    category="actualPercent"
+                                                    label="Actual %"
+                                                    options={filterOptions.actualPercent}
                                                 />
                                                 <CompactFilterDropdown
                                                     category="slackDays"
@@ -645,14 +624,9 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                                                     options={filterOptions.slackDays}
                                                 />
                                                 <CompactFilterDropdown
-                                                    category="baselineVariance"
-                                                    label="Baseline Variance"
-                                                    options={filterOptions.baselineVariance}
-                                                />
-                                                <CompactFilterDropdown
-                                                    category="overdueDays"
-                                                    label="Overdue Days"
-                                                    options={filterOptions.overdueDays}
+                                                    category="baselineOverdueDays"
+                                                    label="Baseline Overdue Days"
+                                                    options={filterOptions.baselineOverdueDays}
                                                 />
                                             </div>
                                         ))
@@ -667,8 +641,11 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                                         <table className="min-w-full divide-y divide-gray-200">
                                             <thead className="bg-gray-50 sticky top-0 z-10">
                                                 <tr>
+                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        WBS
+                                                    </th>
                                                     <th scope="col" className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Task Title
+                                                        Title
                                                     </th>
                                                     <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                         Type
@@ -680,16 +657,19 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                                                         Planned End
                                                     </th>
                                                     <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Progress
+                                                        Planned %
+                                                    </th>
+                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Actual %
                                                     </th>
                                                     <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                         Slack Days
                                                     </th>
                                                     <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Baseline Variance
+                                                        Baseline Overdue Days
                                                     </th>
-                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Overdue Days
+                                                    <th scope="col" className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Delay Log
                                                     </th>
                                                 </tr>
                                             </thead>
@@ -698,7 +678,7 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                                                     filteredData.map(task => renderTaskRow(task))
                                                 ) : (
                                                     <tr>
-                                                        <td colSpan="8" className="p-6 text-center text-gray-500">
+                                                        <td colSpan="10" className="p-6 text-center text-gray-500">
                                                             No tasks match the current filters. Try adjusting your filters.
                                                         </td>
                                                     </tr>

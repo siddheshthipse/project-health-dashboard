@@ -241,7 +241,7 @@ const PlanRecencyDrilldownModal = ({ isOpen, closeModal }) => {
             >
               <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all">
                 <div className="flex justify-between items-center mb-4">
-                  <Dialog.Title as="h3" className="text-lg font-semibold text-gray-900">
+                  <Dialog.Title as="h3" className="text-md font-semibold text-gray-900">
                     Plan Update History
                   </Dialog.Title>
                   <button

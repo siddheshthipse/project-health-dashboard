@@ -343,6 +343,97 @@ const OverdueTasksByStakeholder = () => {
         const stakeholderTasks = taskData[selectedStakeholder];
         const filteredTasks = getFilteredTasks(stakeholderTasks);
 
+        // Function to render the tasks table with the new columns
+        const renderTasksTable = (tasks) => (
+            <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                    <tr>
+                        <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            S No
+                        </th>
+                        <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Title
+                        </th>
+                        <th scope="col" className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Status
+                        </th>
+                        <th scope="col" className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Baseline End
+                        </th>
+                        <th scope="col" className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Planned End
+                        </th>
+                        <th scope="col" className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actual End
+                        </th>
+                        <th scope="col" className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Overdue Days
+                        </th>
+                        <th scope="col" className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Impacted Deliverable Group
+                        </th>
+                        <th scope="col" className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Variance
+                        </th>
+                        <th scope="col" className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Impacted Milestone
+                        </th>
+                    </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                    {tasks.map((task, index) => (
+                        <tr key={task.id} className="hover:bg-gray-50">
+                            <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500">
+                                {index + 1}
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap">
+                                <div className="flex items-center">
+                                    <div className="text-xs font-medium text-gray-900">{task.title}</div>
+                                </div>
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-center">
+                                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                    ${task.status === 'Completed' ? 'bg-green-100 text-green-800' :
+                                        task.status === 'In Progress' ? 'bg-blue-100 text-blue-800' :
+                                            'bg-gray-100 text-gray-800'}`}>
+                                    {task.status}
+                                </span>
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
+                                {task.baselineEnd}
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
+                                {task.plannedEnd}
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
+                                {task.actualEnd || '-'}
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
+                                {task.overdueDays > 0 ? (
+                                    <span className="text-red-500 font-medium">{task.overdueDays}</span>
+                                ) : (
+                                    task.overdueDays || '0'
+                                )}
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
+                                {task.impactedDeliverableGroup || '-'}
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
+                                {task.variance ? (
+                                    <span className={task.variance > 0 ? 'text-red-500' : 'text-green-500'}>
+                                        {task.variance > 0 ? `+${task.variance}` : task.variance}
+                                    </span>
+                                ) : '0'}
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
+                                {task.impactedMilestone || '-'}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        );
+
         return (
             <Transition appear show={stakeholderDrilldownOpen} as={Fragment}>
                 <Dialog as="div" className="relative z-50" onClose={() => setStakeholderDrilldownOpen(false)}>
@@ -385,7 +476,6 @@ const OverdueTasksByStakeholder = () => {
 
                                     <div className="mb-6">
                                         <div className="grid grid-cols-2 gap-4">
-                                            {/* Fixed: Use the handleFilterChange instead of direct setActiveFilter */}
                                             <div
                                                 className="bg-blue-50 border border-blue-200 rounded-lg p-3"
                                                 onClick={() => handleFilterChange('replanning')}
@@ -408,7 +498,6 @@ const OverdueTasksByStakeholder = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            {/* Fixed: Use the handleFilterChange instead of direct setActiveFilter */}
                                             <div
                                                 className="bg-red-50 border border-red-200 rounded-lg p-3"
                                                 onClick={() => handleFilterChange('late')}
@@ -429,7 +518,6 @@ const OverdueTasksByStakeholder = () => {
 
                                     <div className="border rounded-lg overflow-hidden mb-3">
                                         <div className="flex bg-gray-50 p-2 border-b">
-                                            {/* Fixed: Use the handleFilterChange instead of direct setActiveFilter */}
                                             <button
                                                 className={`px-4 py-1 text-sm rounded ${activeFilter === 'all' ? 'bg-white shadow-sm font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
                                                 onClick={() => handleFilterChange('all')}
@@ -476,6 +564,97 @@ const OverdueTasksByStakeholder = () => {
         const allTasks = getAllTasks();
         const filteredTasks = getFilteredTasks(allTasks);
 
+        // Function to render the tasks table with the new columns
+        const renderTasksTable = (tasks) => (
+            <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                    <tr>
+                        <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            S No
+                        </th>
+                        <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Title
+                        </th>
+                        <th scope="col" className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Status
+                        </th>
+                        <th scope="col" className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Baseline End
+                        </th>
+                        <th scope="col" className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Planned End
+                        </th>
+                        <th scope="col" className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actual End
+                        </th>
+                        <th scope="col" className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Overdue Days
+                        </th>
+                        <th scope="col" className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Impacted Deliverable Group
+                        </th>
+                        <th scope="col" className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Variance
+                        </th>
+                        <th scope="col" className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Impacted Milestone
+                        </th>
+                    </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                    {tasks.map((task, index) => (
+                        <tr key={task.id} className="hover:bg-gray-50">
+                            <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500">
+                                {index + 1}
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap">
+                                <div className="flex items-center">
+                                    <div className="text-sm font-medium text-gray-900">{task.title}</div>
+                                </div>
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-center">
+                                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                    ${task.status === 'Completed' ? 'bg-green-100 text-green-800' :
+                                        task.status === 'In Progress' ? 'bg-blue-100 text-blue-800' :
+                                            'bg-gray-100 text-gray-800'}`}>
+                                    {task.status}
+                                </span>
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
+                                {task.baselineEnd}
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
+                                {task.plannedEnd}
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
+                                {task.actualEnd || '-'}
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
+                                {task.overdueDays > 0 ? (
+                                    <span className="text-red-500 font-medium">{task.overdueDays}</span>
+                                ) : (
+                                    task.overdueDays || '0'
+                                )}
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
+                                {task.impactedDeliverableGroup || '-'}
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
+                                {task.variance ? (
+                                    <span className={task.variance > 0 ? 'text-red-500' : 'text-green-500'}>
+                                        {task.variance > 0 ? `+${task.variance}` : task.variance}
+                                    </span>
+                                ) : '0'}
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
+                                {task.impactedMilestone || '-'}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        );
+
         return (
             <Transition appear show={showAllDrilldown} as={Fragment}>
                 <Dialog as="div" className="relative z-50" onClose={() => setShowAllDrilldown(false)}>
@@ -518,7 +697,6 @@ const OverdueTasksByStakeholder = () => {
 
                                     <div className="mb-6">
                                         <div className="grid grid-cols-2 gap-4">
-                                            {/* Fixed: Use the handleFilterChange instead of direct setActiveFilter */}
                                             <div
                                                 className="bg-blue-50 border border-blue-200 rounded-lg p-3"
                                                 onClick={() => handleFilterChange('replanning')}
@@ -541,7 +719,6 @@ const OverdueTasksByStakeholder = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            {/* Fixed: Use the handleFilterChange instead of direct setActiveFilter */}
                                             <div
                                                 className="bg-red-50 border border-red-200 rounded-lg p-3"
                                                 onClick={() => handleFilterChange('late')}
@@ -562,7 +739,6 @@ const OverdueTasksByStakeholder = () => {
 
                                     <div className="border rounded-lg overflow-hidden mb-3">
                                         <div className="flex bg-gray-50 p-2 border-b">
-                                            {/* Fixed: Use the handleFilterChange instead of direct setActiveFilter */}
                                             <button
                                                 className={`px-4 py-1 text-sm rounded ${activeFilter === 'all' ? 'bg-white shadow-sm font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
                                                 onClick={() => handleFilterChange('all')}

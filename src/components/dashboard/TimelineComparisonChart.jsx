@@ -80,8 +80,35 @@ const TaskTableModal = ({
         return taskData;
     };
 
-    const plannedTasks = getTasksForMonth();
-    const actualTasks = getTasksForMonth();
+    const tasks = getTasksForMonth();
+
+    // Calculate planned and actual completion percentages
+    const calculateCompletionPercentages = () => {
+        let totalPlanned = 0;
+        let totalActual = 0;
+        let taskCount = 0;
+
+        const calculatePercentages = (taskList) => {
+            taskList.forEach(task => {
+                totalPlanned += task.plannedMilestonePercent || 0;
+                totalActual += task.actualMilestonePercent || 0;
+                taskCount++;
+
+                if (task.children && task.children.length > 0) {
+                    calculatePercentages(task.children);
+                }
+            });
+        };
+
+        calculatePercentages(tasks);
+
+        return {
+            planned: taskCount > 0 ? Math.round(totalPlanned / taskCount) : 0,
+            actual: taskCount > 0 ? Math.round(totalActual / taskCount) : 0
+        };
+    };
+
+    const completionPercentages = calculateCompletionPercentages();
 
     // Toggle node expansion
     const toggleNodeExpansion = (nodeId) => {
@@ -102,6 +129,9 @@ const TaskTableModal = ({
             return (
                 <Fragment key={task.id}>
                     <tr className={`hover:bg-gray-50 ${level > 0 ? 'bg-gray-50' : ''}`}>
+                        <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">
+                            {task.wbs}
+                        </td>
                         <td className="p-3">
                             <div className="flex items-center" style={{ paddingLeft: `${level * 20}px` }}>
                                 {hasChildren && (
@@ -115,28 +145,37 @@ const TaskTableModal = ({
                                         }
                                     </button>
                                 )}
-                                <span className="font-medium text-sm text-gray-700">{task.title}</span>
+                                <span className="font-medium text-xs text-gray-700">{task.title}</span>
                             </div>
                         </td>
                         <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">
-                            {task.level}
-                        </td>
-                        <td className="p-3 text-center whitespace-nowrap">
-                            <span className={`px-2 py-1 text-xs rounded-full ${task.status === 'Completed' ? 'bg-green-100 text-green-800' :
-                                task.status === 'In Progress' ? 'bg-blue-100 text-blue-800' :
-                                    'bg-gray-100 text-gray-800'
-                                }`}>
-                                {task.status}
-                            </span>
+                            {task.type}
                         </td>
                         <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">
-                            {task.owner}
+                            {task.baselineEnd}
+                        </td>
+                        <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">
+                            {task.plannedEnd}
                         </td>
                         <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">
                             {task.plannedMilestonePercent}%
                         </td>
                         <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">
                             {task.actualMilestonePercent}%
+                        </td>
+                        <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">
+                            {task.slackDays}
+                        </td>
+                        <td className="p-3 text-center whitespace-nowrap">
+                            <span className={`px-2 py-1 text-xs rounded-full ${task.baseline ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                                {task.baseline ? 'Yes' : 'No'}
+                            </span>
+                        </td>
+                        <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">
+                            {task.overdueDays}
+                        </td>
+                        <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">
+                            {task.delayLog}
                         </td>
                     </tr>
                     {/* Render children recursively if expanded */}
@@ -183,7 +222,7 @@ const TaskTableModal = ({
                             leaveTo="opacity-0 scale-95"
                         >
                             <Dialog.Panel
-                                className={`${isFullScreen ? 'w-full h-full' : 'w-full max-w-4xl'} transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all`}
+                                className={`${isFullScreen ? 'w-screen h-screen m-0 rounded-none' : 'w-full max-w-4xl rounded-lg'} transform overflow-hidden bg-white p-6 shadow-xl transition-all`}
                             >
                                 <div className="flex justify-between items-center mb-4">
                                     <Dialog.Title as="h3" className="text-md font-semibold text-gray-900">
@@ -219,15 +258,15 @@ const TaskTableModal = ({
                                         className={`cursor-pointer rounded-lg p-4 border ${activeTab === 'planned' ? 'bg-blue-50 border-blue-300' : 'bg-gray-50 border-gray-200'}`}
                                         onClick={() => setActiveTab('planned')}
                                     >
-                                        <div className="text-xl font-bold text-gray-700">{plannedTasks.length}</div>
-                                        <div className="text-sm text-gray-500">Planned Tasks</div>
+                                        <div className="text-xl font-bold text-gray-700">{completionPercentages.planned}%</div>
+                                        <div className="text-xs text-gray-500">Planned Completion %</div>
                                     </div>
                                     <div
                                         className={`cursor-pointer rounded-lg p-4 border ${activeTab === 'actual' ? 'bg-green-50 border-green-300' : 'bg-gray-50 border-gray-200'}`}
                                         onClick={() => setActiveTab('actual')}
                                     >
-                                        <div className="text-xl font-bold text-gray-700">{actualTasks.length}</div>
-                                        <div className="text-sm text-gray-500">Actual Tasks</div>
+                                        <div className="text-xl font-bold text-gray-700">{completionPercentages.actual}%</div>
+                                        <div className="text-xs text-gray-500">Actual Completion %</div>
                                     </div>
                                 </div>
 
@@ -236,28 +275,43 @@ const TaskTableModal = ({
                                     <table className="min-w-full divide-y divide-gray-200">
                                         <thead className="bg-gray-50 sticky top-0">
                                             <tr>
+                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    WBS
+                                                </th>
                                                 <th scope="col" className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     Title
                                                 </th>
                                                 <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Level
+                                                    Type
                                                 </th>
                                                 <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Status
+                                                    Baseline End
                                                 </th>
                                                 <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Owner
+                                                    Planned End
                                                 </th>
                                                 <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Planned Milestone %
+                                                    Planned %
                                                 </th>
                                                 <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Actual Milestone %
+                                                    Actual %
+                                                </th>
+                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Slack Days
+                                                </th>
+                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Baseline
+                                                </th>
+                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Overdue Days
+                                                </th>
+                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Delay Log
                                                 </th>
                                             </tr>
                                         </thead>
                                         <tbody className="bg-white divide-y divide-gray-200">
-                                            {renderTreeRows(activeTab === 'planned' ? plannedTasks : actualTasks)}
+                                            {renderTreeRows(tasks)}
                                         </tbody>
                                     </table>
                                 </div>
@@ -299,36 +353,45 @@ const TimelineComparisonChart = () => {
     const taskData = [
         {
             id: 'phase-1',
+            wbs: '1',
             title: 'Project Initiation',
-            level: 'Phase',
-            status: 'Completed',
-            owner: 'John Doe',
+            type: 'Phase',
+            baselineEnd: 'Jan 15, 2025',
+            plannedEnd: 'Jan 20, 2025',
             plannedMilestonePercent: 100,
             actualMilestonePercent: 100,
-            plannedEnd: 'Jan 20, 2025',
-            actualEnd: 'Jan 18, 2025',
+            slackDays: 0,
+            baseline: true,
+            overdueDays: 0,
+            delayLog: 'None',
             children: [
                 {
                     id: 'milestone-1',
+                    wbs: '1.1',
                     title: 'Requirements Gathering',
-                    level: 'Milestone',
-                    status: 'Completed',
-                    owner: 'Jane Smith',
+                    type: 'Milestone',
+                    baselineEnd: 'Jan 8, 2025',
+                    plannedEnd: 'Jan 10, 2025',
                     plannedMilestonePercent: 100,
                     actualMilestonePercent: 100,
-                    plannedEnd: 'Jan 10, 2025',
-                    actualEnd: 'Jan 8, 2025',
+                    slackDays: 2,
+                    baseline: true,
+                    overdueDays: 0,
+                    delayLog: 'None',
                     children: [
                         {
                             id: 'deliv-group-1',
+                            wbs: '1.1.1',
                             title: 'Business Requirements',
-                            level: 'Deliverable Group',
-                            status: 'Completed',
-                            owner: 'Mike Johnson',
+                            type: 'Deliverable Group',
+                            baselineEnd: 'Jan 3, 2025',
+                            plannedEnd: 'Jan 5, 2025',
                             plannedMilestonePercent: 100,
                             actualMilestonePercent: 100,
-                            plannedEnd: 'Jan 5, 2025',
-                            actualEnd: 'Jan 4, 2025',
+                            slackDays: 1,
+                            baseline: true,
+                            overdueDays: 0,
+                            delayLog: 'None',
                             children: []
                         }
                     ]
@@ -337,62 +400,77 @@ const TimelineComparisonChart = () => {
         },
         {
             id: 'phase-2',
+            wbs: '2',
             title: 'Design & Planning',
-            level: 'Phase',
-            status: 'Completed',
-            owner: 'Sarah Williams',
+            type: 'Phase',
+            baselineEnd: 'Feb 5, 2025',
+            plannedEnd: 'Feb 10, 2025',
             plannedMilestonePercent: 100,
             actualMilestonePercent: 95,
-            plannedEnd: 'Feb 10, 2025',
-            actualEnd: 'Feb 15, 2025',
+            slackDays: 0,
+            baseline: true,
+            overdueDays: 5,
+            delayLog: 'Resource constraints',
             children: [
                 {
                     id: 'milestone-2',
+                    wbs: '2.1',
                     title: 'System Architecture',
-                    level: 'Milestone',
-                    status: 'Completed',
-                    owner: 'David Lee',
+                    type: 'Milestone',
+                    baselineEnd: 'Feb 1, 2025',
+                    plannedEnd: 'Feb 5, 2025',
                     plannedMilestonePercent: 100,
                     actualMilestonePercent: 95,
-                    plannedEnd: 'Feb 5, 2025',
-                    actualEnd: 'Feb 8, 2025',
+                    slackDays: 0,
+                    baseline: true,
+                    overdueDays: 3,
+                    delayLog: 'Technical challenges',
                     children: []
                 }
             ]
         },
         {
             id: 'phase-3',
+            wbs: '3',
             title: 'Development',
-            level: 'Phase',
-            status: 'In Progress',
-            owner: 'Alex Chen',
+            type: 'Phase',
+            baselineEnd: 'May 10, 2025',
+            plannedEnd: 'May 15, 2025',
             plannedMilestonePercent: 60,
             actualMilestonePercent: 45,
-            plannedEnd: 'May 15, 2025',
-            actualEnd: null,
+            slackDays: 5,
+            baseline: true,
+            overdueDays: 0,
+            delayLog: 'In progress',
             children: [
                 {
                     id: 'milestone-3',
+                    wbs: '3.1',
                     title: 'Backend Development',
-                    level: 'Milestone',
-                    status: 'In Progress',
-                    owner: 'Robert Taylor',
+                    type: 'Milestone',
+                    baselineEnd: 'Apr 15, 2025',
+                    plannedEnd: 'Apr 20, 2025',
                     plannedMilestonePercent: 70,
                     actualMilestonePercent: 60,
-                    plannedEnd: 'Apr 20, 2025',
-                    actualEnd: null,
+                    slackDays: 3,
+                    baseline: true,
+                    overdueDays: 0,
+                    delayLog: 'In progress',
                     children: []
                 },
                 {
                     id: 'milestone-4',
+                    wbs: '3.2',
                     title: 'Frontend Development',
-                    level: 'Milestone',
-                    status: 'In Progress',
-                    owner: 'Lisa Brown',
+                    type: 'Milestone',
+                    baselineEnd: 'Apr 30, 2025',
+                    plannedEnd: 'May 5, 2025',
                     plannedMilestonePercent: 50,
                     actualMilestonePercent: 35,
-                    plannedEnd: 'May 5, 2025',
-                    actualEnd: null,
+                    slackDays: 2,
+                    baseline: true,
+                    overdueDays: 0,
+                    delayLog: 'In progress',
                     children: []
                 }
             ]

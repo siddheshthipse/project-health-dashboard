@@ -25,7 +25,8 @@ const MilestoneAdherenceDrilldownModal = ({ isOpen, closeModal }) => {
         type: [],
         baselineEnd: [],
         plannedEnd: [],
-        progress: [],
+        planned: [],      // Renamed from progress
+        actual: [],       // Added new filter 
         slackDays: [],
         baselineVariance: [],
         overdueDays: []
@@ -69,124 +70,33 @@ const MilestoneAdherenceDrilldownModal = ({ isOpen, closeModal }) => {
     const milestoneData = [
         {
             id: 'MS58',
+            wbs: '1',        // Add WBS field
             title: 'Completion of UAT',
             type: 'Milestone',
             baselineEnd: 'Apr 18, 2025',
             plannedEnd: 'Apr 20, 2025',
-            progress: '20%',
+            planned: '20%',  // Renamed from progress to planned
+            actual: '15%',   // Add actual percentage field
             slackDays: '-2',
             baselineVariance: '2 days',
             overdueDays: '4',
+            delayLog: 'High defect rate in UAT causing delays. Consider adding more test resources.', // Repurpose insights as delayLog
             status: 'AT RISK',
-            insights: 'High defect rate in UAT causing delays. Consider adding more test resources.',
             children: [
                 {
                     id: 'task-101',
+                    wbs: '1.1',
                     title: 'Complete regression testing',
                     type: 'Task',
                     baselineEnd: 'Apr 14, 2025',
                     plannedEnd: 'Apr 16, 2025',
-                    progress: '30%',
+                    planned: '30%',
+                    actual: '25%',
                     slackDays: '-1',
                     baselineVariance: '2 days',
                     overdueDays: '2',
-                    status: 'AT RISK',
-                    insights: 'Test coverage low at 65%. Need to prioritize critical path test cases.'
-                },
-                {
-                    id: 'task-102',
-                    title: 'Sign-off on UAT scenarios',
-                    type: 'Task',
-                    baselineEnd: 'Apr 10, 2025',
-                    plannedEnd: 'Apr 14, 2025',
-                    progress: '50%',
-                    slackDays: '-3',
-                    baselineVariance: '4 days',
-                    overdueDays: '4',
-                    status: 'DELAYED',
-                    insights: 'Stakeholder availability causing sign-off delays.'
-                },
-                {
-                    id: 'task-103',
-                    title: 'Fix critical defects',
-                    type: 'Task',
-                    baselineEnd: 'Apr 16, 2025',
-                    plannedEnd: 'Apr 17, 2025',
-                    progress: '15%',
-                    slackDays: '-2',
-                    baselineVariance: '1 day',
-                    overdueDays: '1',
-                    status: 'DELAYED',
-                    insights: 'Insufficient development capacity for defect resolution.'
-                }
-            ]
-        },
-        {
-            id: 'MS62',
-            title: 'Security Compliance Approval',
-            type: 'Milestone',
-            baselineEnd: 'May 2, 2025',
-            plannedEnd: 'May 5, 2025',
-            progress: '15%',
-            slackDays: '-1',
-            baselineVariance: '3 days',
-            overdueDays: '0',
-            status: 'AT RISK',
-            insights: 'Preliminary security scan found 3 critical issues that need resolution.',
-            children: [
-                {
-                    id: 'task-201',
-                    title: 'Complete security assessment',
-                    type: 'Task',
-                    baselineEnd: 'Apr 22, 2025',
-                    plannedEnd: 'Apr 25, 2025',
-                    progress: '10%',
-                    slackDays: '-2',
-                    baselineVariance: '3 days',
-                    overdueDays: '0',
-                    status: 'AT RISK',
-                    insights: 'Security team resources split across multiple projects.'
-                }
-            ]
-        },
-        {
-            id: 'MS65',
-            title: 'Data Migration Go-Live',
-            type: 'Milestone',
-            baselineEnd: 'May 15, 2025',
-            plannedEnd: 'May 15, 2025',
-            progress: '42%',
-            slackDays: '5',
-            baselineVariance: '0 days',
-            overdueDays: '0',
-            status: 'ON TRACK',
-            insights: 'Good progress on data cleansing. No data quality issues identified.',
-            children: [
-                {
-                    id: 'task-301',
-                    title: 'Prepare data migration scripts',
-                    type: 'Task',
-                    baselineEnd: 'Apr 30, 2025',
-                    plannedEnd: 'Apr 28, 2025',
-                    progress: '65%',
-                    slackDays: '3',
-                    baselineVariance: '-2 days',
-                    overdueDays: '0',
-                    status: 'ON TRACK',
-                    insights: 'Ahead of schedule due to reuse of scripts from previous migrations.'
-                },
-                {
-                    id: 'task-302',
-                    title: 'Data mapping validation',
-                    type: 'Task',
-                    baselineEnd: 'May 5, 2025',
-                    plannedEnd: 'May 5, 2025',
-                    progress: '30%',
-                    slackDays: '2',
-                    baselineVariance: '0 days',
-                    overdueDays: '0',
-                    status: 'ON TRACK',
-                    insights: 'No issues identified in mapping validation so far.'
+                    delayLog: 'Test coverage low at 65%. Need to prioritize critical path test cases.',
+                    status: 'AT RISK'
                 }
             ]
         }
@@ -214,7 +124,8 @@ const MilestoneAdherenceDrilldownModal = ({ isOpen, closeModal }) => {
         type: getUniqueOptions('type'),
         baselineEnd: ['Apr 2025', 'May 2025', 'Jun 2025'],
         plannedEnd: ['Apr 2025', 'May 2025', 'Jun 2025'],
-        progress: ['0-25%', '26-50%', '51-75%', '76-100%'],
+        planned: ['0-25%', '26-50%', '51-75%', '76-100%'],    // Renamed from progress
+        actual: ['0-25%', '26-50%', '51-75%', '76-100%'],     // Added new filter
         slackDays: ['Negative', 'Zero', 'Positive'],
         baselineVariance: ['None', '1-3 days', '4+ days', 'Ahead of Baseline'],
         overdueDays: ['None', '1-3 days', '4+ days']
@@ -227,6 +138,32 @@ const MilestoneAdherenceDrilldownModal = ({ isOpen, closeModal }) => {
             for (const [category, values] of Object.entries(filters)) {
                 if (values.length === 0) continue; // Skip if no filter for this category
 
+                if (category === 'planned') {
+                    const plannedValue = parseInt(task.planned);
+                    let matchesAny = false;
+
+                    for (const range of values) {
+                        if (range === '0-25%' && plannedValue <= 25) matchesAny = true;
+                        else if (range === '26-50%' && plannedValue > 25 && plannedValue <= 50) matchesAny = true;
+                        else if (range === '51-75%' && plannedValue > 50 && plannedValue <= 75) matchesAny = true;
+                        else if (range === '76-100%' && plannedValue > 75) matchesAny = true;
+                    }
+
+                    if (!matchesAny) return false;
+                }
+                else if (category === 'actual') {
+                    const actualValue = parseInt(task.actual);
+                    let matchesAny = false;
+
+                    for (const range of values) {
+                        if (range === '0-25%' && actualValue <= 25) matchesAny = true;
+                        else if (range === '26-50%' && actualValue > 25 && actualValue <= 50) matchesAny = true;
+                        else if (range === '51-75%' && actualValue > 50 && actualValue <= 75) matchesAny = true;
+                        else if (range === '76-100%' && actualValue > 75) matchesAny = true;
+                    }
+
+                    if (!matchesAny) return false;
+                }
                 if (category === 'progress') {
                     const progressValue = parseInt(task.progress);
                     let matchesAny = false;
@@ -325,6 +262,9 @@ const MilestoneAdherenceDrilldownModal = ({ isOpen, closeModal }) => {
         return (
             <React.Fragment key={task.id}>
                 <tr className={`border-b ${isOverdue ? 'bg-red-50' : ''}`}>
+                    <td className="p-2 text-center whitespace-nowrap text-xs text-gray-600">
+                        {task.wbs}
+                    </td>
                     <td className="p-2 whitespace-nowrap">
                         <div className="flex items-center" style={{ paddingLeft: `${indentPadding}px` }}>
                             {hasChildren ? (
@@ -340,42 +280,37 @@ const MilestoneAdherenceDrilldownModal = ({ isOpen, closeModal }) => {
                             ) : (
                                 <span className="w-5"></span>
                             )}
-                            <span className="ml-1 font-medium text-gray-700 text-sm">{task.title}</span>
+                            <span className="ml-1 font-medium text-gray-700 text-xs">{task.title}</span>
                         </div>
                     </td>
                     <td className="p-2 text-center whitespace-nowrap">
                         <span className="px-2 py-1 rounded-full bg-gray-100 text-xs text-gray-700">{task.type}</span>
                     </td>
-                    <td className="p-2 text-center whitespace-nowrap text-sm">{task.baselineEnd}</td>
-                    <td className="p-2 text-center whitespace-nowrap text-sm">{task.plannedEnd}</td>
-                    <td className="p-2 text-center whitespace-nowrap text-sm">
+                    <td className="p-2 text-center whitespace-nowrap text-xs">{task.baselineEnd}</td>
+                    <td className="p-2 text-center whitespace-nowrap text-xs">{task.plannedEnd}</td>
+                    <td className="p-2 text-center whitespace-nowrap text-xs">
                         <div className="flex justify-center items-center">
-                            <div className="w-16 bg-gray-200 rounded-full h-2.5 mr-2">
-                                <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: task.progress }}></div>
-                            </div>
-                            <span>{task.progress}</span>
+                            <span>{task.planned}</span>
                         </div>
                     </td>
-                    <td className="p-2 text-center whitespace-nowrap text-sm">
+                    <td className="p-2 text-center whitespace-nowrap text-xs">{task.actual}</td>
+                    <td className="p-2 text-center whitespace-nowrap text-xs">
                         <span className={`font-medium ${slackStatus === 'negative' ? 'text-red-600' :
                             slackStatus === 'zero' ? 'text-yellow-600' : 'text-green-600'
                             }`}>{task.slackDays}</span>
                     </td>
-                    <td className="p-2 text-center whitespace-nowrap text-sm">
+                    <td className="p-2 text-center whitespace-nowrap text-xs">
                         <span className={`font-medium ${task.baselineVariance.includes('-') ? 'text-green-600' : (task.baselineVariance === '0 days' ? 'text-gray-600' : 'text-orange-600')}`}>
                             {task.baselineVariance}
                         </span>
                     </td>
-                    <td className="p-2 text-center whitespace-nowrap text-sm">
+                    <td className="p-2 text-center whitespace-nowrap text-xs">
                         <span className={`font-medium ${parseInt(task.overdueDays) > 0 ? 'text-red-600' : 'text-green-600'}`}>
                             {task.overdueDays}
                         </span>
                     </td>
-                    <td className="p-2 whitespace-normal text-sm max-w-xs">
-                        <div className="flex items-start">
-                            <LightBulbIcon className="h-4 w-4 text-amber-500 mt-0.5 mr-1 flex-shrink-0" />
-                            <span className="text-gray-600 line-clamp-2">{task.insights}</span>
-                        </div>
+                    <td className="p-2 whitespace-normal text-xs max-w-xs">
+                        <span className="text-gray-600">{task.delayLog}</span>
                     </td>
                 </tr>
                 {hasChildren && isExpanded && task.children.map(child => renderTaskRow(child, depth + 1))}
@@ -439,6 +374,7 @@ const MilestoneAdherenceDrilldownModal = ({ isOpen, closeModal }) => {
 
     // Compact Filter Dropdown for normal mode
     const CompactFilterDropdown = ({ category, label, options }) => {
+        console.log(category, filters)
         const hasFilters = filters[category].length > 0;
 
         return (
@@ -622,7 +558,8 @@ const MilestoneAdherenceDrilldownModal = ({ isOpen, closeModal }) => {
                                                             type: [],
                                                             baselineEnd: [],
                                                             plannedEnd: [],
-                                                            progress: [],
+                                                            planned: [],      // Renamed from progress
+                                                            actual: [],       // Added new filter
                                                             slackDays: [],
                                                             baselineVariance: [],
                                                             overdueDays: []
@@ -673,11 +610,11 @@ const MilestoneAdherenceDrilldownModal = ({ isOpen, closeModal }) => {
                                                     label="Planned End"
                                                     options={filterOptions.plannedEnd}
                                                 />
-                                                <ExpandedFilterPanel
+                                                {/* <ExpandedFilterPanel
                                                     category="progress"
                                                     label="Progress"
                                                     options={filterOptions.progress}
-                                                />
+                                                /> */}
                                                 <ExpandedFilterPanel
                                                     category="slackDays"
                                                     label="Slack Days"
@@ -692,6 +629,16 @@ const MilestoneAdherenceDrilldownModal = ({ isOpen, closeModal }) => {
                                                     category="overdueDays"
                                                     label="Overdue Days"
                                                     options={filterOptions.overdueDays}
+                                                />
+                                                <ExpandedFilterPanel
+                                                    category="planned"
+                                                    label="Planned %"
+                                                    options={filterOptions.planned}
+                                                />
+                                                <ExpandedFilterPanel
+                                                    category="actual"
+                                                    label="Actual %"
+                                                    options={filterOptions.actual}
                                                 />
                                             </div>
                                         ) : (
@@ -712,11 +659,11 @@ const MilestoneAdherenceDrilldownModal = ({ isOpen, closeModal }) => {
                                                     label="Planned End"
                                                     options={filterOptions.plannedEnd}
                                                 />
-                                                <CompactFilterDropdown
+                                                {/* <CompactFilterDropdown
                                                     category="progress"
                                                     label="Progress"
                                                     options={filterOptions.progress}
-                                                />
+                                                /> */}
                                                 <CompactFilterDropdown
                                                     category="slackDays"
                                                     label="Slack Days"
@@ -732,6 +679,16 @@ const MilestoneAdherenceDrilldownModal = ({ isOpen, closeModal }) => {
                                                     label="Overdue Days"
                                                     options={filterOptions.overdueDays}
                                                 />
+                                                <CompactFilterDropdown
+                                                    category="planned"
+                                                    label="Planned %"
+                                                    options={filterOptions.planned}
+                                                />
+                                                <CompactFilterDropdown
+                                                    category="actual"
+                                                    label="Actual %"
+                                                    options={filterOptions.actual}
+                                                />
                                             </div>
                                         )
                                     )}
@@ -745,6 +702,9 @@ const MilestoneAdherenceDrilldownModal = ({ isOpen, closeModal }) => {
                                         <table className="min-w-full divide-y divide-gray-200">
                                             <thead className="bg-gray-50 sticky top-0 z-10">
                                                 <tr>
+                                                    <th scope="col" className="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        WBS
+                                                    </th>
                                                     <th scope="col" className="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                         Title
                                                     </th>
@@ -758,7 +718,10 @@ const MilestoneAdherenceDrilldownModal = ({ isOpen, closeModal }) => {
                                                         Planned End
                                                     </th>
                                                     <th scope="col" className="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Progress
+                                                        Planned %
+                                                    </th>
+                                                    <th scope="col" className="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Actual %
                                                     </th>
                                                     <th scope="col" className="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                         Slack Days
@@ -770,7 +733,7 @@ const MilestoneAdherenceDrilldownModal = ({ isOpen, closeModal }) => {
                                                         Overdue Days
                                                     </th>
                                                     <th scope="col" className="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Insights
+                                                        Delay Log
                                                     </th>
                                                 </tr>
                                             </thead>
@@ -779,7 +742,7 @@ const MilestoneAdherenceDrilldownModal = ({ isOpen, closeModal }) => {
                                                     filteredData.map(task => renderTaskRow(task))
                                                 ) : (
                                                     <tr>
-                                                        <td colSpan="9" className="p-6 text-center text-gray-500">
+                                                        <td colSpan="11" className="p-6 text-center text-gray-500">
                                                             No milestones match the current filters. Try adjusting your filters.
                                                         </td>
                                                     </tr>
@@ -805,12 +768,12 @@ const MilestoneAdherenceDrilldownModal = ({ isOpen, closeModal }) => {
                                             <div className="w-3 h-3 rounded-full bg-red-500 mr-1"></div>
                                             <span>Delayed</span>
                                         </div>
-                                        <div className="flex items-center text-xs text-gray-500">
+                                        {/* <div className="flex items-center text-xs text-gray-500">
                                             <div className="h-3 w-3 text-amber-500 mr-1 flex items-center justify-center">
                                                 <LightBulbIcon className="h-3 w-3" />
                                             </div>
                                             <span>AI-Generated Insights</span>
-                                        </div>
+                                        </div> */}
                                     </div>
                                 </div>
                             </Dialog.Panel>

@@ -276,6 +276,44 @@ const RiskModal = ({ isOpen, closeModal, selectedRisks, modalTitle }) => {
         );
     };
 
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+
+        // Try to parse the date - this assumes dateString is a valid date string
+        try {
+            const date = new Date(dateString);
+
+            // Check if date is valid
+            if (isNaN(date.getTime())) return dateString;
+
+            // Get the day number
+            const day = date.getDate();
+
+            // Function to add ordinal suffix
+            const getOrdinalSuffix = (day) => {
+                if (day > 3 && day < 21) return 'th';
+                switch (day % 10) {
+                    case 1: return 'st';
+                    case 2: return 'nd';
+                    case 3: return 'rd';
+                    default: return 'th';
+                }
+            };
+
+            // Get the ordinal day (e.g., 1st, 2nd, 3rd, 4th)
+            const ordinalDay = day + getOrdinalSuffix(day);
+
+            // Format the date like "2nd May 2025"
+            const month = date.toLocaleString('en-US', { month: 'long' });
+            const year = date.getFullYear();
+
+            return `${ordinalDay} ${month} ${year}`;
+        } catch (e) {
+            // If there's any error, return the original string
+            return dateString;
+        }
+    };
+
     return (
         <Transition appear show={isOpen} as={Fragment}>
             <Dialog as="div" className="relative z-50" onClose={closeModal}>
@@ -474,6 +512,9 @@ const RiskModal = ({ isOpen, closeModal, selectedRisks, modalTitle }) => {
                                         <table className="min-w-full divide-y divide-gray-200">
                                             <thead className="bg-gray-50 sticky top-0 z-10">
                                                 <tr>
+                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        S.No
+                                                    </th>
                                                     <th scope="col" className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                         Title
                                                     </th>
@@ -498,9 +539,12 @@ const RiskModal = ({ isOpen, closeModal, selectedRisks, modalTitle }) => {
                                                 {filteredRisks.length > 0 ? (
                                                     filteredRisks.map((risk, index) => (
                                                         <tr key={risk.id || index} className={risk.status === 'Pending' || risk.status === 'Active' ? 'bg-amber-50' : ''}>
+                                                            <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">
+                                                                {index + 1}
+                                                            </td>
                                                             <td className="p-3 whitespace-nowrap">
                                                                 <div className="flex items-center">
-                                                                    <span className="text-gray-900 font-medium text-sm">{risk.title}</span>
+                                                                    <span className="text-gray-900 font-medium text-xs">{risk.title}</span>
                                                                 </div>
                                                             </td>
                                                             <td className="p-3 text-center whitespace-nowrap">
@@ -513,20 +557,21 @@ const RiskModal = ({ isOpen, closeModal, selectedRisks, modalTitle }) => {
                                                                     {risk.impactScore}
                                                                 </span>
                                                             </td>
-                                                            <td className="p-3 whitespace-nowrap text-gray-700 text-sm">
+                                                            <td className="p-3 whitespace-nowrap text-gray-700 text-xs">
                                                                 {risk.responsiblePerson}
                                                             </td>
-                                                            <td className="p-3 whitespace-nowrap text-gray-700 text-sm">
+                                                            <td className="p-3 whitespace-nowrap text-gray-700 text-xs">
                                                                 {risk.createdBy}
                                                             </td>
-                                                            <td className="p-3 text-center whitespace-nowrap text-gray-700 text-sm">
-                                                                {risk.plannedTo}
+                                                            <td className="p-3 text-center whitespace-nowrap text-gray-700 text-xs">
+                                                                {/* Format the date if it exists */}
+                                                                {risk.plannedTo ? formatDate(risk.plannedTo) : ''}
                                                             </td>
                                                         </tr>
                                                     ))
                                                 ) : (
                                                     <tr>
-                                                        <td colSpan="6" className="p-6 text-center text-gray-500">
+                                                        <td colSpan="7" className="p-6 text-center text-gray-500">
                                                             No risks match the current filters. Try adjusting your filters.
                                                         </td>
                                                     </tr>
@@ -730,19 +775,19 @@ const RiskHeatmap = () => {
             <div className="flex mb-4">
                 {/* Left side - Total column */}
                 <div className="flex flex-col mr-1">
-                    <div className="h-10 flex items-center justify-center font-semibold text-sm bg-blue-100 text-blue-800 w-16">
+                    <div className="h-10 flex items-center justify-center font-semibold text-xs bg-blue-100 text-blue-800 w-12">
                         TOTAL
                     </div>
-                    <div className={`h-10 w-16 ${getTotalRowColor('high')} flex items-center justify-center text-white font-semibold`}>
+                    <div className={`h-10 w-12 ${getTotalRowColor('high')} flex items-center justify-center text-white font-semibold`}>
                         {riskData.totals.high}
                     </div>
-                    <div className={`h-10 w-16 ${getTotalRowColor('medium')} flex items-center justify-center text-gray-800 font-semibold`}>
+                    <div className={`h-10 w-12 ${getTotalRowColor('medium')} flex items-center justify-center text-gray-800 font-semibold`}>
                         {riskData.totals.medium}
                     </div>
-                    <div className={`h-10 w-16 ${getTotalRowColor('low')} flex items-center justify-center text-gray-800 font-semibold`}>
+                    <div className={`h-10 w-12 ${getTotalRowColor('low')} flex items-center justify-center text-gray-800 font-semibold`}>
                         {riskData.totals.low}
                     </div>
-                    <div className="h-10 w-16 bg-gray-300 flex items-center justify-center font-semibold text-gray-800">
+                    <div className="h-10 w-12 bg-gray-300 flex items-center justify-center font-semibold text-gray-800">
                         {riskData.totals.all}
                     </div>
                 </div>
@@ -750,8 +795,8 @@ const RiskHeatmap = () => {
                 {/* Right side - Heatmap */}
                 <div className="flex-1">
                     {/* Header */}
-                    <div className="bg-blue-500 h-10 text-white font-semibold text-sm flex items-center justify-center rounded-t">
-                        Impact vs Probability
+                    <div className="bg-blue-500 h-10 text-white font-semibold text-xs flex items-center justify-center rounded-t">
+                        IMPACT VS PROBABILITY
                     </div>
 
                     <div className="flex flex-col"> {/* Main container for the grid */}

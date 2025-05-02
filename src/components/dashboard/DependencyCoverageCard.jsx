@@ -67,38 +67,58 @@ const DependencyCoverageDrilldownModal = ({ isOpen, closeModal }) => {
     const tasksWithoutDependencies = [
         {
             id: 'wave-1',
+            wbs: '1',
             level: 1,
+            type: 'Wave',
             title: 'Wave 1 - PTP 1/2',
+            baselineStart: 'Mar 25, 2025',
+            baselineEnd: 'Jun 25, 2025',
             plannedStart: 'Apr 1, 2025',
             plannedEnd: 'Jun 30, 2025',
+            dependencies: 'None',
             owner: 'Michael Chen',
             isAutoScheduled: false,
             children: [
                 {
                     id: 'phase-1',
+                    wbs: '1.1',
                     level: 2,
+                    type: 'Phase',
                     title: 'Explore Phase',
+                    baselineStart: 'Mar 25, 2025',
+                    baselineEnd: 'Apr 25, 2025',
                     plannedStart: 'Apr 1, 2025',
                     plannedEnd: 'Apr 30, 2025',
+                    dependencies: 'None',
                     owner: 'Sarah Williams',
                     isAutoScheduled: true,
                     children: [
                         {
                             id: 'milestone-1',
+                            wbs: '1.1.1',
                             level: 3,
+                            type: 'Milestone',
                             title: 'Requirement Gathering',
+                            baselineStart: 'Apr 1, 2025',
+                            baselineEnd: 'Apr 10, 2025',
                             plannedStart: 'Apr 5, 2025',
                             plannedEnd: 'Apr 15, 2025',
+                            dependencies: 'None',
                             owner: 'Priya Sharma',
                             isAutoScheduled: false,
                             children: []
                         },
                         {
                             id: 'milestone-2',
+                            wbs: '1.1.2',
                             level: 3,
+                            type: 'Milestone',
                             title: 'Blueprint Sign-off',
+                            baselineStart: 'Apr 15, 2025',
+                            baselineEnd: 'Apr 20, 2025',
                             plannedStart: 'Apr 20, 2025',
                             plannedEnd: 'Apr 25, 2025',
+                            dependencies: 'Requirement Gathering',
                             owner: 'John Smith',
                             isAutoScheduled: false,
                             children: []
@@ -109,19 +129,29 @@ const DependencyCoverageDrilldownModal = ({ isOpen, closeModal }) => {
         },
         {
             id: 'wave-2',
+            wbs: '2',
             level: 1,
+            type: 'Wave',
             title: 'Wave 2 - HSSE 1/2',
+            baselineStart: 'May 25, 2025',
+            baselineEnd: 'Aug 20, 2025',
             plannedStart: 'Jun 1, 2025',
             plannedEnd: 'Aug 30, 2025',
+            dependencies: 'Wave 1 - PTP 1/2',
             owner: 'Robert Taylor',
             isAutoScheduled: false,
             children: [
                 {
                     id: 'phase-2',
+                    wbs: '2.1',
                     level: 2,
+                    type: 'Phase',
                     title: 'Build Phase',
+                    baselineStart: 'May 25, 2025',
+                    baselineEnd: 'Jul 10, 2025',
                     plannedStart: 'Jun 1, 2025',
                     plannedEnd: 'Jul 15, 2025',
+                    dependencies: 'Wave 1 - PTP 1/2',
                     owner: 'Michael Chen',
                     isAutoScheduled: true,
                     children: []
@@ -130,10 +160,15 @@ const DependencyCoverageDrilldownModal = ({ isOpen, closeModal }) => {
         },
         {
             id: 'milestone-3',
+            wbs: '3',
             level: 3,
+            type: 'Milestone',
             title: 'Integration Testing',
+            baselineStart: 'Aug 5, 2025',
+            baselineEnd: 'Aug 15, 2025',
             plannedStart: 'Aug 10, 2025',
             plannedEnd: 'Aug 20, 2025',
+            dependencies: 'None',
             owner: 'Sarah Williams',
             isAutoScheduled: false,
             children: []
@@ -146,21 +181,12 @@ const DependencyCoverageDrilldownModal = ({ isOpen, closeModal }) => {
         const isExpanded = expandedRows[task.id];
         const indentPadding = depth * 12; // 12px per level of depth
 
-        // Convert numeric level to text representation
-        const getLevelText = (level) => {
-            switch (level) {
-                case 1: return 'Wave';
-                case 2: return 'Phase';
-                case 3: return 'Milestone';
-                case 4: return 'Deliverable';
-                case 5: return 'Activity';
-                default: return 'Task';
-            }
-        };
-
         return (
             <React.Fragment key={task.id}>
                 <tr className="border-b hover:bg-gray-50">
+                    <td className="p-3 text-center whitespace-nowrap text-gray-600 text-xs">
+                        {task.wbs}
+                    </td>
                     <td className="p-3">
                         <div className="flex items-center" style={{ paddingLeft: `${indentPadding}px` }}>
                             {hasChildren ? (
@@ -176,22 +202,32 @@ const DependencyCoverageDrilldownModal = ({ isOpen, closeModal }) => {
                             ) : (
                                 <span className="w-5"></span>
                             )}
-                            <span className="ml-1 font-medium text-gray-700 text-sm">{task.title}</span>
+                            <span className="ml-1 font-medium text-gray-700 text-xs">{task.title}</span>
                         </div>
                     </td>
                     <td className="p-3 text-center whitespace-nowrap">
                         <span className="px-2 py-1 rounded-full bg-gray-100 text-xs text-gray-700">
-                            {getLevelText(task.level)}
+                            {task.type}
                         </span>
                     </td>
-                    <td className="p-3 text-center whitespace-nowrap text-gray-600 text-sm">
+                    <td className="p-3 text-center whitespace-nowrap text-gray-600 text-xs">
+                        {task.baselineStart}
+                    </td>
+                    <td className="p-3 text-center whitespace-nowrap text-gray-600 text-xs">
+                        {task.baselineEnd}
+                    </td>
+                    <td className="p-3 text-center whitespace-nowrap text-gray-600 text-xs">
                         {task.plannedStart}
                     </td>
-                    <td className="p-3 text-center whitespace-nowrap text-gray-600 text-sm">
+                    <td className="p-3 text-center whitespace-nowrap text-gray-600 text-xs">
                         {task.plannedEnd}
                     </td>
-                    <td className="p-3 whitespace-nowrap text-gray-600 text-sm">
-                        {task.owner}
+                    <td className="p-3 text-center whitespace-nowrap text-gray-600 text-xs">
+                        {task.dependencies === 'None' ? (
+                            <span className="text-red-500">{task.dependencies}</span>
+                        ) : (
+                            task.dependencies
+                        )}
                     </td>
                     <td className="p-3 text-center whitespace-nowrap">
                         <div className="flex justify-center items-center">
@@ -235,9 +271,9 @@ const DependencyCoverageDrilldownModal = ({ isOpen, closeModal }) => {
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all">
+                            <Dialog.Panel className="w-full max-w-6xl transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all">
                                 <div className="flex justify-between items-center mb-4">
-                                    <Dialog.Title as="h3" className="text-lg font-semibold text-gray-900">
+                                    <Dialog.Title as="h3" className="text-md font-semibold text-gray-900">
                                         Tasks Missing Dependencies
                                     </Dialog.Title>
                                     <button
@@ -278,11 +314,20 @@ const DependencyCoverageDrilldownModal = ({ isOpen, closeModal }) => {
                                     <table className="min-w-full divide-y divide-gray-200">
                                         <thead className="bg-gray-50 sticky top-0">
                                             <tr>
+                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    WBS
+                                                </th>
                                                 <th scope="col" className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     Title
                                                 </th>
                                                 <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Level
+                                                    Type
+                                                </th>
+                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Baseline Start
+                                                </th>
+                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Baseline End
                                                 </th>
                                                 <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     Planned Start
@@ -290,8 +335,8 @@ const DependencyCoverageDrilldownModal = ({ isOpen, closeModal }) => {
                                                 <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     Planned End
                                                 </th>
-                                                <th scope="col" className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Owner
+                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Dependencies
                                                 </th>
                                                 <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     Is Auto Scheduled
