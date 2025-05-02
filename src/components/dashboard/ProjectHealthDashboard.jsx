@@ -311,7 +311,7 @@ const ProjectHealthDashboard = () => {
                                 </div>
 
                                 {/* Two equal cards in a row */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                                     <div className="h-full">
                                         <PlanRecencyCard />
                                     </div>

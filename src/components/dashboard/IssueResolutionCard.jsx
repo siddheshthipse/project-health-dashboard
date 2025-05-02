@@ -330,9 +330,9 @@ const IssueResolutionDrilldownModal = ({ isOpen, closeModal }) => {
                                     </div>
                                 </div>
 
-                                <div className="text-xs text-gray-500 mb-2">
+                                {/* <div className="text-xs text-gray-500 mb-2">
                                     Note: Click on the section cards above to filter issues
-                                </div>
+                                </div> */}
 
                                 <div className="flex flex-wrap gap-3">
                                     <div className="flex items-center text-xs text-gray-500">

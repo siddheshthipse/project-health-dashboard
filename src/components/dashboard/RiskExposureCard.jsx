@@ -1,6 +1,7 @@
 import React, { useState, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon, FunnelIcon } from '@heroicons/react/20/solid';
+import RiskModal from './RiskModal';
 
 const RiskDrilldownModal = ({ isOpen, closeModal }) => {
     // State for filtering
@@ -248,7 +249,10 @@ const RiskDrilldownModal = ({ isOpen, closeModal }) => {
 };
 
 const RiskExposureCard = () => {
-    const [showDrilldown, setShowDrilldown] = useState(false);
+    // const [showDrilldown, setShowDrilldown] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedRisks, setSelectedRisks] = useState([]);
+    const [modalTitle, setModalTitle] = useState('');
 
     return (
         <div className="bg-white rounded-lg shadow p-5 h-full flex flex-col">
@@ -305,7 +309,127 @@ const RiskExposureCard = () => {
                     </div>
                 </div>
                 <button
-                    onClick={() => setShowDrilldown(true)}
+                    onClick={() => {
+                        // Get all risks from all cells
+                        const allRisks = [
+                            {
+                                "title": "Server Outage",
+                                "status": "Active",
+                                "impactScore": "High",
+                                "responsiblePerson": "John Doe",
+                                "createdBy": "Sarah Smith",
+                                "plannedTo": "2025-05-15"
+                            },
+                            {
+                                "title": "Data Breach",
+                                "status": "Mitigating",
+                                "impactScore": "Critical",
+                                "responsiblePerson": "Jane Wilson",
+                                "createdBy": "Mike Johnson",
+                                "plannedTo": "2025-04-30"
+                            },
+                            {
+                                "title": "Budget Overrun",
+                                "status": "Active",
+                                "impactScore": "Medium",
+                                "responsiblePerson": "Robert Brown",
+                                "createdBy": "Lisa Taylor",
+                                "plannedTo": "2025-06-10"
+                            },
+                            {
+                                "title": "Staff Turnover",
+                                "status": "Monitoring",
+                                "impactScore": "Medium",
+                                "responsiblePerson": "Emily Davis",
+                                "createdBy": "David Wilson",
+                                "plannedTo": "2025-05-20"
+                            },
+                            {
+                                "title": "Equipment Failure",
+                                "status": "Active",
+                                "impactScore": "Medium",
+                                "responsiblePerson": "Michael Scott",
+                                "createdBy": "Pam Beesly",
+                                "plannedTo": "2025-04-25"
+                            },
+                            {
+                                "title": "Supply Chain Disruption",
+                                "status": "Active",
+                                "impactScore": "Medium",
+                                "responsiblePerson": "Chris Evans",
+                                "createdBy": "Tony Stark",
+                                "plannedTo": "2025-05-05"
+                            },
+                            {
+                                "title": "Regulatory Change",
+                                "status": "Pending Review",
+                                "impactScore": "Medium",
+                                "responsiblePerson": "Natasha Romanoff",
+                                "createdBy": "Nick Fury",
+                                "plannedTo": "2025-06-15"
+                            },
+                            {
+                                "title": "Project Delay",
+                                "status": "Mitigating",
+                                "impactScore": "Medium",
+                                "responsiblePerson": "Steve Rogers",
+                                "createdBy": "Bruce Banner",
+                                "plannedTo": "2025-05-12"
+                            },
+                            {
+                                "title": "Resource Constraint",
+                                "status": "Active",
+                                "impactScore": "Medium",
+                                "responsiblePerson": "Wanda Maximoff",
+                                "createdBy": "Vision",
+                                "plannedTo": "2025-04-28"
+                            },
+                            {
+                                "title": "Market Volatility",
+                                "status": "Monitoring",
+                                "impactScore": "High",
+                                "responsiblePerson": "Peter Parker",
+                                "createdBy": "Mary Jane",
+                                "plannedTo": "2025-05-25"
+                            },
+                            {
+                                "title": "Competitive Threat",
+                                "status": "Active",
+                                "impactScore": "High",
+                                "responsiblePerson": "Thor Odinson",
+                                "createdBy": "Loki Laufeyson",
+                                "plannedTo": "2025-06-05"
+                            },
+                            {
+                                "title": "Minor Software Bug",
+                                "status": "Scheduled",
+                                "impactScore": "Low",
+                                "responsiblePerson": "Peter Quill",
+                                "createdBy": "Gamora",
+                                "plannedTo": "2025-06-30"
+                            },
+                            {
+                                "title": "Office Renovation",
+                                "status": "Scheduled",
+                                "impactScore": "Low",
+                                "responsiblePerson": "Stephen Strange",
+                                "createdBy": "Wong",
+                                "plannedTo": "2025-07-10"
+                            },
+                            {
+                                "title": "Team Training",
+                                "status": "Pending",
+                                "impactScore": "Low",
+                                "responsiblePerson": "T'Challa",
+                                "createdBy": "Shuri",
+                                "plannedTo": "2025-05-30"
+                            }
+                        ];
+
+                        setSelectedRisks(allRisks);
+                        setModalTitle("All Project Risks");
+                        setIsModalOpen(true);
+                    }}
                     className="text-blue-600 text-xs hover:underline focus:outline-none"
                 >
                     View All Risks
@@ -313,9 +437,16 @@ const RiskExposureCard = () => {
             </div>
 
             {/* Drilldown Modal */}
-            <RiskDrilldownModal
+            {/* <RiskDrilldownModal
                 isOpen={showDrilldown}
                 closeModal={() => setShowDrilldown(false)}
+            /> */}
+
+            <RiskModal
+                isOpen={isModalOpen}
+                closeModal={() => setIsModalOpen(false)}
+                selectedRisks={selectedRisks}
+                modalTitle={modalTitle}
             />
         </div>
     );
