@@ -1,6 +1,6 @@
 import React, { useState, Fragment } from 'react';
-import { Dialog, Transition } from '@headlessui/react';
-import { XMarkIcon, FunnelIcon } from '@heroicons/react/20/solid';
+import { Dialog, Transition, Menu } from '@headlessui/react';
+import { XMarkIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 
 const IssueResolutionDrilldownModal = ({ isOpen, closeModal }) => {
     // State for filtering
@@ -84,7 +84,7 @@ const IssueResolutionDrilldownModal = ({ isOpen, closeModal }) => {
     // Get filtered tasks based on current filters
     const getFilteredIssues = () => {
         let issues = [];
-        
+
         // Status filter (Open, Resolved, All)
         if (activeFilter === 'open') {
             issues = issueData.open;
@@ -93,22 +93,22 @@ const IssueResolutionDrilldownModal = ({ isOpen, closeModal }) => {
         } else {
             issues = [...issueData.open, ...issueData.resolved];
         }
-        
+
         // Team filter
         if (activeTeamFilter !== 'all') {
             issues = issues.filter(issue => issue.team === activeTeamFilter);
         }
-        
+
         // Priority filter
         if (activePriorityFilter !== 'all') {
             issues = issues.filter(issue => issue.priority === activePriorityFilter);
         }
-        
+
         return issues;
     };
 
     const filteredIssues = getFilteredIssues();
-    
+
     // Get unique teams for team filter
     const teams = [...new Set([...issueData.open, ...issueData.resolved].map(issue => issue.team))];
 
@@ -226,27 +226,95 @@ const IssueResolutionDrilldownModal = ({ isOpen, closeModal }) => {
                                             </button>
                                         </div>
                                         <div className="flex space-x-2">
-                                            <select
-                                                value={activeTeamFilter}
-                                                onChange={(e) => setActiveTeamFilter(e.target.value)}
-                                                className="px-2 py-1 text-sm border rounded text-gray-700 bg-white"
-                                            >
-                                                <option value="all">All Teams</option>
-                                                {teams.map(team => (
-                                                    <option key={team} value={team}>{team}</option>
-                                                ))}
-                                            </select>
-                                            <select
-                                                value={activePriorityFilter}
-                                                onChange={(e) => setActivePriorityFilter(e.target.value)}
-                                                className="px-2 py-1 text-sm border rounded text-gray-700 bg-white"
-                                            >
-                                                <option value="all">All Priorities</option>
-                                                <option value="Critical">Critical</option>
-                                                <option value="High">High</option>
-                                                <option value="Medium">Medium</option>
-                                                <option value="Low">Low</option>
-                                            </select>
+                                            <Menu as="div" className="relative inline-block text-left">
+                                                <Menu.Button className="px-3 py-1 text-sm border rounded text-gray-700 bg-white inline-flex items-center">
+                                                    {activeTeamFilter === 'all' ? 'All Teams' : activeTeamFilter}
+                                                    <ChevronDownIcon className="h-4 w-4 ml-1" aria-hidden="true" />
+                                                </Menu.Button>
+                                                <Transition
+                                                    as={Fragment}
+                                                    enter="transition ease-out duration-100"
+                                                    enterFrom="transform opacity-0 scale-95"
+                                                    enterTo="transform opacity-100 scale-100"
+                                                    leave="transition ease-in duration-75"
+                                                    leaveFrom="transform opacity-100 scale-100"
+                                                    leaveTo="transform opacity-0 scale-95"
+                                                >
+                                                    <Menu.Items className="absolute left-0 mt-2 w-40 origin-top-left divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
+                                                        <div className="px-1 py-1">
+                                                            <Menu.Item>
+                                                                {({ active }) => (
+                                                                    <button
+                                                                        onClick={() => setActiveTeamFilter('all')}
+                                                                        className={`${active ? 'bg-gray-100' : ''
+                                                                            } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                                                                    >
+                                                                        All Teams
+                                                                    </button>
+                                                                )}
+                                                            </Menu.Item>
+                                                            {teams.map(team => (
+                                                                <Menu.Item key={team}>
+                                                                    {({ active }) => (
+                                                                        <button
+                                                                            onClick={() => setActiveTeamFilter(team)}
+                                                                            className={`${active ? 'bg-gray-100' : ''
+                                                                                } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                                                                        >
+                                                                            {team}
+                                                                        </button>
+                                                                    )}
+                                                                </Menu.Item>
+                                                            ))}
+                                                        </div>
+                                                    </Menu.Items>
+                                                </Transition>
+                                            </Menu>
+
+                                            <Menu as="div" className="relative inline-block text-left">
+                                                <Menu.Button className="px-3 py-1 text-sm border rounded text-gray-700 bg-white inline-flex items-center">
+                                                    {activePriorityFilter === 'all' ? 'All Priorities' : activePriorityFilter}
+                                                    <ChevronDownIcon className="h-4 w-4 ml-1" aria-hidden="true" />
+                                                </Menu.Button>
+                                                <Transition
+                                                    as={Fragment}
+                                                    enter="transition ease-out duration-100"
+                                                    enterFrom="transform opacity-0 scale-95"
+                                                    enterTo="transform opacity-100 scale-100"
+                                                    leave="transition ease-in duration-75"
+                                                    leaveFrom="transform opacity-100 scale-100"
+                                                    leaveTo="transform opacity-0 scale-95"
+                                                >
+                                                    <Menu.Items className="absolute right-0 mt-2 w-40 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
+                                                        <div className="px-1 py-1">
+                                                            <Menu.Item>
+                                                                {({ active }) => (
+                                                                    <button
+                                                                        onClick={() => setActivePriorityFilter('all')}
+                                                                        className={`${active ? 'bg-gray-100' : ''
+                                                                            } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                                                                    >
+                                                                        All Priorities
+                                                                    </button>
+                                                                )}
+                                                            </Menu.Item>
+                                                            {['Critical', 'High', 'Medium', 'Low'].map(priority => (
+                                                                <Menu.Item key={priority}>
+                                                                    {({ active }) => (
+                                                                        <button
+                                                                            onClick={() => setActivePriorityFilter(priority)}
+                                                                            className={`${active ? 'bg-gray-100' : ''
+                                                                                } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                                                                        >
+                                                                            {priority}
+                                                                        </button>
+                                                                    )}
+                                                                </Menu.Item>
+                                                            ))}
+                                                        </div>
+                                                    </Menu.Items>
+                                                </Transition>
+                                            </Menu>
                                         </div>
                                     </div>
 

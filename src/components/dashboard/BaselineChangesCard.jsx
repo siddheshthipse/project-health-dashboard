@@ -1,6 +1,6 @@
 import React, { useState, Fragment } from 'react';
 import { Dialog, Transition, Listbox } from '@headlessui/react';
-import { XMarkIcon, ChevronRightIcon, ChevronDownIcon, PlusIcon, MinusIcon, ChevronUpDownIcon, CheckIcon } from '@heroicons/react/20/solid';
+import { XMarkIcon, ChevronRightIcon, ChevronDownIcon, PlusIcon, MinusIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 
 const BaselineChangesCard = () => {
   const [showDrilldown, setShowDrilldown] = useState(false);
@@ -328,7 +328,7 @@ const BaselineChangesDrilldownModal = ({ isOpen, closeModal }) => {
                   <div className="mb-4">
                     <Listbox value={selectedBaseline} onChange={setSelectedBaseline}>
                       <div className="relative">
-                        <Listbox.Button className="relative w-full cursor-default rounded-lg bg-blue-50 py-2.5 pl-4 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-300 sm:text-sm">
+                        <Listbox.Button className="relative w-full cursor-pointer rounded-lg bg-blue-50 py-2.5 pl-4 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-300 sm:text-sm">
                           <div className="flex items-center">
                             <span className="block truncate font-medium text-blue-700">{selectedBaseline.name}</span>
                             <span className="ml-2 text-sm text-blue-500">({selectedBaseline.date})</span>
@@ -348,7 +348,7 @@ const BaselineChangesDrilldownModal = ({ isOpen, closeModal }) => {
                               <Listbox.Option
                                 key={baseline.id}
                                 className={({ active }) =>
-                                  `relative cursor-default select-none py-2 px-4 ${
+                                  `relative cursor-pointer select-none py-2 px-4 ${
                                     active ? 'bg-blue-50 text-blue-700' : 'text-gray-900'
                                   }`
                                 }
@@ -371,11 +371,11 @@ const BaselineChangesDrilldownModal = ({ isOpen, closeModal }) => {
                                         </span>
                                       </div>
                                     </div>
-                                    {selected ? (
+                                    {/* {selected ? (
                                       <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-blue-600">
                                         <CheckIcon className="h-5 w-5" aria-hidden="true" />
                                       </span>
-                                    ) : null}
+                                    ) : null} */}
                                   </>
                                 )}
                               </Listbox.Option>
