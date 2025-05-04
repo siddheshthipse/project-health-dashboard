@@ -4,12 +4,6 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-// // Import PrimeReact styles
-// import "primereact/resources/themes/lara-light-indigo/theme.css";  // theme
-// import "primereact/resources/primereact.min.css";                  // core css
-// import "primeicons/primeicons.css";                                // icons
-// import "primeflex/primeflex.css";                                  // PrimeFlex for layout (optional)
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
