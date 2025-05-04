@@ -49,7 +49,6 @@ The dashboard includes these essential project health indicators:
 1. Clone the repository
    ```bash
    git clone https://github.com/siddheshthipse/project-health-dashboard.git
-   cd project-health-dashboard
    ```
 
 2. Install dependencies
@@ -61,9 +60,9 @@ The dashboard includes these essential project health indicators:
 
 3. Start the development server
    ```bash
-   npm run dev
+   npm run start
    # or
-   yarn dev
+   yarn start
    ```
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser
