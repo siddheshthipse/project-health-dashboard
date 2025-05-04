@@ -1,4 +1,4 @@
-# KTERN Project Health Navigator Dashboard
+# KTern Project Health Navigator Dashboard
 
 ![Dashboard Preview](https://media-hosting.imagekit.io/0233c9c5cfc14e3a/Screenshot%202025-05-03%20152449.png?Expires=1840874209&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=DvK-ipQNiKri6NF-oWuKROITFBgKoMoF8TxGx0~Y2sm1BG-CFYJuokcJF-DEdY0NVUTYed9Bl5OaCPtMy8ObRD7CQQ09tnb53aRyroLqOS3FgfEBXDqt8-q4Sv2evZMuDgkR4aEC0DHHWHpFhTDXo3irwb-KybXQvdVmxbOAyij9Oi~LK52wRYn62sw5HLBZumjDTlZLAtZ7peg28CKdkCsxHIamWlx5rWAf2oHocAkj5VsbyQPbEPYPXnhgGw9TK413OEZNAZowMK5RweGpV-KRzLLqv5K7dUsIE0EvZMDONZ2YyGXjIYJO8O7aSxWtW~85-wNDttuApuDPaaNhig__)
 
@@ -49,7 +49,6 @@ The dashboard includes these essential project health indicators:
 1. Clone the repository
    ```bash
    git clone https://github.com/siddheshthipse/project-health-dashboard.git
-   cd project-health-dashboard
    ```
 
 2. Install dependencies
@@ -61,9 +60,9 @@ The dashboard includes these essential project health indicators:
 
 3. Start the development server
    ```bash
-   npm run dev
+   npm run start
    # or
-   yarn dev
+   yarn start
    ```
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser
