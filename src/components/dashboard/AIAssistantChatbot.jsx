@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { SparklesIcon, XMarkIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
+import { SparklesIcon, XMarkIcon } from '@heroicons/react/20/solid';
 
 const AIAssistantChatbot = () => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
 
   return (
@@ -38,7 +38,7 @@ const AIAssistantChatbot = () => {
                   <li>Incomplete dependency mapping for UAT activities</li>
                 </ul>
                 <div className="mt-3 text-sm text-blue-700">
-                  <a href="#" className="hover:underline">View detailed analysis</a>
+                  <a  className="hover:underline">View detailed analysis</a>
                 </div>
               </div>
             </div>

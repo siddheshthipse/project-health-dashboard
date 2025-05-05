@@ -82,7 +82,7 @@ const ResourceCapacityGap = () => {
                 <div className="flex items-center text-gray-500">
                     <span>4 overallocated resources</span>
                 </div>
-                <a href="#" className="text-blue-600 flex items-center">
+                <a  className="text-blue-600 flex items-center">
                     Details
                 </a>
             </div>
