@@ -1,15 +1,15 @@
 import React, { useState, Fragment } from 'react';
-import { Dialog, Transition, Listbox } from '@headlessui/react';
+import { Dialog, Transition, Listbox, Switch } from '@headlessui/react';
 import { XMarkIcon, ChevronRightIcon, ChevronDownIcon, PlusIcon, MinusIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 
 const BaselineChangesCard = () => {
   const [showDrilldown, setShowDrilldown] = useState(false);
-  
+
   return (
     <div className="bg-white rounded-lg shadow p-5 h-full flex flex-col justify-between">
       {/* Title Section - keeping original styling but with slightly more margin */}
       <h3 className="font-medium text-gray-700 mb-3">Baseline Changes</h3>
-      
+
       {/* Main Content - using flex-grow to take up available space */}
       <div className="flex-grow flex flex-col justify-center">
         <div className="flex justify-center">
@@ -18,26 +18,26 @@ const BaselineChangesCard = () => {
             <div className="text-sm text-gray-500">revisions in baseline</div>
           </div>
         </div>
-        
+
         <div className="text-xs text-gray-500 mt-3 text-center">
           Last change: Mar 28, 2025
         </div>
       </div>
-      
+
       {/* Action Button - maintaining original styling but with more padding for consistency */}
       <div className="mt-4 pt-3 border-t flex justify-end">
-        <button 
-          onClick={() => setShowDrilldown(true)} 
+        <button
+          onClick={() => setShowDrilldown(true)}
           className="text-blue-600 text-xs hover:underline focus:outline-none"
         >
           View Changes
         </button>
       </div>
-      
+
       {/* Drilldown Modal */}
-      <BaselineChangesDrilldownModal 
-        isOpen={showDrilldown} 
-        closeModal={() => setShowDrilldown(false)} 
+      <BaselineChangesDrilldownModal
+        isOpen={showDrilldown}
+        closeModal={() => setShowDrilldown(false)}
       />
     </div>
   );
@@ -191,6 +191,7 @@ const BaselineChangesDrilldownModal = ({ isOpen, closeModal }) => {
 
   // Selected baseline state
   const [selectedBaseline, setSelectedBaseline] = useState(baselineData[0]);
+  const [showAffectedOnly, setShowAffectedOnly] = useState(false);
 
   // Function to toggle row expansion
   const toggleRowExpansion = (id) => {
@@ -229,22 +230,21 @@ const BaselineChangesDrilldownModal = ({ isOpen, closeModal }) => {
     const hasChildren = task.children && task.children.length > 0;
     const isExpanded = expandedRows[task.id];
     const indentPadding = depth * 12; // 12px per level of depth
-    
+
     return (
       <React.Fragment key={task.id}>
-        <tr className={`border-b hover:bg-gray-50 ${
-          task.status === 'added' ? 'bg-green-50' :
-          task.status === 'removed' ? 'bg-red-50' : ''
-        }`}>
+        <tr className={`border-b hover:bg-gray-50 ${task.status === 'added' ? 'bg-green-50' :
+            task.status === 'removed' ? 'bg-red-50' : ''
+          }`}>
           <td className="p-3">
             <div className="flex items-center" style={{ paddingLeft: `${indentPadding}px` }}>
               {hasChildren ? (
-                <button 
+                <button
                   onClick={() => toggleRowExpansion(task.id)}
                   className="mr-1 p-0.5 rounded hover:bg-gray-200"
                 >
-                  {isExpanded ? 
-                    <ChevronDownIcon className="h-4 w-4 text-gray-500" /> : 
+                  {isExpanded ?
+                    <ChevronDownIcon className="h-4 w-4 text-gray-500" /> :
                     <ChevronRightIcon className="h-4 w-4 text-gray-500" />
                   }
                 </button>
@@ -282,7 +282,7 @@ const BaselineChangesDrilldownModal = ({ isOpen, closeModal }) => {
       </React.Fragment>
     );
   };
-  
+
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={closeModal}>
@@ -348,8 +348,7 @@ const BaselineChangesDrilldownModal = ({ isOpen, closeModal }) => {
                               <Listbox.Option
                                 key={baseline.id}
                                 className={({ active }) =>
-                                  `relative cursor-pointer select-none py-2 px-4 ${
-                                    active ? 'bg-blue-50 text-blue-700' : 'text-gray-900'
+                                  `relative cursor-pointer select-none py-2 px-4 ${active ? 'bg-blue-50 text-blue-700' : 'text-gray-900'
                                   }`
                                 }
                                 value={baseline}
@@ -391,13 +390,22 @@ const BaselineChangesDrilldownModal = ({ isOpen, closeModal }) => {
                     <div className="text-xs text-gray-500">
                       Comparing current plan with <span className="font-medium text-gray-700">{selectedBaseline.name}</span> ({selectedBaseline.date})
                     </div>
-                    <div className="flex gap-2">
-                      <button className="px-3 py-1 rounded text-xs bg-blue-600 text-white hover:bg-blue-700">
-                        Show Modified Only
-                      </button>
-                      <button className="px-3 py-1 rounded text-xs bg-white border border-gray-300 text-gray-700 hover:bg-gray-50">
-                        Reset Filters
-                      </button>
+                    <div className="flex items-center">
+                      <Switch
+                        checked={showAffectedOnly}
+                        onChange={setShowAffectedOnly}
+                        className={`${showAffectedOnly ? 'bg-blue-600' : 'bg-gray-200'
+                          } relative inline-flex h-5 w-10 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mr-2`}
+                      >
+                        <span className="sr-only">Show affected tasks only</span>
+                        <span
+                          className={`${showAffectedOnly ? 'translate-x-5' : 'translate-x-1'
+                            } inline-block h-3 w-3 transform rounded-full bg-white transition-transform`}
+                        />
+                      </Switch>
+                      <span className="text-xs text-gray-700">
+                        {showAffectedOnly ? 'Showing affected tasks only' : 'Showing all tasks'}
+                      </span>
                     </div>
                   </div>
 

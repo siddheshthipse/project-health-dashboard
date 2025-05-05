@@ -435,40 +435,61 @@ const IssueResolutionDrilldownModal = ({ isOpen, closeModal }) => {
 
 const IssueResolutionCard = () => {
     const [showDrilldown, setShowDrilldown] = useState(false);
-
+    
     return (
         <div className="bg-white rounded-lg shadow p-5 h-full flex flex-col">
-            {/* Header section */}
-            <div>
-                <h3 className="font-medium text-gray-700 mb-2">Issue Resolution Efficiency</h3>
-                <div className="flex justify-between mb-2">
-                    <span className="text-sm text-gray-700">Resolution Rate</span>
-                    <span className="text-sm font-medium text-green-600">87%</span>
+            {/* Issue counts at the top like the Risk card */}
+            <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="rounded bg-gray-100 p-3 text-center">
+                    <div className="text-2xl font-bold text-gray-700">12</div>
+                    <div className="text-xs text-gray-700">Open Issues</div>
                 </div>
-                <div className="text-xs text-gray-500 mb-3">
-                    (Resolved Issues / Total Issues) × 100%
-                </div>
-                <div className="mb-2 bg-gray-200 h-1.5 rounded-full">
-                    <div className="bg-green-500 h-full rounded-full" style={{ width: '87%' }}></div>
+                <div className="rounded bg-orange-100 p-3 text-center">
+                    <div className="text-2xl font-bold text-orange-600">6.2</div>
+                    <div className="text-xs text-gray-700">Avg. Days to Resolve</div>
                 </div>
             </div>
 
-            {/* Main content - with flex-grow to expand and take available space */}
-            <div className="flex-grow my-4">
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center">
-                        <div className="text-2xl font-bold text-gray-700">12</div>
+            {/* Resolution rate section - flex-grow will help fill available space */}
+            <div className="flex-grow mb-4">
+                <div className="mb-4 mt-5">
+                    <div className="flex justify-between items-center mb-1">
+                        <span className="text-sm font-medium text-gray-700">Resolution Rate</span>
+                        <span className="text-sm font-medium text-green-600">87%</span>
+                    </div>
+                    <div className="text-xs text-gray-500 mb-2">
+                        (Resolved Issues / Total Issues) × 100%
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                        <div className="bg-green-500 h-2.5 rounded-full" style={{ width: '87%' }}></div>
+                    </div>
+                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>0%</span>
+                        <div>
+                            <span className="inline-block w-2 h-2 bg-red-500 rounded-full mr-1"></span>
+                            <span>Critical &lt;50%</span>
+                        </div>
+                        <div>
+                            <span className="inline-block w-2 h-2 bg-yellow-500 rounded-full mr-1"></span>
+                            <span>Warning &lt;75%</span>
+                        </div>
+                        <span>100%</span>
+                    </div>
+                </div>
+            </div>
+
+            {/* Bottom section with metrics and button */}
+            <div className="flex justify-between items-center border-t pt-3 mt-auto">
+                <div className="flex items-center space-x-4">
+                    <div className="text-sm">
+                        <div className="font-medium">82/94</div>
+                        <div className="text-xs text-gray-500">Issues Resolved</div>
+                    </div>
+                    <div className="text-sm">
+                        <div className="font-medium">12</div>
                         <div className="text-xs text-gray-500">Open Issues</div>
                     </div>
-                    <div className="text-center">
-                        <div className="text-2xl font-bold text-orange-600">6.2</div>
-                        <div className="text-xs text-gray-500">Avg. Days to Resolve</div>
-                    </div>
                 </div>
-            </div>
-
-            {/* Action button section */}
-            <div className="border-t pt-3 flex justify-end mt-auto">
                 <button
                     onClick={() => setShowDrilldown(true)}
                     className="text-blue-600 text-xs hover:underline focus:outline-none"
