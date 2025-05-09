@@ -51432,7 +51432,7 @@ const SPICard = () => {
                 </div>
                 <div className="flex justify-between items-center text-gray-600">
                     <span>Change</span>
-                    <span className="text-red-600 font-medium">0</span>
+                    <span className="text-red-600 font-medium">0.01</span>
                 </div>
             </div>
 
