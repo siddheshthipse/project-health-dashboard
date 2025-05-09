@@ -14,13 +14,13 @@ const BaselineChangesCard = () => {
       <div className="flex-grow flex flex-col justify-center">
         <div className="flex justify-center">
           <div className="text-center">
-            <div className="text-4xl font-bold text-amber-600">3</div>
+            <div className="text-4xl font-bold text-amber-600">1</div>
             <div className="text-sm text-gray-500">revisions in baseline</div>
           </div>
         </div>
 
         <div className="text-xs text-gray-500 mt-3 text-center">
-          Last change: Mar 28, 2025
+          Last Change: Dec 4, 2024
         </div>
       </div>
 
@@ -234,7 +234,7 @@ const BaselineChangesDrilldownModal = ({ isOpen, closeModal }) => {
     return (
       <React.Fragment key={task.id}>
         <tr className={`border-b hover:bg-gray-50 ${task.status === 'added' ? 'bg-green-50' :
-            task.status === 'removed' ? 'bg-red-50' : ''
+          task.status === 'removed' ? 'bg-red-50' : ''
           }`}>
           <td className="p-3">
             <div className="flex items-center" style={{ paddingLeft: `${indentPadding}px` }}>
@@ -309,7 +309,7 @@ const BaselineChangesDrilldownModal = ({ isOpen, closeModal }) => {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-5xl transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all">
+              <Dialog.Panel className="w-full max-w-5xl transform overflow-hidden rounded-lg bg-white p-4 shadow-xl transition-all">
                 <div className="flex justify-between items-center mb-4">
                   <Dialog.Title as="h3" className="text-md font-semibold text-gray-900">
                     Baseline Change Analysis

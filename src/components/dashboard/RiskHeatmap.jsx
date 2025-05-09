@@ -4,91 +4,135 @@ import RiskModal from './RiskModal';
 const RiskHeatmap = () => {
     // Sample data for risk heatmap
     const riskData = {
-        totals: {
-            high: 3,
-            medium: 6,
-            low: 5,
-            all: 14
+        "totals": {
+            "high": 4,
+            "medium": 3,
+            "low": 0,
+            "all": 7
         },
-        cells: [
+        "cells": [
             {
-                impact: 'high',
-                probability: 'low',
-                count: 1,
-                risks: [
-                    { title: "Server Outage", status: "Active", impactScore: "High", responsiblePerson: "John Doe", createdBy: "Sarah Smith", plannedTo: "2025-05-15" }
+                "impact": "high",
+                "probability": "low",
+                "count": 3,
+                "risks": [
+                    {
+                        "title": "W3 -Syniti Tool implementation ",
+                        "status": "Closed",
+                        "impactScore": "High",
+                        "responsiblePerson": "Daniel Zambrano",
+                        "createdBy": "Vengateshwararaja S",
+                        "plannedTo": "2024-07-31",
+                        "id": "risk-2"
+                    },
+                    {
+                        "title": "W3 - Stakeholder Change",
+                        "status": "Closed",
+                        "impactScore": "High",
+                        "responsiblePerson": "Ben Rubio",
+                        "createdBy": "Vengateshwararaja S",
+                        "plannedTo": "2024-07-31",
+                        "id": "risk-5"
+                    },
+                    {
+                        "title": "System access Delay",
+                        "status": "Closed",
+                        "impactScore": "High",
+                        "responsiblePerson": "Daniel Zambrano",
+                        "createdBy": "Vengateshwararaja S",
+                        "plannedTo": "2024-07-31",
+                        "id": "risk-6"
+                    }
                 ]
             },
             {
-                impact: 'high',
-                probability: 'medium',
-                count: 0,
-                risks: []
+                "impact": "high",
+                "probability": "medium",
+                "count": 0,
+                "risks": []
             },
             {
-                impact: 'high',
-                probability: 'high',
-                count: 1,
-                risks: [
-                    { title: "Data Breach", status: "Mitigating", impactScore: "Critical", responsiblePerson: "Jane Wilson", createdBy: "Mike Johnson", plannedTo: "2025-04-30" }
+                "impact": "high",
+                "probability": "high",
+                "count": 1,
+                "risks": [
+                    {
+                        "title": "Equipment Master data Cleansing ",
+                        "status": "In-Process",
+                        "impactScore": "High",
+                        "responsiblePerson": "Amir Khan",
+                        "createdBy": "Vengateshwararaja S",
+                        "plannedTo": "2024-09-16",
+                        "id": "risk-7"
+                    }
                 ]
             },
             {
-                impact: 'medium',
-                probability: 'low',
-                count: 3,
-                risks: [
-                    { title: "Budget Overrun", status: "Active", impactScore: "Medium", responsiblePerson: "Robert Brown", createdBy: "Lisa Taylor", plannedTo: "2025-06-10" },
-                    { title: "Staff Turnover", status: "Monitoring", impactScore: "Medium", responsiblePerson: "Emily Davis", createdBy: "David Wilson", plannedTo: "2025-05-20" },
-                    { title: "Equipment Failure", status: "Active", impactScore: "Medium", responsiblePerson: "Michael Scott", createdBy: "Pam Beesly", plannedTo: "2025-04-25" }
+                "impact": "medium",
+                "probability": "low",
+                "count": 3,
+                "risks": [
+                    {
+                        "title": "W3 - Prepare Phase closure ",
+                        "status": "Closed",
+                        "impactScore": "Medium",
+                        "responsiblePerson": "Vengateshwararaja S",
+                        "createdBy": "Vengateshwararaja S",
+                        "plannedTo": "2024-06-24",
+                        "id": "risk-1"
+                    },
+                    {
+                        "title": "W3 - Pilog Onboarding ",
+                        "status": "Closed",
+                        "impactScore": "Medium",
+                        "responsiblePerson": "Baburaj Parakkal",
+                        "createdBy": "Vengateshwararaja S",
+                        "plannedTo": "2024-07-22",
+                        "id": "risk-3"
+                    },
+                    {
+                        "title": "W3 - MDG - Customer Master data",
+                        "status": "Closed",
+                        "impactScore": "Medium",
+                        "responsiblePerson": "Vengateshwararaja S",
+                        "createdBy": "Vengateshwararaja S",
+                        "plannedTo": "2024-07-31",
+                        "id": "risk-4"
+                    }
                 ]
             },
             {
-                impact: 'medium',
-                probability: 'medium',
-                count: 4,
-                risks: [
-                    { title: "Supply Chain Disruption", status: "Active", impactScore: "Medium", responsiblePerson: "Chris Evans", createdBy: "Tony Stark", plannedTo: "2025-05-05" },
-                    { title: "Regulatory Change", status: "Pending Review", impactScore: "Medium", responsiblePerson: "Natasha Romanoff", createdBy: "Nick Fury", plannedTo: "2025-06-15" },
-                    { title: "Project Delay", status: "Mitigating", impactScore: "Medium", responsiblePerson: "Steve Rogers", createdBy: "Bruce Banner", plannedTo: "2025-05-12" },
-                    { title: "Resource Constraint", status: "Active", impactScore: "Medium", responsiblePerson: "Wanda Maximoff", createdBy: "Vision", plannedTo: "2025-04-28" }
-                ]
+                "impact": "medium",
+                "probability": "medium",
+                "count": 0,
+                "risks": []
             },
             {
-                impact: 'medium',
-                probability: 'high',
-                count: 2,
-                risks: [
-                    { title: "Market Volatility", status: "Monitoring", impactScore: "High", responsiblePerson: "Peter Parker", createdBy: "Mary Jane", plannedTo: "2025-05-25" },
-                    { title: "Competitive Threat", status: "Active", impactScore: "High", responsiblePerson: "Thor Odinson", createdBy: "Loki Laufeyson", plannedTo: "2025-06-05" }
-                ]
+                "impact": "medium",
+                "probability": "high",
+                "count": 0,
+                "risks": []
             },
             {
-                impact: 'low',
-                probability: 'low',
-                count: 1,
-                risks: [
-                    { title: "Minor Software Bug", status: "Scheduled", impactScore: "Low", responsiblePerson: "Peter Quill", createdBy: "Gamora", plannedTo: "2025-06-30" }
-                ]
+                "impact": "low",
+                "probability": "low",
+                "count": 0,
+                "risks": []
             },
             {
-                impact: 'low',
-                probability: 'medium',
-                count: 1,
-                risks: [
-                    { title: "Office Renovation", status: "Scheduled", impactScore: "Low", responsiblePerson: "Stephen Strange", createdBy: "Wong", plannedTo: "2025-07-10" }
-                ]
+                "impact": "low",
+                "probability": "medium",
+                "count": 0,
+                "risks": []
             },
             {
-                impact: 'low',
-                probability: 'high',
-                count: 1,
-                risks: [
-                    { title: "Team Training", status: "Pending", impactScore: "Low", responsiblePerson: "T'Challa", createdBy: "Shuri", plannedTo: "2025-05-30" }
-                ]
-            },
+                "impact": "low",
+                "probability": "high",
+                "count": 0,
+                "risks": []
+            }
         ]
-    };
+    }
 
     // State for modal
     const [isModalOpen, setIsModalOpen] = useState(false);

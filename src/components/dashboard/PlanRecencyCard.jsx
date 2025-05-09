@@ -4,40 +4,40 @@ import { XMarkIcon, ClockIcon } from '@heroicons/react/20/solid';
 
 const PlanRecencyCard = () => {
   const [showDrilldown, setShowDrilldown] = useState(false);
-  
+
   return (
     <div className="bg-white rounded-lg shadow p-5 h-full flex flex-col justify-between">
       {/* Title Section */}
       <div>
         <h3 className="font-medium text-gray-700 mb-3">Plan Recency</h3>
       </div>
-      
+
       {/* Main Content - Centered */}
       <div className="flex-grow flex flex-col justify-center items-center my-2">
         <div className="text-center">
-          <div className="text-4xl font-bold text-red-600">12</div>
+          <div className="text-4xl font-bold text-red-600">1</div>
           <div className="text-sm text-gray-500 mt-1">days since last update</div>
         </div>
-        
+
         <div className="text-xs text-gray-500 mt-3 text-center">
-          Last updated: Apr 5, 2025
+          Last Updated: May 7, 2025
         </div>
       </div>
-      
+
       {/* Action Button */}
       <div className="mt-auto pt-3 border-t flex justify-end">
-        <button 
-          onClick={() => setShowDrilldown(true)} 
+        <button
+          onClick={() => setShowDrilldown(true)}
           className="text-blue-600 text-xs hover:underline focus:outline-none"
         >
           View Update History
         </button>
       </div>
-      
+
       {/* Drilldown Modal */}
-      <PlanRecencyDrilldownModal 
-        isOpen={showDrilldown} 
-        closeModal={() => setShowDrilldown(false)} 
+      <PlanRecencyDrilldownModal
+        isOpen={showDrilldown}
+        closeModal={() => setShowDrilldown(false)}
       />
     </div>
   );
@@ -239,7 +239,7 @@ const PlanRecencyDrilldownModal = ({ isOpen, closeModal }) => {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all">
+              <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-lg bg-white p-4 shadow-xl transition-all">
                 <div className="flex justify-between items-center mb-4">
                   <Dialog.Title as="h3" className="text-md font-semibold text-gray-900">
                     Plan Update History

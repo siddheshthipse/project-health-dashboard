@@ -129,7 +129,7 @@ const RiskDrilldownModal = ({ isOpen, closeModal }) => {
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-full max-w-5xl transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all">
+                            <Dialog.Panel className="w-full max-w-5xl transform overflow-hidden rounded-lg bg-white p-4 shadow-xl transition-all">
                                 <div className="flex justify-between items-center mb-4">
                                     <Dialog.Title as="h3" className="text-lg font-semibold text-gray-900">
                                         Project Risks
@@ -259,11 +259,11 @@ const RiskExposureCard = () => {
             {/* Risk counts */}
             <div className="grid grid-cols-2 gap-4 mb-4">
                 <div className="rounded bg-red-100 p-3 text-center">
-                    <div className="text-2xl font-bold text-red-700">5</div>
+                    <div className="text-2xl font-bold text-red-700">10</div>
                     <div className="text-xs text-gray-700">High Risks</div>
                 </div>
                 <div className="rounded bg-yellow-100 p-3 text-center">
-                    <div className="text-2xl font-bold text-yellow-700">8</div>
+                    <div className="text-2xl font-bold text-yellow-700">1</div>
                     <div className="text-xs text-gray-700">Medium Risks</div>
                 </div>
             </div>
@@ -273,7 +273,7 @@ const RiskExposureCard = () => {
                 <div className="mb-4 mt-5">
                     <div className="flex justify-between items-center mb-1">
                         <span className="text-sm font-medium text-gray-700">Risk Mitigation Rate</span>
-                        <span className="text-sm font-medium text-yellow-600">68%</span>
+                        <span className="text-sm font-medium text-yellow-600">31%</span>
                     </div>
                     <div className="text-xs text-gray-500 mb-2">
                         (Mitigated risks / Identified risks) × 100%
@@ -300,7 +300,7 @@ const RiskExposureCard = () => {
             <div className="flex justify-between items-center border-t pt-3 mt-auto">
                 <div className="flex items-center space-x-4">
                     <div className="text-sm">
-                        <div className="font-medium">17/25</div>
+                        <div className="font-medium">14/45</div>
                         <div className="text-xs text-gray-500">Risks Mitigated</div>
                     </div>
                     <div className="text-sm">

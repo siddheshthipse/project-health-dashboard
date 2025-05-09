@@ -12,15 +12,30 @@ const OverdueTasksByStakeholder = () => {
 
     // Mock data for overdue tasks by stakeholder and status
     const overdueData = {
-        stakeholders: [
-            'Michael Chen', 'Sarah Williams', 'Robert Taylor', 'Priya Sharma', 'John Smith'
+        "stakeholders": [
+            "Hal Hadden",
+            "Lisa Taylor",
+            "Simone Williams",
+            "Girish MP"
         ],
-        // Tasks that are not started yet but are overdue
-        newTasks: [4, 2, 1, 3, 0],
-        // Tasks that are in progress but will miss the deadline
-        activeTasks: [3, 5, 2, 1, 2],
-        // Tasks that were completed late
-        completedLateTasks: [5, 2, 3, 2, 3]
+        "newTasks": [
+            4,
+            2,
+            1,
+            3
+        ],
+        "activeTasks": [
+            3,
+            5,
+            2,
+            1
+        ],
+        "completedLateTasks": [
+            5,
+            2,
+            3,
+            2
+        ]
     };
 
     // Calculate totals for each stakeholder
@@ -44,28 +59,108 @@ const OverdueTasksByStakeholder = () => {
 
     // Sample task data for drilldown
     const taskData = {
-        'Michael Chen': {
-            new: [
-                { id: 'task-1', title: 'Database Schema Design', status: 'New', plannedStart: 'Apr 10, 2025', plannedEnd: 'Apr 15, 2025', actualStart: null, actualEnd: null, variance: '5 days', impactedMilestone: 'Data Design' },
-                { id: 'task-2', title: 'API Integration', status: 'New', plannedStart: 'Apr 5, 2025', plannedEnd: 'Apr 12, 2025', actualStart: null, actualEnd: null, variance: '8 days', impactedMilestone: 'Integration' }
+        "Hal Hadden": {
+            "new": [
+                {
+                    "id": "task-1",
+                    "title": "Database Schema Design",
+                    "status": "New",
+                    "plannedStart": "Apr 10, 2025",
+                    "plannedEnd": "Apr 15, 2025",
+                    "actualStart": null,
+                    "actualEnd": null,
+                    "variance": "5 days",
+                    "impactedMilestone": "Data Design"
+                },
+                {
+                    "id": "task-2",
+                    "title": "API Integration",
+                    "status": "New",
+                    "plannedStart": "Apr 5, 2025",
+                    "plannedEnd": "Apr 12, 2025",
+                    "actualStart": null,
+                    "actualEnd": null,
+                    "variance": "8 days",
+                    "impactedMilestone": "Integration"
+                }
             ],
-            active: [
-                { id: 'task-3', title: 'Performance Testing', status: 'Active', plannedStart: 'Apr 1, 2025', plannedEnd: 'Apr 8, 2025', actualStart: 'Apr 3, 2025', actualEnd: null, variance: '10 days', impactedMilestone: 'Testing Complete' }
+            "active": [
+                {
+                    "id": "task-3",
+                    "title": "Performance Testing",
+                    "status": "Active",
+                    "plannedStart": "Apr 1, 2025",
+                    "plannedEnd": "Apr 8, 2025",
+                    "actualStart": "Apr 3, 2025",
+                    "actualEnd": null,
+                    "variance": "10 days",
+                    "impactedMilestone": "Testing Complete"
+                }
             ],
-            completedLate: [
-                { id: 'task-4', title: 'Code Reviews', status: 'Completed', plannedStart: 'Mar 25, 2025', plannedEnd: 'Apr 1, 2025', actualStart: 'Mar 26, 2025', actualEnd: 'Apr 5, 2025', variance: '4 days', impactedMilestone: 'Development Complete' }
+            "completedLate": [
+                {
+                    "id": "task-4",
+                    "title": "Code Reviews",
+                    "status": "Completed",
+                    "plannedStart": "Mar 25, 2025",
+                    "plannedEnd": "Apr 1, 2025",
+                    "actualStart": "Mar 26, 2025",
+                    "actualEnd": "Apr 5, 2025",
+                    "variance": "4 days",
+                    "impactedMilestone": "Development Complete"
+                }
             ]
         },
-        'Sarah Williams': {
-            new: [
-                { id: 'task-5', title: 'User Training Materials', status: 'New', plannedStart: 'Apr 12, 2025', plannedEnd: 'Apr 18, 2025', actualStart: null, actualEnd: null, variance: '2 days', impactedMilestone: 'Training' }
+        "Lisa Taylor": {
+            "new": [
+                {
+                    "id": "task-5",
+                    "title": "User Training Materials",
+                    "status": "New",
+                    "plannedStart": "Apr 12, 2025",
+                    "plannedEnd": "Apr 18, 2025",
+                    "actualStart": null,
+                    "actualEnd": null,
+                    "variance": "2 days",
+                    "impactedMilestone": "Training"
+                }
             ],
-            active: [
-                { id: 'task-6', title: 'UI Component Library', status: 'Active', plannedStart: 'Apr 3, 2025', plannedEnd: 'Apr 9, 2025', actualStart: 'Apr 4, 2025', actualEnd: null, variance: '6 days', impactedMilestone: 'Design System' },
-                { id: 'task-7', title: 'User Documentation', status: 'Active', plannedStart: 'Apr 5, 2025', plannedEnd: 'Apr 10, 2025', actualStart: 'Apr 6, 2025', actualEnd: null, variance: '5 days', impactedMilestone: 'Documentation' }
+            "active": [
+                {
+                    "id": "task-6",
+                    "title": "UI Component Library",
+                    "status": "Active",
+                    "plannedStart": "Apr 3, 2025",
+                    "plannedEnd": "Apr 9, 2025",
+                    "actualStart": "Apr 4, 2025",
+                    "actualEnd": null,
+                    "variance": "6 days",
+                    "impactedMilestone": "Design System"
+                },
+                {
+                    "id": "task-7",
+                    "title": "User Documentation",
+                    "status": "Active",
+                    "plannedStart": "Apr 5, 2025",
+                    "plannedEnd": "Apr 10, 2025",
+                    "actualStart": "Apr 6, 2025",
+                    "actualEnd": null,
+                    "variance": "5 days",
+                    "impactedMilestone": "Documentation"
+                }
             ],
-            completedLate: [
-                { id: 'task-8', title: 'Wireframes', status: 'Completed', plannedStart: 'Mar 28, 2025', plannedEnd: 'Apr 3, 2025', actualStart: 'Mar 29, 2025', actualEnd: 'Apr 6, 2025', variance: '3 days', impactedMilestone: 'Design Complete' }
+            "completedLate": [
+                {
+                    "id": "task-8",
+                    "title": "Wireframes",
+                    "status": "Completed",
+                    "plannedStart": "Mar 28, 2025",
+                    "plannedEnd": "Apr 3, 2025",
+                    "actualStart": "Mar 29, 2025",
+                    "actualEnd": "Apr 6, 2025",
+                    "variance": "3 days",
+                    "impactedMilestone": "Design Complete"
+                }
             ]
         }
     };
@@ -460,7 +555,7 @@ const OverdueTasksByStakeholder = () => {
                                 leaveFrom="opacity-100 scale-100"
                                 leaveTo="opacity-0 scale-95"
                             >
-                                <Dialog.Panel className="w-full max-w-6xl transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all">
+                                <Dialog.Panel className="w-full max-w-6xl transform overflow-hidden rounded-lg bg-white p-4 shadow-xl transition-all">
                                     <div className="flex justify-between items-center mb-4">
                                         <Dialog.Title as="h3" className="text-md font-semibold text-gray-900">
                                             Overdue Tasks: {selectedStakeholder}
@@ -681,7 +776,7 @@ const OverdueTasksByStakeholder = () => {
                                 leaveFrom="opacity-100 scale-100"
                                 leaveTo="opacity-0 scale-95"
                             >
-                                <Dialog.Panel className="w-full max-w-6xl transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all">
+                                <Dialog.Panel className="w-full max-w-6xl transform overflow-hidden rounded-lg bg-white p-4 shadow-xl transition-all">
                                     <div className="flex justify-between items-center mb-4">
                                         <Dialog.Title as="h3" className="text-md font-semibold text-gray-900">
                                             All Overdue Tasks

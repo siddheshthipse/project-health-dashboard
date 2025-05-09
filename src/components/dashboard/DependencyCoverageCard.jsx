@@ -14,13 +14,13 @@ const DependencyCoverageCard = () => {
                 
                 {/* Progress Bar */}
                 <div className="mb-3 bg-gray-200 h-2.5 rounded-full overflow-hidden">
-                    <div className="bg-yellow-500 h-full rounded-full" style={{ width: '76%' }}></div>
+                    <div className="bg-yellow-500 h-full rounded-full" style={{ width: '1%' }}></div>
                 </div>
                 
                 {/* Coverage Info */}
                 <div className="flex justify-between text-xs mb-5">
-                    <span className="text-gray-500">76% coverage</span>
-                    <span className="text-yellow-700">6 milestones need dependencies</span>
+                    <span className="text-gray-500">1% coverage</span>
+                    <span className="text-yellow-700">21 milestones need dependencies</span>
                 </div>
             </div>
             
@@ -271,7 +271,7 @@ const DependencyCoverageDrilldownModal = ({ isOpen, closeModal }) => {
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-full max-w-6xl transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all">
+                            <Dialog.Panel className="w-full max-w-6xl transform overflow-hidden rounded-lg bg-white p-4 shadow-xl transition-all">
                                 <div className="flex justify-between items-center mb-4">
                                     <Dialog.Title as="h3" className="text-md font-semibold text-gray-900">
                                         Tasks Missing Dependencies

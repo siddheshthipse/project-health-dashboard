@@ -67,84 +67,60 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
     // Sample critical path task data with updated columns
     const criticalPathData = [
         {
-            id: 'CP-1',
-            wbs: '1',
-            title: 'Data Migration Completion',
-            type: 'Milestone',
-            baselineEnd: 'Apr 25, 2025',
-            plannedEnd: 'May 5, 2025',
-            plannedPercent: '40%',
-            actualPercent: '35%',
-            slackDays: '-2',
-            baselineOverdueDays: '12',
-            delayLog: 'Source data quality issues; Additional data mapping required',
-            children: [
+            "id": "CP-1",
+            "wbs": "1.5.5",
+            "title": "Wave 3 - Hypercare",
+            "type": "Phase",
+            "baselineEnd": "Feb 27, 2025",
+            "plannedEnd": "Feb 27, 2026",
+            "plannedPercent": "0.909%",
+            "actualPercent": "0%",
+            "slackDays": "0",
+            "baselineOverdueDays": "0",
+            "delayLog": "",
+            "children": [
                 {
-                    id: 'CP-1-1',
-                    wbs: '1.1',
-                    title: 'Data Cleansing',
-                    type: 'Activity',
-                    baselineEnd: 'Apr 15, 2025',
-                    plannedEnd: 'Apr 20, 2025',
-                    plannedPercent: '60%',
-                    actualPercent: '60%',
-                    slackDays: '0',
-                    baselineOverdueDays: '5',
-                    delayLog: 'Unexpected issues with duplicate records',
-                },
-                {
-                    id: 'CP-1-2',
-                    wbs: '1.2',
-                    title: 'Data Transformation Scripts',
-                    type: 'Activity',
-                    baselineEnd: 'Apr 20, 2025',
-                    plannedEnd: 'Apr 25, 2025',
-                    plannedPercent: '30%',
-                    actualPercent: '25%',
-                    slackDays: '-1',
-                    baselineOverdueDays: '7',
-                    delayLog: 'Resource constraints; Complex transformation logic',
-                }
-            ]
-        },
-        {
-            id: 'CP-2',
-            wbs: '2',
-            title: 'UAT Completion',
-            type: 'Milestone',
-            baselineEnd: 'May 10, 2025',
-            plannedEnd: 'May 15, 2025',
-            plannedPercent: '25%',
-            actualPercent: '20%',
-            slackDays: '0',
-            baselineOverdueDays: '8',
-            delayLog: 'Stakeholder availability is limited',
-            children: [
-                {
-                    id: 'CP-2-1',
-                    wbs: '2.1',
-                    title: 'Test Script Preparation',
-                    type: 'Activity',
-                    baselineEnd: 'Apr 25, 2025',
-                    plannedEnd: 'Apr 30, 2025',
-                    plannedPercent: '50%',
-                    actualPercent: '45%',
-                    slackDays: '1',
-                    baselineOverdueDays: '3',
-                    delayLog: '',
-                },
-                {
-                    id: 'CP-2-2',
-                    wbs: '2.2',
-                    title: 'User Training for UAT',
-                    type: 'Activity',
-                    baselineEnd: 'May 1, 2025',
-                    plannedEnd: 'May 5, 2025',
-                    plannedPercent: '20%',
-                    actualPercent: '15%',
-                    slackDays: '-1',
-                    baselineOverdueDays: '5',
-                    delayLog: 'Training materials revision required',
+                    "id": "CP-1-1",
+                    "wbs": "1.5.5.6",
+                    "title": "MS69: Completion of Month 6",
+                    "type": "Milestone",
+                    "baselineEnd": "Feb 27, 2025",
+                    "plannedEnd": "Feb 27, 2026",
+                    "plannedPercent": "0.909%",
+                    "actualPercent": "0%",
+                    "slackDays": "0",
+                    "baselineOverdueDays": "0",
+                    "delayLog": "",
+                    "children": [
+                        {
+                            "id": "CP-1-1",
+                            "wbs": "1.5.5.6.1",
+                            "title": "W3_MS69_Completion of Month 6",
+                            "type": "Deliverable Group",
+                            "baselineEnd": "Feb 27, 2025",
+                            "plannedEnd": "Feb 27, 2026",
+                            "plannedPercent": "0.909%",
+                            "actualPercent": "0%",
+                            "slackDays": "0",
+                            "baselineOverdueDays": "0",
+                            "delayLog": "",
+                            "children": [
+                                {
+                                    "id": "CP-1-1",
+                                    "wbs": "1.5.5.6.1.1",
+                                    "title": "W3_MS69_Completion of Month 6",
+                                    "type": "Deliverable",
+                                    "baselineEnd": "Feb 27, 2025",
+                                    "plannedEnd": "Feb 27, 2026",
+                                    "plannedPercent": "0.909%",
+                                    "actualPercent": "0%",
+                                    "slackDays": "0",
+                                    "baselineOverdueDays": "0",
+                                    "delayLog": ""
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         }
@@ -300,7 +276,7 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                     <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">{task.actualPercent}</td>
                     <td className="p-3 text-center whitespace-nowrap text-xs">
                         <span className={`font-medium ${slackStatus === 'negative' ? 'text-red-600' :
-                                slackStatus === 'zero' ? 'text-yellow-600' : 'text-green-600'
+                            slackStatus === 'zero' ? 'text-yellow-600' : 'text-green-600'
                             }`}>{task.slackDays}</span>
                     </td>
                     <td className="p-3 text-center whitespace-nowrap text-xs">
@@ -472,7 +448,7 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                             <Dialog.Panel
                                 className={`transform overflow-hidden bg-white shadow-xl transition-all ${isFullScreen
                                     ? 'fixed inset-0 rounded-none'
-                                    : 'w-full max-w-5xl rounded-lg p-6'
+                                    : 'w-full max-w-5xl rounded-lg p-4'
                                     }`}
                             >
                                 <div className={`flex justify-between items-center ${isFullScreen ? 'p-4' : 'mb-4'}`}>
@@ -521,8 +497,7 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                                                     The project is currently delayed by {calculateProjectDelay()} based on critical path analysis. Delays in the following high-impact tasks are the primary contributors:
                                                 </p>
                                                 <ul className="text-sm text-red-700 mt-2 list-disc list-inside ml-1">
-                                                    <li>Data Migration Completion (12 days delay)</li>
-                                                    <li>UAT Completion (8 days delay)</li>
+                                                    <li>W3_MS69_Completion of Month 6 (12 days delay)</li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -720,7 +695,7 @@ const GoLiveRiskCard = () => {
     const [showDrilldown, setShowDrilldown] = useState(false);
 
     return (
-        <div className="bg-white rounded-lg shadow p-5 border-t-4 border-red-500">
+        <div className="bg-white rounded-lg shadow p-5 border-t-4 border-green-600">
             <div className="flex justify-between items-start mb-4">
                 <div>
                     <h3 className="font-medium text-gray-700">Go-Live Probability</h3>
@@ -728,15 +703,15 @@ const GoLiveRiskCard = () => {
                         <span>HIGH PRIORITY</span>
                     </div> */}
                 </div>
-                <div className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded flex items-center">
-                    At Risk
+                <div className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded flex items-center">
+                    On Track
                 </div>
             </div>
 
             {/* Simplified gauge */}
             <div className="flex justify-center mb-2">
-                <div className="w-32 h-32 rounded-full border-8 border-red-500 flex flex-col items-center justify-center">
-                    <span className="text-2xl font-bold text-gray-800">45%</span>
+                <div className="w-32 h-32 rounded-full border-8 border-green-600 flex flex-col items-center justify-center">
+                    <span className="text-2xl font-bold text-gray-800">100%</span>
                     <span className="text-xs text-gray-500">Chance of</span>
                     <span className="text-xs text-gray-500">On-time Go-live</span>
                 </div>
@@ -749,19 +724,19 @@ const GoLiveRiskCard = () => {
 
             <div className="mt-4 text-sm">
                 <div className="flex justify-between items-center text-gray-600">
-                    <span>Last 30 days as on March 25th</span>
-                    <span className="font-medium">62%</span>
+                    <span>Last 30 days as on April 8th</span>
+                    <span className="font-medium">95%</span>
                 </div>
                 <div className="flex justify-between items-center text-gray-600">
                     <span>Change</span>
-                    <span className="text-red-600 font-medium">-17%</span>
+                    <span className="text-red-600 font-medium">0%</span>
                 </div>
             </div>
 
             <div className="mt-3 pt-3 border-t flex justify-between items-center text-xs">
                 <div className="flex items-center text-gray-500">
-                    <div className="w-2 h-2 rounded-full bg-red-500 mr-1"></div>
-                    <span>5 Critical Path Tasks Delayed</span>
+                    <div className="w-2 h-2 rounded-full bg-green-500 mr-1"></div>
+                    <span>0/1 Critical Path Tasks Delayed</span>
                 </div>
                 <button
                     onClick={() => setShowDrilldown(true)}

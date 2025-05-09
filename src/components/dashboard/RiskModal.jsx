@@ -1,6 +1,6 @@
 import React, { useState, Fragment, useEffect } from 'react';
 import { Dialog, Transition, Menu } from '@headlessui/react';
-import { XMarkIcon, ArrowsPointingOutIcon, ArrowsPointingInIcon, CheckIcon, XMarkIcon as XCircleIcon, FunnelIcon, MagnifyingGlassIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/20/solid';
+import { XMarkIcon, ArrowsPointingOutIcon, ArrowsPointingInIcon, CheckIcon, XMarkIcon as XCircleIcon, FunnelIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/20/solid';
 
 const RiskModal = ({ isOpen, closeModal, selectedRisks, modalTitle }) => {
     const [isFullScreen, setIsFullScreen] = useState(false);
@@ -343,7 +343,7 @@ const RiskModal = ({ isOpen, closeModal, selectedRisks, modalTitle }) => {
                             <Dialog.Panel
                                 className={`transform overflow-hidden bg-white shadow-xl transition-all ${isFullScreen
                                     ? 'fixed inset-0 rounded-none'
-                                    : 'w-full max-w-5xl rounded-lg p-6'
+                                    : 'w-full max-w-5xl rounded-lg p-4'
                                     }`}
                             >
                                 <div className={`flex justify-between items-center ${isFullScreen ? 'p-4' : 'mb-4'}`}>

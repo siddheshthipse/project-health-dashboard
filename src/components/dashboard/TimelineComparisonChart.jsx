@@ -222,7 +222,7 @@ const TaskTableModal = ({
                             leaveTo="opacity-0 scale-95"
                         >
                             <Dialog.Panel
-                                className={`${isFullScreen ? 'w-screen h-screen m-0 rounded-none' : 'w-full max-w-4xl rounded-lg'} transform overflow-hidden bg-white p-6 shadow-xl transition-all`}
+                                className={`${isFullScreen ? 'w-screen h-screen m-0 rounded-none' : 'w-full max-w-4xl rounded-lg'} transform overflow-hidden bg-white p-4 shadow-xl transition-all`}
                             >
                                 <div className="flex justify-between items-center mb-4">
                                     <Dialog.Title as="h3" className="text-md font-semibold text-gray-900">
@@ -258,62 +258,70 @@ const TaskTableModal = ({
                                         className={`cursor-pointer rounded-lg p-4 border ${activeTab === 'planned' ? 'bg-blue-50 border-blue-300' : 'bg-gray-50 border-gray-200'}`}
                                         onClick={() => setActiveTab('planned')}
                                     >
-                                        <div className="text-xl font-bold text-gray-700">{completionPercentages.planned}%</div>
+                                        <div className="text-xl font-bold text-gray-700">61.1%</div>
                                         <div className="text-xs text-gray-500">Planned Completion %</div>
                                     </div>
                                     <div
                                         className={`cursor-pointer rounded-lg p-4 border ${activeTab === 'actual' ? 'bg-green-50 border-green-300' : 'bg-gray-50 border-gray-200'}`}
                                         onClick={() => setActiveTab('actual')}
                                     >
-                                        <div className="text-xl font-bold text-gray-700">{completionPercentages.actual}%</div>
+                                        <div className="text-xl font-bold text-gray-700">30.02%</div>
                                         <div className="text-xs text-gray-500">Actual Completion %</div>
                                     </div>
                                 </div>
 
                                 {/* Tab content */}
-                                <div className={`border rounded-lg overflow-hidden ${isFullScreen ? 'h-[calc(100vh-200px)]' : 'max-h-[50vh]'} overflow-y-auto`}>
-                                    <table className="min-w-full divide-y divide-gray-200">
-                                        <thead className="bg-gray-50 sticky top-0">
-                                            <tr>
-                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    WBS
-                                                </th>
-                                                <th scope="col" className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Title
-                                                </th>
-                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Type
-                                                </th>
-                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Baseline End
-                                                </th>
-                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Planned End
-                                                </th>
-                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Planned %
-                                                </th>
-                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Actual %
-                                                </th>
-                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Slack Days
-                                                </th>
-                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Baseline
-                                                </th>
-                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Overdue Days
-                                                </th>
-                                                <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Delay Log
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="bg-white divide-y divide-gray-200">
-                                            {renderTreeRows(tasks)}
-                                        </tbody>
-                                    </table>
+                                <div className="border rounded-lg overflow-hidden" style={{ minHeight: '300px' }}>
+                                    <div style={{
+                                        height: isFullScreen ? 'calc(100vh - 200px)' : '50vh',
+                                        minHeight: '300px',
+                                        maxHeight: isFullScreen ? 'calc(100vh - 200px)' : '50vh',
+                                        overflowY: 'auto',
+                                        overflowX: 'auto'
+                                    }}>
+                                        <table className="min-w-full divide-y divide-gray-200" style={{ minWidth: '1200px' }}>
+                                            <thead className="bg-gray-50 sticky top-0 z-10">
+                                                <tr>
+                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '80px', width: '80px' }}>
+                                                        WBS
+                                                    </th>
+                                                    <th scope="col" className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '400px', width: '200px' }}>
+                                                        Title
+                                                    </th>
+                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '80px', width: '80px' }}>
+                                                        Type
+                                                    </th>
+                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '120px', width: '120px' }}>
+                                                        Baseline End
+                                                    </th>
+                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '120px', width: '120px' }}>
+                                                        Planned End
+                                                    </th>
+                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '100px', width: '100px' }}>
+                                                        Planned %
+                                                    </th>
+                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '100px', width: '100px' }}>
+                                                        Actual %
+                                                    </th>
+                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '100px', width: '100px' }}>
+                                                        Slack Days
+                                                    </th>
+                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '100px', width: '100px' }}>
+                                                        Baseline
+                                                    </th>
+                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '120px', width: '120px' }}>
+                                                        Overdue Days
+                                                    </th>
+                                                    <th scope="col" className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ minWidth: '150px', width: 'auto' }}>
+                                                        Delay Log
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="bg-white divide-y divide-gray-200">
+                                                {renderTreeRows(tasks)}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </Dialog.Panel>
                         </Transition.Child>
@@ -336,95 +344,126 @@ const TimelineComparisonChart = () => {
 
     // Sample baseline versions
     const baselineVersions = [
-        { id: 'baseline-1', name: 'Baseline 1', data: [10, 22, 35, 50, 65, 80, 90, 100, null] },
-        { id: 'baseline-2', name: 'Baseline 2', data: [8, 20, 32, 48, 62, 78, 88, 98, null] },
-        { id: 'baseline-3', name: 'Baseline 3', data: [12, 25, 38, 52, 68, 82, 92, 102, null] }
+        { id: 'baseline-1', name: 'Baseline 1', data: [0.26, 4.55, 9.59, 14.32, 18.87, 24.05, 28.78, 33.56, 37.95, 42.81, 47.85, 52.62, 57.19, 61.87, 66.77, 71.3, 75.98, 81.05, 85.62, 90.52, 95.23, 100] },
+        { id: 'baseline-2', name: 'Baseline 2', data: [0.12, 1.11, 2.75, 5.63, 8.46, 11.6, 15.21, 19.26, 23.42, 28.19, 32.65, 38.07, 43.15, 48.72, 54.56, 60.23, 66.54, 73.07, 79.17, 86.17, 92.83, 98] },
+        { id: 'baseline-3', name: 'Baseline 3', data: [0.28, 11.94, 19.5, 25.63, 31.39, 36.58, 41.79, 46.14, 50.66, 55.46, 59.49, 63.52, 67.42, 71.47, 75.12, 79.05, 82.47, 86.24, 89.58, 93.22, 96.74, 102] }
     ];
 
     // Sample project progress data (percentages)
     const projectData = {
-        months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
-        planned: [5, 15, 30, 45, 60, 75, 85, 95, 100],
-        actual: [5, 13, 25, 38, 48, 60, null, null, null], // null for future months
-        forecast: [5, 13, 25, 38, 48, 60, 69, 80, 92] // AI-generated forecast
+        months: ["May 24", "Jun 24", "Jul 24", "Aug 24", "Sep 24", "Oct 24", "Nov 24", "Dec 24", "Jan 25", "Feb 25", "Mar 25", "Apr 25", "May 25", "Jun 25", "Jul 25", "Aug 25", "Sep 25", "Oct 25", "Nov 25", "Dec 25", "Jan 26", "Feb 26"],
+        baseline: [0.08, 0.6, 2.64, 3.02, 3.39, 3.98, 4.14, 15.68, 21.38, 24.87, 31.64, 48.7, 58.88, 76.94, 86.08, 89.4, 92.73, 94.55, 96.36, 98.18, 99.09, 100],
+        actual: [0.08, 1.71, 3.55, 9.24, 10.65, 12.9, 16.14, 18.98, 25.23, 27.15, 28.35, 29.77, 30.02, null, null, null, null, null, null, null, null, null],
+        planned: [0.08, 0.59, 2.58, 2.87, 3.49, 3.87, 4.24, 15.53, 20.85, 24.25, 30.94, 50.04, 61.1, 80.04, 92.07, 93.52, 96.32, 97.6, 98.32, 98.74, 102.5, 100.71],
+        forecast: [0.08, 1.71, 3.55, 9.24, 10.65, 12.9, 16.14, 18.98, 25.23, 27.15, 28.35, 29.77, 30.02, 75.44, 82.99, 86.09, 89.12, 90.56, 92.9, 94.79, 96.09, 97.28]
     };
 
     // Enhanced task data with hierarchical structure
+
     const taskData = [
         {
             id: 'phase-1',
             wbs: '1',
-            title: 'Project Initiation',
+            title: 'Program Setup & Integration',
             type: 'Phase',
-            baselineEnd: 'Jan 15, 2025',
-            plannedEnd: 'Jan 20, 2025',
+            baselineEnd: 'Aug 24, 2024',
+            plannedEnd: 'Sep 10, 2024',
             plannedMilestonePercent: 100,
             actualMilestonePercent: 100,
             slackDays: 0,
             baseline: true,
             overdueDays: 0,
-            delayLog: 'None',
+            delayLog: 'Completed',
             children: [
                 {
-                    id: 'milestone-1',
+                    id: 'milestone-1-1',
                     wbs: '1.1',
-                    title: 'Requirements Gathering',
+                    title: 'Program Charter & Governance',
                     type: 'Milestone',
-                    baselineEnd: 'Jan 8, 2025',
-                    plannedEnd: 'Jan 10, 2025',
+                    baselineEnd: 'Jun 20, 2024',
+                    plannedEnd: 'Jun 25, 2024',
                     plannedMilestonePercent: 100,
                     actualMilestonePercent: 100,
-                    slackDays: 2,
+                    slackDays: 0,
                     baseline: true,
                     overdueDays: 0,
-                    delayLog: 'None',
-                    children: [
-                        {
-                            id: 'deliv-group-1',
-                            wbs: '1.1.1',
-                            title: 'Business Requirements',
-                            type: 'Deliverable Group',
-                            baselineEnd: 'Jan 3, 2025',
-                            plannedEnd: 'Jan 5, 2025',
-                            plannedMilestonePercent: 100,
-                            actualMilestonePercent: 100,
-                            slackDays: 1,
-                            baseline: true,
-                            overdueDays: 0,
-                            delayLog: 'None',
-                            children: []
-                        }
-                    ]
+                    delayLog: 'Completed on time',
+                    children: []
+                },
+                {
+                    id: 'milestone-1-2',
+                    wbs: '1.2',
+                    title: 'Team Onboarding',
+                    type: 'Milestone',
+                    baselineEnd: 'Jul 15, 2024',
+                    plannedEnd: 'Jul 20, 2024',
+                    plannedMilestonePercent: 100,
+                    actualMilestonePercent: 100,
+                    slackDays: 0,
+                    baseline: true,
+                    overdueDays: 0,
+                    delayLog: 'Completed with minor delays',
+                    children: []
                 }
             ]
         },
         {
             id: 'phase-2',
             wbs: '2',
-            title: 'Design & Planning',
+            title: 'Discovery & Requirements',
             type: 'Phase',
-            baselineEnd: 'Feb 5, 2025',
-            plannedEnd: 'Feb 10, 2025',
+            baselineEnd: 'Dec 15, 2024',
+            plannedEnd: 'Dec 20, 2024',
             plannedMilestonePercent: 100,
-            actualMilestonePercent: 95,
-            slackDays: 0,
+            actualMilestonePercent: 80,
+            slackDays: 5,
             baseline: true,
-            overdueDays: 5,
-            delayLog: 'Resource constraints',
+            overdueDays: 0,
+            delayLog: 'On track with adjustments',
             children: [
                 {
-                    id: 'milestone-2',
+                    id: 'milestone-2-1',
                     wbs: '2.1',
-                    title: 'System Architecture',
+                    title: 'Business Process Analysis',
                     type: 'Milestone',
-                    baselineEnd: 'Feb 1, 2025',
-                    plannedEnd: 'Feb 5, 2025',
+                    baselineEnd: 'Oct 10, 2024',
+                    plannedEnd: 'Oct 15, 2024',
                     plannedMilestonePercent: 100,
-                    actualMilestonePercent: 95,
+                    actualMilestonePercent: 100,
                     slackDays: 0,
                     baseline: true,
-                    overdueDays: 3,
-                    delayLog: 'Technical challenges',
+                    overdueDays: 0,
+                    delayLog: 'Completed',
+                    children: []
+                },
+                {
+                    id: 'milestone-2-2',
+                    wbs: '2.2',
+                    title: 'System Requirements',
+                    type: 'Milestone',
+                    baselineEnd: 'Nov 25, 2024',
+                    plannedEnd: 'Dec 05, 2024',
+                    plannedMilestonePercent: 100,
+                    actualMilestonePercent: 90,
+                    slackDays: 3,
+                    baseline: true,
+                    overdueDays: 0,
+                    delayLog: 'Minor scope adjustments',
+                    children: []
+                },
+                {
+                    id: 'milestone-2-3',
+                    wbs: '2.3',
+                    title: 'Data Migration Strategy',
+                    type: 'Milestone',
+                    baselineEnd: 'Dec 10, 2024',
+                    plannedEnd: 'Dec 15, 2024',
+                    plannedMilestonePercent: 100,
+                    actualMilestonePercent: 60,
+                    slackDays: 5,
+                    baseline: true,
+                    overdueDays: 0,
+                    delayLog: 'In progress',
                     children: []
                 }
             ]
@@ -432,45 +471,228 @@ const TimelineComparisonChart = () => {
         {
             id: 'phase-3',
             wbs: '3',
-            title: 'Development',
+            title: 'Design & Configuration',
             type: 'Phase',
-            baselineEnd: 'May 10, 2025',
+            baselineEnd: 'Apr 30, 2025',
             plannedEnd: 'May 15, 2025',
-            plannedMilestonePercent: 60,
-            actualMilestonePercent: 45,
-            slackDays: 5,
+            plannedMilestonePercent: 100,
+            actualMilestonePercent: 30,
+            slackDays: 0,
             baseline: true,
             overdueDays: 0,
             delayLog: 'In progress',
             children: [
                 {
-                    id: 'milestone-3',
+                    id: 'milestone-3-1',
                     wbs: '3.1',
-                    title: 'Backend Development',
+                    title: 'System Architecture',
                     type: 'Milestone',
-                    baselineEnd: 'Apr 15, 2025',
-                    plannedEnd: 'Apr 20, 2025',
-                    plannedMilestonePercent: 70,
-                    actualMilestonePercent: 60,
-                    slackDays: 3,
+                    baselineEnd: 'Jan 25, 2025',
+                    plannedEnd: 'Feb 05, 2025',
+                    plannedMilestonePercent: 100,
+                    actualMilestonePercent: 95,
+                    slackDays: 0,
                     baseline: true,
-                    overdueDays: 0,
-                    delayLog: 'In progress',
+                    overdueDays: 2,
+                    delayLog: 'Minor technical issues',
                     children: []
                 },
                 {
-                    id: 'milestone-4',
+                    id: 'milestone-3-2',
                     wbs: '3.2',
-                    title: 'Frontend Development',
+                    title: 'Application Configuration',
                     type: 'Milestone',
-                    baselineEnd: 'Apr 30, 2025',
-                    plannedEnd: 'May 5, 2025',
-                    plannedMilestonePercent: 50,
-                    actualMilestonePercent: 35,
-                    slackDays: 2,
+                    baselineEnd: 'Mar 20, 2025',
+                    plannedEnd: 'Mar 30, 2025',
+                    plannedMilestonePercent: 100,
+                    actualMilestonePercent: 25,
+                    slackDays: 0,
                     baseline: true,
                     overdueDays: 0,
-                    delayLog: 'In progress',
+                    delayLog: 'Early stages',
+                    children: []
+                },
+                {
+                    id: 'milestone-3-3',
+                    wbs: '3.3',
+                    title: 'Integration Design',
+                    type: 'Milestone',
+                    baselineEnd: 'Apr 15, 2025',
+                    plannedEnd: 'Apr 20, 2025',
+                    plannedMilestonePercent: 100,
+                    actualMilestonePercent: 0,
+                    slackDays: 0,
+                    baseline: true,
+                    overdueDays: 0,
+                    delayLog: 'Not started',
+                    children: []
+                }
+            ]
+        },
+        {
+            id: 'phase-4',
+            wbs: '4',
+            title: 'Development & Integration',
+            type: 'Phase',
+            baselineEnd: 'Sep 30, 2025',
+            plannedEnd: 'Oct 15, 2025',
+            plannedMilestonePercent: 100,
+            actualMilestonePercent: 0,
+            slackDays: 0,
+            baseline: true,
+            overdueDays: 0,
+            delayLog: 'Not started',
+            children: [
+                {
+                    id: 'milestone-4-1',
+                    wbs: '4.1',
+                    title: 'Core Development',
+                    type: 'Milestone',
+                    baselineEnd: 'Jul 15, 2025',
+                    plannedEnd: 'Jul 30, 2025',
+                    plannedMilestonePercent: 100,
+                    actualMilestonePercent: 0,
+                    slackDays: 0,
+                    baseline: true,
+                    overdueDays: 0,
+                    delayLog: 'Not started',
+                    children: []
+                },
+                {
+                    id: 'milestone-4-2',
+                    wbs: '4.2',
+                    title: 'System Integration',
+                    type: 'Milestone',
+                    baselineEnd: 'Sep 15, 2025',
+                    plannedEnd: 'Sep 30, 2025',
+                    plannedMilestonePercent: 100,
+                    actualMilestonePercent: 0,
+                    slackDays: 0,
+                    baseline: true,
+                    overdueDays: 0,
+                    delayLog: 'Not started',
+                    children: []
+                }
+            ]
+        },
+        {
+            id: 'phase-5',
+            wbs: '5',
+            title: 'Testing & Validation',
+            type: 'Phase',
+            baselineEnd: 'Dec 20, 2025',
+            plannedEnd: 'Dec 31, 2025',
+            plannedMilestonePercent: 100,
+            actualMilestonePercent: 0,
+            slackDays: 0,
+            baseline: true,
+            overdueDays: 0,
+            delayLog: 'Not started',
+            children: [
+                {
+                    id: 'milestone-5-1',
+                    wbs: '5.1',
+                    title: 'Unit Testing',
+                    type: 'Milestone',
+                    baselineEnd: 'Oct 30, 2025',
+                    plannedEnd: 'Nov 10, 2025',
+                    plannedMilestonePercent: 100,
+                    actualMilestonePercent: 0,
+                    slackDays: 0,
+                    baseline: true,
+                    overdueDays: 0,
+                    delayLog: 'Not started',
+                    children: []
+                },
+                {
+                    id: 'milestone-5-2',
+                    wbs: '5.2',
+                    title: 'Integration Testing',
+                    type: 'Milestone',
+                    baselineEnd: 'Nov 30, 2025',
+                    plannedEnd: 'Dec 10, 2025',
+                    plannedMilestonePercent: 100,
+                    actualMilestonePercent: 0,
+                    slackDays: 0,
+                    baseline: true,
+                    overdueDays: 0,
+                    delayLog: 'Not started',
+                    children: []
+                },
+                {
+                    id: 'milestone-5-3',
+                    wbs: '5.3',
+                    title: 'User Acceptance Testing',
+                    type: 'Milestone',
+                    baselineEnd: 'Dec 15, 2025',
+                    plannedEnd: 'Dec 25, 2025',
+                    plannedMilestonePercent: 100,
+                    actualMilestonePercent: 0,
+                    slackDays: 0,
+                    baseline: true,
+                    overdueDays: 0,
+                    delayLog: 'Not started',
+                    children: []
+                }
+            ]
+        },
+        {
+            id: 'phase-6',
+            wbs: '6',
+            title: 'Deployment & Go-Live',
+            type: 'Phase',
+            baselineEnd: 'Feb 26, 2026',
+            plannedEnd: 'Feb 26, 2026',
+            plannedMilestonePercent: 100,
+            actualMilestonePercent: 0,
+            slackDays: 0,
+            baseline: true,
+            overdueDays: 0,
+            delayLog: 'Not started',
+            children: [
+                {
+                    id: 'milestone-6-1',
+                    wbs: '6.1',
+                    title: 'Training',
+                    type: 'Milestone',
+                    baselineEnd: 'Jan 15, 2026',
+                    plannedEnd: 'Jan 20, 2026',
+                    plannedMilestonePercent: 100,
+                    actualMilestonePercent: 0,
+                    slackDays: 0,
+                    baseline: true,
+                    overdueDays: 0,
+                    delayLog: 'Not started',
+                    children: []
+                },
+                {
+                    id: 'milestone-6-2',
+                    wbs: '6.2',
+                    title: 'Production Deployment',
+                    type: 'Milestone',
+                    baselineEnd: 'Feb 10, 2026',
+                    plannedEnd: 'Feb 15, 2026',
+                    plannedMilestonePercent: 100,
+                    actualMilestonePercent: 0,
+                    slackDays: 0,
+                    baseline: true,
+                    overdueDays: 0,
+                    delayLog: 'Not started',
+                    children: []
+                },
+                {
+                    id: 'milestone-6-3',
+                    wbs: '6.3',
+                    title: 'Post-Implementation Support',
+                    type: 'Milestone',
+                    baselineEnd: 'Feb 26, 2026',
+                    plannedEnd: 'Feb 26, 2026',
+                    plannedMilestonePercent: 100,
+                    actualMilestonePercent: 0,
+                    slackDays: 0,
+                    baseline: true,
+                    overdueDays: 0,
+                    delayLog: 'Not started',
                     children: []
                 }
             ]

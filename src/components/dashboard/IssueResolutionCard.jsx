@@ -161,7 +161,7 @@ const IssueResolutionDrilldownModal = ({ isOpen, closeModal }) => {
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-full max-w-5xl transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all">
+                            <Dialog.Panel className="w-full max-w-5xl transform overflow-hidden rounded-lg bg-white p-4 shadow-xl transition-all">
                                 <div className="flex justify-between items-center mb-4">
                                     <Dialog.Title as="h3" className="text-md font-semibold text-gray-900">
                                         Issue Resolution Details
@@ -441,11 +441,11 @@ const IssueResolutionCard = () => {
             {/* Issue counts at the top like the Risk card */}
             <div className="grid grid-cols-2 gap-4 mb-4">
                 <div className="rounded bg-gray-100 p-3 text-center">
-                    <div className="text-2xl font-bold text-gray-700">12</div>
+                    <div className="text-2xl font-bold text-gray-700">1</div>
                     <div className="text-xs text-gray-700">Open Issues</div>
                 </div>
                 <div className="rounded bg-orange-100 p-3 text-center">
-                    <div className="text-2xl font-bold text-orange-600">6.2</div>
+                    <div className="text-2xl font-bold text-orange-600">NA</div>
                     <div className="text-xs text-gray-700">Avg. Days to Resolve</div>
                 </div>
             </div>
@@ -455,13 +455,13 @@ const IssueResolutionCard = () => {
                 <div className="mb-4 mt-5">
                     <div className="flex justify-between items-center mb-1">
                         <span className="text-sm font-medium text-gray-700">Resolution Rate</span>
-                        <span className="text-sm font-medium text-green-600">87%</span>
+                        <span className="text-sm font-medium text-red-600">0%</span>
                     </div>
                     <div className="text-xs text-gray-500 mb-2">
                         (Resolved Issues / Total Issues) × 100%
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2.5">
-                        <div className="bg-green-500 h-2.5 rounded-full" style={{ width: '87%' }}></div>
+                        <div className="bg-red-500 h-2.5 rounded-full" style={{ width: '0%' }}></div>
                     </div>
                     <div className="flex justify-between text-xs text-gray-500 mt-1">
                         <span>0%</span>
@@ -482,11 +482,11 @@ const IssueResolutionCard = () => {
             <div className="flex justify-between items-center border-t pt-3 mt-auto">
                 <div className="flex items-center space-x-4">
                     <div className="text-sm">
-                        <div className="font-medium">82/94</div>
+                        <div className="font-medium">0/1</div>
                         <div className="text-xs text-gray-500">Issues Resolved</div>
                     </div>
                     <div className="text-sm">
-                        <div className="font-medium">12</div>
+                        <div className="font-medium">1</div>
                         <div className="text-xs text-gray-500">Open Issues</div>
                     </div>
                 </div>
