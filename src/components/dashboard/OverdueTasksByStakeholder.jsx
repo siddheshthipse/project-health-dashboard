@@ -394,7 +394,7 @@ const OverdueTasksByStakeholder = () => {
                     {tasks.map((task) => (
                         <tr key={task.id} className="hover:bg-gray-50">
                             <td className="px-3 py-3 whitespace-nowrap">
-                                <div className="text-sm font-medium text-gray-900">{task.title}</div>
+                                <div className="text-xs font-medium text-gray-900">{task.title}</div>
                             </td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">
                                 <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(task.status)}`}>
@@ -704,7 +704,7 @@ const OverdueTasksByStakeholder = () => {
                             </td>
                             <td className="px-3 py-2 whitespace-nowrap">
                                 <div className="flex items-center">
-                                    <div className="text-sm font-medium text-gray-900">{task.title}</div>
+                                    <div className="text-xs font-medium text-gray-900">{task.title}</div>
                                 </div>
                             </td>
                             <td className="px-3 py-2 whitespace-nowrap text-center">
@@ -876,17 +876,17 @@ const OverdueTasksByStakeholder = () => {
     };
 
     return (
-        <div className="bg-white rounded-lg shadow p-5 border-t-4 border-red-500">
+        <div className="bg-white rounded-lg shadow p-5">
             <div className="flex justify-between items-start mb-4">
                 <div>
                     <h3 className="font-medium text-gray-700">Overdue Tasks by Stakeholder</h3>
-                    <div className="text-xs text-gray-500">
+                    {/* <div className="text-xs text-gray-500">
                         Tasks that require attention or were completed past deadline
-                    </div>
+                    </div> */}
                 </div>
-                <div className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded flex items-center">
+                {/* <div className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded flex items-center">
                     {totalOverdue} Overdue Tasks
-                </div>
+                </div> */}
             </div>
 
             <div className="mb-4">

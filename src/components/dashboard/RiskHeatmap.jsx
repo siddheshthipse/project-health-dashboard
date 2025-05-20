@@ -196,7 +196,7 @@ const RiskHeatmap = () => {
     // };
 
     return (
-        <div className="bg-white rounded-lg shadow p-5 border-t-4 border-blue-500">
+        <div className="bg-white rounded-lg shadow p-5">
             <div className="flex justify-between items-start mb-4">
                 <div>
                     <h3 className="font-medium text-gray-700">Risk Heatmap</h3>
@@ -204,14 +204,14 @@ const RiskHeatmap = () => {
                         <span>HIGH PRIORITY</span>
                     </div> */}
                 </div>
-                <div className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex items-center">
+                {/* <div className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex items-center">
                     Active
-                </div>
+                </div> */}
             </div>
 
             <div className="flex mb-4">
                 {/* Left side - Total column */}
-                <div className="flex flex-col mr-1">
+                {/* <div className="flex flex-col mr-1">
                     <div className="h-10 flex items-center justify-center font-semibold text-xs bg-blue-100 text-blue-800 w-12">
                         TOTAL
                     </div>
@@ -227,7 +227,7 @@ const RiskHeatmap = () => {
                     <div className="h-10 w-12 bg-gray-300 flex items-center justify-center font-semibold text-gray-800">
                         {riskData.totals.all}
                     </div>
-                </div>
+                </div> */}
 
                 {/* Right side - Heatmap */}
                 <div className="flex-1">

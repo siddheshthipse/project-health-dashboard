@@ -269,35 +269,38 @@ const RiskExposureCard = () => {
             </div>
 
             {/* Risk mitigation section - flex-grow will help fill available space */}
-            <div className="flex-grow mb-4">
-                <div className="mb-4 mt-5">
-                    <div className="flex justify-between items-center mb-1">
-                        <span className="text-sm font-medium text-gray-700">Risk Mitigation Rate</span>
-                        <span className="text-sm font-medium text-yellow-600">31%</span>
+            <div className="mb-4 mt-5">
+                <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-medium text-gray-700">Risk Mitigation Rate</span>
+                    <span className="text-sm font-medium text-red-600">70%</span>
+                </div>
+                <div className="text-xs text-gray-500 mb-2">
+                    (Mitigated risks / Identified risks) × 100%
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2.5 relative">
+                    <div className="bg-yellow-500 h-2.5 rounded-full" style={{ width: '70%' }}></div>
+                </div>
+
+                {/* Percentage markers with proper positioning */}
+                <div className="relative w-full mt-2 mb-4">
+                    <span className="absolute left-0 text-xs text-gray-500">0%</span>
+
+                    <div className="absolute left-1/2 transform -translate-x-1/2 flex flex-col items-center">
+                        <span className="inline-block w-2 h-2 bg-red-500 rounded-full"></span>
+                        <span className="text-xs text-gray-500 mt-1">Critical &lt;50%</span>
                     </div>
-                    <div className="text-xs text-gray-500 mb-2">
-                        (Mitigated risks / Identified risks) × 100%
+
+                    <div className="absolute left-3/4 transform -translate-x-1/2 flex flex-col items-center">
+                        <span className="inline-block w-2 h-2 bg-yellow-500 rounded-full"></span>
+                        <span className="text-xs text-gray-500 mt-1">Warning &lt;75%</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5">
-                        <div className="bg-yellow-500 h-2.5 rounded-full" style={{ width: '68%' }}></div>
-                    </div>
-                    <div className="flex justify-between text-xs text-gray-500 mt-1">
-                        <span>0%</span>
-                        <div>
-                            <span className="inline-block w-2 h-2 bg-red-500 rounded-full mr-1"></span>
-                            <span>Critical &lt;50%</span>
-                        </div>
-                        <div>
-                            <span className="inline-block w-2 h-2 bg-yellow-500 rounded-full mr-1"></span>
-                            <span>Warning &lt;75%</span>
-                        </div>
-                        <span>100%</span>
-                    </div>
+
+                    <span className="absolute right-0 text-xs text-gray-500">100%</span>
                 </div>
             </div>
 
             {/* Bottom section with metrics and button */}
-            <div className="flex justify-between items-center border-t pt-3 mt-auto">
+            <div className="flex justify-between items-center border-t pt-3 mt-4">
                 <div className="flex items-center space-x-4">
                     <div className="text-sm">
                         <div className="font-medium">14/45</div>

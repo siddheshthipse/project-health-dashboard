@@ -5,30 +5,50 @@ import { XMarkIcon, ChevronRightIcon, ChevronDownIcon } from '@heroicons/react/2
 // Dependency Coverage Card with Drilldown
 const DependencyCoverageCard = () => {
     const [showDrilldown, setShowDrilldown] = useState(false);
-    
+
     return (
         <div className="bg-white rounded-lg shadow p-5 h-full flex flex-col justify-between">
             {/* Title Section */}
             <div>
-                <h3 className="font-medium text-gray-700 mb-3">Dependency Coverage Rate</h3>
-                
-                {/* Progress Bar */}
-                <div className="mb-3 bg-gray-200 h-2.5 rounded-full overflow-hidden">
-                    <div className="bg-yellow-500 h-full rounded-full" style={{ width: '1%' }}></div>
+                <div className="flex justify-between items-center mb-3">
+                    <h3 className="font-medium text-gray-700">Dependency Coverage Rate</h3>
+                    <span className="text-sm font-medium text-red-600">30%</span>
                 </div>
-                
-                {/* Coverage Info */}
-                <div className="flex justify-between text-xs mb-5">
-                    <span className="text-gray-500">1% coverage</span>
-                    <span className="text-yellow-700">21 milestones need dependencies</span>
+
+                {/* Progress Bar */}
+                <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2 relative">
+                    <div className="bg-red-500 h-2.5 rounded-full" style={{ width: '30%' }}></div>
+
+                    {/* Marker for 50% - Critical threshold */}
+                    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
+                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                        <span className="text-xs text-gray-500 mt-1">Critical &lt;50%</span>
+                    </div>
+
+                    {/* Marker for 75% - Warning threshold */}
+                    <div className="absolute top-4 left-3/4 transform -translate-x-1/2 flex flex-col items-center">
+                        <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                        <span className="text-xs text-gray-500 mt-1">Warning &lt;75%</span>
+                    </div>
+                </div>
+
+                {/* Coverage percentage labels */}
+                <div className="flex justify-between text-xs text-gray-500 mt-6 mb-5">
+                    <span>0%</span>
+                    <span className="ml-auto">100%</span>
+                </div>
+
+                {/* Additional Info */}
+                <div className="text-xs text-red-700 font-medium">
+                    21 milestones need dependencies
                 </div>
             </div>
-            
+
             {/* Additional Content to Fill Space */}
             <div className="flex-grow my-4">
                 {/* You can add additional content here if needed */}
             </div>
-            
+
             {/* Action Button */}
             <div className="border-t pt-3 flex justify-end mt-auto">
                 <button
@@ -38,12 +58,6 @@ const DependencyCoverageCard = () => {
                     View Tasks without Dependencies
                 </button>
             </div>
-            
-            {/* Drilldown Modal */}
-            <DependencyCoverageDrilldownModal
-                isOpen={showDrilldown}
-                closeModal={() => setShowDrilldown(false)}
-            />
         </div>
     );
 };

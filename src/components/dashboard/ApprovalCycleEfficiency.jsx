@@ -158,7 +158,7 @@ const ApprovalEfficiencyDrilldownModal = ({ isOpen, closeModal }) => {
     };
 
     const filteredApprovals = getFilteredApprovals();
-    
+
     // Get unique workstreams
     const workstreams = ['BAS', 'CIM', 'DMG', 'DRA', 'EAM', 'FSM', 'HSSE', 'PTP'];
 
@@ -168,7 +168,7 @@ const ApprovalEfficiencyDrilldownModal = ({ isOpen, closeModal }) => {
     //         name: workstream,
     //         value: time
     //     }));
-        
+
     //     return {
     //         tooltip: {
     //             trigger: 'axis',
@@ -256,7 +256,7 @@ const ApprovalEfficiencyDrilldownModal = ({ isOpen, closeModal }) => {
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel 
+                            <Dialog.Panel
                                 className={`${isFullScreen ? 'w-screen h-screen m-0 rounded-none' : 'w-full max-w-6xl rounded-lg'} transform overflow-hidden bg-white p-4 shadow-xl transition-all`}
                             >
                                 <div className="flex justify-between items-center mb-2">
@@ -303,9 +303,9 @@ const ApprovalEfficiencyDrilldownModal = ({ isOpen, closeModal }) => {
                                                     Avg. Total Approval Time
                                                 </div>
                                             </div>
-                                            <div className={`rounded-lg p-3 border ${activeFilter === 'inprogress' ? 'bg-amber-50 border-amber-200' : 'bg-gray-50 border-gray-200'}`} 
-                                                 onClick={() => setActiveFilter('inprogress')}
-                                                 style={{ cursor: 'pointer' }}>
+                                            <div className={`rounded-lg p-3 border ${activeFilter === 'inprogress' ? 'bg-amber-50 border-amber-200' : 'bg-gray-50 border-gray-200'}`}
+                                                onClick={() => setActiveFilter('inprogress')}
+                                                style={{ cursor: 'pointer' }}>
                                                 <div className="text-xl font-bold text-amber-600">
                                                     {approvalData.approvals.filter(a => a.status === 'In Progress').length}
                                                 </div>
@@ -313,9 +313,9 @@ const ApprovalEfficiencyDrilldownModal = ({ isOpen, closeModal }) => {
                                                     In Progress Approvals
                                                 </div>
                                             </div>
-                                            <div className={`rounded-lg p-3 border ${activeFilter === 'completed' ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`} 
-                                                 onClick={() => setActiveFilter('completed')}
-                                                 style={{ cursor: 'pointer' }}>
+                                            <div className={`rounded-lg p-3 border ${activeFilter === 'completed' ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}
+                                                onClick={() => setActiveFilter('completed')}
+                                                style={{ cursor: 'pointer' }}>
                                                 <div className="text-xl font-bold text-green-600">
                                                     {approvalData.approvals.filter(a => a.status === 'Completed').length}
                                                 </div>
@@ -342,23 +342,20 @@ const ApprovalEfficiencyDrilldownModal = ({ isOpen, closeModal }) => {
                                             setActiveFilter(statuses[index]);
                                         }}>
                                             <Tab.List className="flex">
-                                                <Tab className={({ selected }) => 
-                                                    `px-4 py-1 text-sm rounded focus:outline-none ${
-                                                        selected ? 'bg-white shadow-sm font-medium' : 'text-gray-600 hover:bg-gray-100'
+                                                <Tab className={({ selected }) =>
+                                                    `px-4 py-1 text-sm rounded focus:outline-none ${selected ? 'bg-white shadow-sm font-medium' : 'text-gray-600 hover:bg-gray-100'
                                                     }`
                                                 }>
                                                     All Approvals
                                                 </Tab>
-                                                <Tab className={({ selected }) => 
-                                                    `px-4 py-1 text-sm rounded focus:outline-none ${
-                                                        selected ? 'bg-white shadow-sm font-medium' : 'text-gray-600 hover:bg-gray-100'
+                                                <Tab className={({ selected }) =>
+                                                    `px-4 py-1 text-sm rounded focus:outline-none ${selected ? 'bg-white shadow-sm font-medium' : 'text-gray-600 hover:bg-gray-100'
                                                     }`
                                                 }>
                                                     In Progress
                                                 </Tab>
-                                                <Tab className={({ selected }) => 
-                                                    `px-4 py-1 text-sm rounded focus:outline-none ${
-                                                        selected ? 'bg-white shadow-sm font-medium' : 'text-gray-600 hover:bg-gray-100'
+                                                <Tab className={({ selected }) =>
+                                                    `px-4 py-1 text-sm rounded focus:outline-none ${selected ? 'bg-white shadow-sm font-medium' : 'text-gray-600 hover:bg-gray-100'
                                                     }`
                                                 }>
                                                     Completed
@@ -368,8 +365,8 @@ const ApprovalEfficiencyDrilldownModal = ({ isOpen, closeModal }) => {
                                         <div className="flex">
                                             <Menu as="div" className="relative inline-block text-left">
                                                 <Menu.Button className="px-3 py-1 text-sm border rounded text-gray-700 bg-white inline-flex items-center">
-                                                    {activeFilter === 'all' || activeFilter === 'inprogress' || activeFilter === 'completed' 
-                                                        ? 'All Workstreams' 
+                                                    {activeFilter === 'all' || activeFilter === 'inprogress' || activeFilter === 'completed'
+                                                        ? 'All Workstreams'
                                                         : activeFilter}
                                                     <ChevronDownIcon className="h-4 w-4 ml-1" aria-hidden="true" />
                                                 </Menu.Button>
@@ -388,9 +385,8 @@ const ApprovalEfficiencyDrilldownModal = ({ isOpen, closeModal }) => {
                                                                 {({ active }) => (
                                                                     <button
                                                                         onClick={() => setActiveFilter('all')}
-                                                                        className={`${
-                                                                            active ? 'bg-gray-100' : ''
-                                                                        } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                                                                        className={`${active ? 'bg-gray-100' : ''
+                                                                            } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                                                                     >
                                                                         All Workstreams
                                                                     </button>
@@ -401,9 +397,8 @@ const ApprovalEfficiencyDrilldownModal = ({ isOpen, closeModal }) => {
                                                                     {({ active }) => (
                                                                         <button
                                                                             onClick={() => setActiveFilter(workstream)}
-                                                                            className={`${
-                                                                                active ? 'bg-gray-100' : ''
-                                                                            } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                                                                            className={`${active ? 'bg-gray-100' : ''
+                                                                                } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                                                                         >
                                                                             {workstream}
                                                                         </button>
@@ -446,9 +441,9 @@ const ApprovalEfficiencyDrilldownModal = ({ isOpen, closeModal }) => {
                                                         <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             Level 3
                                                         </th>
-                                                        <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        {/* <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             Level 4
-                                                        </th>
+                                                        </th> */}
                                                         <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             Total Time
                                                         </th>
@@ -492,11 +487,11 @@ const ApprovalEfficiencyDrilldownModal = ({ isOpen, closeModal }) => {
                                                                     {approval.level3Time !== null ? `${approval.level3Time} days` : '-'}
                                                                 </span>
                                                             </td>
-                                                            <td className="p-3 text-center whitespace-nowrap text-xs font-medium">
+                                                            {/* <td className="p-3 text-center whitespace-nowrap text-xs font-medium">
                                                                 <span className={getTimeColor(approval.level4Time)}>
                                                                     {approval.level4Time !== null ? `${approval.level4Time} days` : '-'}
                                                                 </span>
-                                                            </td>
+                                                            </td> */}
                                                             <td className="p-3 text-center whitespace-nowrap text-xs font-medium">
                                                                 {approval.totalTime} days
                                                             </td>
@@ -611,14 +606,14 @@ const ApprovalCycleEfficiency = () => {
                     { value: approvalData.times[0], name: approvalData.levels[0] },
                     { value: approvalData.times[1], name: approvalData.levels[1] },
                     { value: approvalData.times[2], name: approvalData.levels[2] },
-                    { value: approvalData.times[3], name: approvalData.levels[3] }
+                    
                 ]
             }
         ]
     };
 
     return (
-        <div className="bg-white rounded-lg shadow p-5 border-t-4 border-purple-500">
+        <div className="bg-white rounded-lg shadow p-5 border-t-4 border-red-500">
             <div className="flex justify-between items-start mb-4">
                 <div>
                     <h3 className="font-medium text-gray-700">Signoff Approval Efficiency</h3>
@@ -626,19 +621,19 @@ const ApprovalCycleEfficiency = () => {
                         <span>MEDIUM PRIORITY</span>
                     </div> */}
                 </div>
-                <div className={`${status} text-xs px-2 py-1 rounded flex items-center`}>
-                    {statusText}
+                <div className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded flex items-center">
+                    Critical
                 </div>
             </div>
 
             <div className="mb-4">
                 <div className="flex justify-between items-end">
                     <div className="text-xl text-gray-800">{approvalData.total} days</div>
-                    <div className="text-sm text-gray-500">
+                    {/* <div className="text-sm text-gray-500">
                         Avg. approval cycle
-                    </div>
+                    </div> */}
                 </div>
-                <div className="text-sm text-gray-500 mt-1">
+                <div className="text-xs text-gray-500 mt-1">
                     Average days from submission to final approval
                 </div>
             </div>

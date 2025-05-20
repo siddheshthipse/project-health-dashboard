@@ -6,26 +6,27 @@ const PlanRecencyCard = () => {
   const [showDrilldown, setShowDrilldown] = useState(false);
 
   return (
-    <div className="bg-white rounded-lg shadow p-5 h-full flex flex-col justify-between">
+    <div className="bg-white rounded-lg shadow p-4 flex flex-col justify-between">
       {/* Title Section */}
       <div>
-        <h3 className="font-medium text-gray-700 mb-3">Plan Recency</h3>
+        <h3 className="font-medium text-gray-700 mb-2">Plan Recency</h3>
       </div>
 
       {/* Main Content - Centered */}
-      <div className="flex-grow flex flex-col justify-center items-center my-2">
+      <div className="flex justify-center items-center py-2">
         <div className="text-center">
-          <div className="text-4xl font-bold text-red-600">1</div>
-          <div className="text-sm text-gray-500 mt-1">days since last update</div>
-        </div>
-
-        <div className="text-xs text-gray-500 mt-3 text-center">
-          Last Updated: May 7, 2025
+          <div className="text-3xl font-bold text-red-600">1</div>
+          <div className="text-xs text-gray-500">days since last update</div>
         </div>
       </div>
 
+      {/* Last Updated Info */}
+      <div className="text-xs text-gray-500 text-center mb-2">
+        Last Updated: May 7, 2025
+      </div>
+
       {/* Action Button */}
-      <div className="mt-auto pt-3 border-t flex justify-end">
+      <div className="pt-2 border-t flex justify-end">
         <button
           onClick={() => setShowDrilldown(true)}
           className="text-blue-600 text-xs hover:underline focus:outline-none"

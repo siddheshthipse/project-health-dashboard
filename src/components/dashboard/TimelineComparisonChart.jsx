@@ -872,37 +872,37 @@ const TimelineComparisonChart = () => {
     };
 
     return (
-        <div className="bg-white rounded-lg shadow p-5">
+        <div className="bg-white rounded-lg shadow p-5 border-1">
             <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
                     <h3 className="font-medium text-gray-800">Project Progress Timeline</h3>
-                    <span className="text-xs text-gray-500">Track project progress against plan, baseline and forecasts</span>
+                    {/* <span className="text-xs text-gray-500">Track project progress against plan, baseline and forecasts</span> */}
                 </div>
-                <div className="flex space-x-2">
+                <div className="flex bg-gray-100 rounded-md p-0.5 space-x-0.5">
                     <button
                         onClick={() => setComparisonMode('planned-actual-baseline')}
-                        className={`px-2 py-1 text-xs rounded ${comparisonMode === 'planned-actual-baseline' ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-700'
+                        className={`text-xs py-1 px-2 rounded-md transition-all ${comparisonMode === 'planned-actual-baseline' ? 'bg-white shadow-sm' : 'text-gray-700'
                             }`}
                     >
                         Planned vs Actual vs Baseline
                     </button>
                     <button
                         onClick={() => setComparisonMode('planned-actual')}
-                        className={`px-2 py-1 text-xs rounded ${comparisonMode === 'planned-actual' ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-700'
+                        className={`text-xs py-1 px-2 rounded-md transition-all ${comparisonMode === 'planned-actual' ? 'bg-white shadow-sm' : 'text-gray-700'
                             }`}
                     >
                         Planned vs Actual
                     </button>
                     <button
                         onClick={() => setComparisonMode('planned-baseline')}
-                        className={`px-2 py-1 text-xs rounded ${comparisonMode === 'planned-baseline' ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-700'
+                        className={`text-xs py-1 px-2 rounded-md transition-all ${comparisonMode === 'planned-baseline' ? 'bg-white shadow-sm' : 'text-gray-700'
                             }`}
                     >
                         Planned vs Baseline
                     </button>
                     <button
                         onClick={() => setComparisonMode('actual-baseline')}
-                        className={`px-2 py-1 text-xs rounded ${comparisonMode === 'actual-baseline' ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-700'
+                        className={`text-xs py-1 px-2 rounded-md transition-all ${comparisonMode === 'actual-baseline' ? 'bg-white shadow-sm' : 'text-gray-700'
                             }`}
                     >
                         Actual vs Baseline

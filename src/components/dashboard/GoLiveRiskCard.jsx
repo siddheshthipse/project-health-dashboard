@@ -453,7 +453,7 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                             >
                                 <div className={`flex justify-between items-center ${isFullScreen ? 'p-4' : 'mb-4'}`}>
                                     <Dialog.Title as="h3" className="text-md font-semibold text-gray-900">
-                                        Go-Live Impact Analysis
+                                        Go-Live Probability
                                     </Dialog.Title>
 
                                     <div className="flex items-center space-x-2">
@@ -491,7 +491,7 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                                             </div>
                                             <div>
                                                 <h3 className="text-md font-medium text-red-800">
-                                                    Delay is assessed based on current progress against planned end dates for critical items in the project plan
+                                                    Delay is assessed based on progress against planned end dates for critical path tasks
                                                 </h3>
                                                 <p className="text-sm text-red-700 mt-1">
                                                     The project is currently delayed by {calculateProjectDelay()} based on critical path analysis. Delays in the following high-impact tasks are the primary contributors:
@@ -699,9 +699,6 @@ const GoLiveRiskCard = () => {
             <div className="flex justify-between items-start mb-4">
                 <div>
                     <h3 className="font-medium text-gray-700">Go-Live Probability</h3>
-                    {/* <div className="text-xs text-gray-500 flex items-center">
-                        <span>HIGH PRIORITY</span>
-                    </div> */}
                 </div>
                 <div className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded flex items-center">
                     On Track
@@ -717,10 +714,20 @@ const GoLiveRiskCard = () => {
                 </div>
             </div>
 
-            {/* <div className="flex justify-between text-xs text-gray-500">
-                <span>Critical (0%)</span>
-                <span>Good (100%)</span>
-            </div> */}
+            <div className="flex justify-center mb-3 text-xs">
+                <div className="flex items-center mx-2">
+                    <div className="w-2 h-2 rounded-full bg-green-600 mr-1"></div>
+                    <span className="text-gray-600">100%</span>
+                </div>
+                <div className="flex items-center mx-2">
+                    <div className="w-2 h-2 rounded-full bg-yellow-500 mr-1"></div>
+                    <span className="text-gray-600">75-99%</span>
+                </div>
+                <div className="flex items-center mx-2">
+                    <div className="w-2 h-2 rounded-full bg-red-500 mr-1"></div>
+                    <span className="text-gray-600">&lt;75%</span>
+                </div>
+            </div>
 
             <div className="mt-4 text-sm">
                 <div className="flex justify-between items-center text-gray-600">
@@ -729,7 +736,7 @@ const GoLiveRiskCard = () => {
                 </div>
                 <div className="flex justify-between items-center text-gray-600">
                     <span>Change</span>
-                    <span className="text-green-600 font-medium">5%</span>
+                    <span className="text-green-600 font-medium">+5%</span>
                 </div>
             </div>
 

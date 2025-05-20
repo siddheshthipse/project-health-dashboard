@@ -6,26 +6,27 @@ const BaselineChangesCard = () => {
   const [showDrilldown, setShowDrilldown] = useState(false);
 
   return (
-    <div className="bg-white rounded-lg shadow p-5 h-full flex flex-col justify-between">
-      {/* Title Section - keeping original styling but with slightly more margin */}
-      <h3 className="font-medium text-gray-700 mb-3">Baseline Changes</h3>
+    <div className="bg-white rounded-lg shadow p-4 flex flex-col justify-between">
+      {/* Title Section */}
+      <div>
+        <h3 className="font-medium text-gray-700 mb-2">Baseline Changes</h3>
+      </div>
 
-      {/* Main Content - using flex-grow to take up available space */}
-      <div className="flex-grow flex flex-col justify-center">
-        <div className="flex justify-center">
-          <div className="text-center">
-            <div className="text-4xl font-bold text-amber-600">1</div>
-            <div className="text-sm text-gray-500">revisions in baseline</div>
-          </div>
-        </div>
-
-        <div className="text-xs text-gray-500 mt-3 text-center">
-          Last Change: Dec 4, 2024
+      {/* Main Content - Centered */}
+      <div className="flex justify-center items-center py-2">
+        <div className="text-center">
+          <div className="text-3xl font-bold text-amber-600">1</div>
+          <div className="text-xs text-gray-500">revisions in baseline</div>
         </div>
       </div>
 
-      {/* Action Button - maintaining original styling but with more padding for consistency */}
-      <div className="mt-4 pt-3 border-t flex justify-end">
+      {/* Last Updated Info */}
+      <div className="text-xs text-gray-500 text-center mb-2">
+        Last Change: Dec 4, 2024
+      </div>
+
+      {/* Action Button */}
+      <div className="pt-2 border-t flex justify-end">
         <button
           onClick={() => setShowDrilldown(true)}
           className="text-blue-600 text-xs hover:underline focus:outline-none"

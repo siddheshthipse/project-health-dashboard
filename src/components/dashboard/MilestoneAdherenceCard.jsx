@@ -2764,7 +2764,7 @@ const MilestoneAdherenceCard = () => {
     const [showDrilldown, setShowDrilldown] = useState(false);
 
     return (
-        <div className="bg-white rounded-lg shadow p-5 border-t-4 border-orange-500">
+        <div className="bg-white rounded-lg shadow p-5 border-t-4 border-red-500">
             <div className="flex justify-between items-start mb-4">
                 <div>
                     <h3 className="font-medium text-gray-700">Milestone Adherence Rate</h3>
@@ -2782,6 +2782,21 @@ const MilestoneAdherenceCard = () => {
                 <div className="w-32 h-32 rounded-full border-8 border-red-500 flex flex-col items-center justify-center">
                     <span className="text-2xl font-bold text-gray-800">0%</span>
                     <span className="text-xs text-gray-500">Completed on time</span>
+                </div>
+            </div>
+
+            <div className="flex justify-center mb-3 text-xs">
+                <div className="flex items-center mx-2">
+                    <div className="w-2 h-2 rounded-full bg-green-600 mr-1"></div>
+                    <span className="text-gray-600">100%</span>
+                </div>
+                <div className="flex items-center mx-2">
+                    <div className="w-2 h-2 rounded-full bg-yellow-500 mr-1"></div>
+                    <span className="text-gray-600">75-99%</span>
+                </div>
+                <div className="flex items-center mx-2">
+                    <div className="w-2 h-2 rounded-full bg-red-500 mr-1"></div>
+                    <span className="text-gray-600">&lt;75%</span>
                 </div>
             </div>
 
