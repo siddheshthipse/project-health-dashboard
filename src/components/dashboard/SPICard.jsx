@@ -9,6 +9,7 @@ import {
     EyeIcon,
     EyeSlashIcon,
     FunnelIcon,
+    CalendarIcon,
     CheckIcon,
     XMarkIcon as XCircleIcon
 } from '@heroicons/react/20/solid';
@@ -25,11 +26,13 @@ const SPIDrilldownModal = ({ isOpen, closeModal }) => {
     const [showSlicers, setShowSlicers] = useState(true);
     const [filters, setFilters] = useState({
         type: [],
-        baselineEnd: [],
-        plannedEnd: [],
+        baselineEnd: { start: null, end: null },
+        plannedEnd: { start: null, end: null },
         plannedPercentage: [],
         actualPercentage: [],
-        spi: []
+        spi: [],
+        status: [],
+        hasDelayLog: []
     });
 
     // Function to toggle row expansion
@@ -47,26 +50,40 @@ const SPIDrilldownModal = ({ isOpen, closeModal }) => {
 
     // Toggle a filter value
     const toggleFilter = (category, value) => {
-        setFilters(prev => {
-            const updated = { ...prev };
-            if (updated[category].includes(value)) {
-                updated[category] = updated[category].filter(v => v !== value);
-            } else {
-                updated[category] = [...updated[category], value];
-            }
-            return updated;
-        });
+        if (category === 'baselineEnd' || category === 'plannedEnd') {
+            setFilters(prev => ({
+                ...prev,
+                [category]: value
+            }));
+        } else {
+            setFilters(prev => {
+                const updated = { ...prev };
+                if (updated[category].includes(value)) {
+                    updated[category] = updated[category].filter(v => v !== value);
+                } else {
+                    updated[category] = [...updated[category], value];
+                }
+                return updated;
+            });
+        }
     };
 
     // Clear filters for a category
     const clearFilters = (category) => {
-        setFilters(prev => ({
-            ...prev,
-            [category]: []
-        }));
+        if (category === 'baselineEnd' || category === 'plannedEnd') {
+            setFilters(prev => ({
+                ...prev,
+                [category]: { start: null, end: null }
+            }));
+        } else {
+            setFilters(prev => ({
+                ...prev,
+                [category]: []
+            }));
+        }
     };
 
-    // Sample task data with hierarchy and updated columns including WBS and delay logs
+    // Sample task data with hierarchy and updated columns including WBS, status, and delay logs
     const taskData = [
         {
             "id": "36612a40d6beb0d53071c129",
@@ -78,8 +95,8 @@ const SPIDrilldownModal = ({ isOpen, closeModal }) => {
             "planned": "100.00000",
             "actual": "30.02101",
             "spi": 3.33,
-            "delayLog": "",
-            "status": "Active",
+            "delayLog": "Initial delay due to resource constraints",
+            "status": "On Track",
             "isOverdue": false,
             "children": [
                 {
@@ -121,11 +138,11 @@ const SPIDrilldownModal = ({ isOpen, closeModal }) => {
     // Create filter options
     const filterOptions = {
         type: getUniqueOptions('type'),
-        baselineEnd: ['Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025'],
-        plannedEnd: ['Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025'],
+        status: ['Completed', 'On Track', 'At Risk', 'Delayed', 'Critical'],
         plannedPercentage: ['0-25%', '26-50%', '51-75%', '76-100%'],
         actualPercentage: ['0-25%', '26-50%', '51-75%', '76-100%'],
-        spi: ['<0.7 (Critical)', '0.7-0.9 (At Risk)', '0.9-1.0 (Near Target)', '>1.0 (Ahead)']
+        spi: ['<0.7 (Critical)', '0.7-0.9 (At Risk)', '0.9-1.0 (Near Target)', '>1.0 (Ahead)'],
+        hasDelayLog: ['Yes', 'No']
     };
 
     // Filter the tasks based on selected filters
@@ -133,10 +150,23 @@ const SPIDrilldownModal = ({ isOpen, closeModal }) => {
         const isTaskFiltered = (task) => {
             // Check if task passes all filters
             for (const [category, values] of Object.entries(filters)) {
+                if (category === 'baselineEnd' || category === 'plannedEnd') {
+                    if (!values.start && !values.end) continue; // Skip if no date range set
+
+                    // Parse task date (simplified for demonstration)
+                    const taskDate = new Date(task[category]);
+
+                    // Check if the date falls in the selected range
+                    if (values.start && new Date(values.start) > taskDate) return false;
+                    if (values.end && new Date(values.end) < taskDate) return false;
+
+                    continue;
+                }
+
                 if (values.length === 0) continue; // Skip if no filter for this category
 
                 if (category === 'plannedPercentage') {
-                    const progressValue = parseInt(task.planned);
+                    const progressValue = parseFloat(task.planned);
                     let matchesAny = false;
 
                     for (const range of values) {
@@ -149,7 +179,7 @@ const SPIDrilldownModal = ({ isOpen, closeModal }) => {
                     if (!matchesAny) return false;
                 }
                 else if (category === 'actualPercentage') {
-                    const progressValue = parseInt(task.actual);
+                    const progressValue = parseFloat(task.actual);
                     let matchesAny = false;
 
                     for (const range of values) {
@@ -174,11 +204,20 @@ const SPIDrilldownModal = ({ isOpen, closeModal }) => {
 
                     if (!matchesAny) return false;
                 }
-                else if (category === 'type' && !values.includes(task[category])) {
+                else if (category === 'hasDelayLog') {
+                    const hasDelay = task.delayLog && task.delayLog.trim() !== '';
+                    let matchesAny = false;
+
+                    for (const option of values) {
+                        if (option === 'Yes' && hasDelay) matchesAny = true;
+                        else if (option === 'No' && !hasDelay) matchesAny = true;
+                    }
+
+                    if (!matchesAny) return false;
+                }
+                else if ((category === 'type' || category === 'status') && !values.includes(task[category])) {
                     return false;
                 }
-                // Quarter-based filtering for dates would require date parsing in a real application
-                // This is a simplified approach
             }
 
             return true;
@@ -239,6 +278,11 @@ const SPIDrilldownModal = ({ isOpen, closeModal }) => {
                     <td className="p-2 text-center whitespace-nowrap">
                         <span className="px-2 py-1 rounded-full bg-gray-100 text-xs text-gray-700">{task.type}</span>
                     </td>
+                    <td className="p-2 text-center whitespace-nowrap">
+                        <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(task.status)}`}>
+                            {task.status}
+                        </span>
+                    </td>
                     <td className="p-2 text-center whitespace-nowrap text-xs text-gray-600">{task.baselineEnd}</td>
                     <td className="p-2 text-center whitespace-nowrap text-xs text-gray-600">{task.plannedEnd}</td>
                     <td className="p-2 text-center whitespace-nowrap text-xs text-gray-600">{task.planned}</td>
@@ -273,9 +317,72 @@ const SPIDrilldownModal = ({ isOpen, closeModal }) => {
                 return 'bg-yellow-100 text-yellow-800';
             case 'On Track':
                 return 'bg-green-100 text-green-800';
+            case 'Completed':
+                return 'bg-blue-100 text-blue-800';
             default:
                 return 'bg-gray-100 text-gray-800';
         }
+    };
+
+    // Date Range Filter Component
+    const DateRangeFilter = ({ category, label }) => {
+        const [isOpen, setIsOpen] = useState(false);
+        const hasFilters = filters[category].start || filters[category].end;
+
+        return (
+            <div className="relative">
+                <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className={`flex items-center justify-between px-3 py-2 text-xs rounded-md border ${hasFilters ? 'bg-blue-50 border-blue-300 text-blue-700' : 'bg-white border-gray-300 text-gray-700'}`}
+                >
+                    <div className="flex items-center">
+                        <FunnelIcon className={`h-3.5 w-3.5 mr-1.5 ${hasFilters ? 'text-blue-500' : 'text-gray-400'}`} />
+                        <span>{label}</span>
+                        {hasFilters && (
+                            <span className="ml-1.5 bg-blue-100 text-blue-800 rounded-full px-1.5 py-0.5 text-xs font-medium">
+                                Active
+                            </span>
+                        )}
+                    </div>
+                </button>
+
+                {isOpen && (
+                    <div className="absolute z-50 mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-3 min-w-[260px]">
+                        <div className="flex justify-between items-center mb-2">
+                            <h3 className="text-xs font-medium">{label} Range</h3>
+                            {hasFilters && (
+                                <button
+                                    className="text-xs text-blue-600"
+                                    onClick={() => clearFilters(category)}
+                                >
+                                    Clear
+                                </button>
+                            )}
+                        </div>
+                        <div className="space-y-2">
+                            <div>
+                                <label className="block text-xs text-gray-700 mb-1">From</label>
+                                <input
+                                    type="date"
+                                    className="w-full text-xs border border-gray-300 rounded p-1.5"
+                                    value={filters[category].start || ''}
+                                    onChange={(e) => toggleFilter(category, { ...filters[category], start: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs text-gray-700 mb-1">To</label>
+                                <input
+                                    type="date"
+                                    className="w-full text-xs border border-gray-300 rounded p-1.5"
+                                    value={filters[category].end || ''}
+                                    onChange={(e) => toggleFilter(category, { ...filters[category], end: e.target.value })}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
     };
 
     // Expanded Filter Panel for fullscreen mode
@@ -480,17 +587,19 @@ const SPIDrilldownModal = ({ isOpen, closeModal }) => {
                                         <div></div> {/* Empty div to maintain flex spacing */}
 
                                         <div className="flex items-center space-x-2">
-                                            {Object.values(filters).some(arr => arr.length > 0) && (
+                                            {(Object.values(filters).some(arr => Array.isArray(arr) ? arr.length > 0 : (arr.start || arr.end))) && (
                                                 <button
                                                     className="text-xs text-blue-600 hover:text-blue-800 flex items-center"
                                                     onClick={() => {
                                                         setFilters({
                                                             type: [],
-                                                            baselineEnd: [],
-                                                            plannedEnd: [],
+                                                            baselineEnd: { start: null, end: null },
+                                                            plannedEnd: { start: null, end: null },
                                                             plannedPercentage: [],
                                                             actualPercentage: [],
-                                                            spi: []
+                                                            spi: [],
+                                                            status: [],
+                                                            hasDelayLog: []
                                                         });
                                                     }}
                                                 >
@@ -529,20 +638,31 @@ const SPIDrilldownModal = ({ isOpen, closeModal }) => {
                                                     options={filterOptions.type}
                                                 />
                                                 <ExpandedFilterPanel
-                                                    category="baselineEnd"
-                                                    label="Baseline End"
-                                                    options={filterOptions.baselineEnd}
-                                                />
-                                                <ExpandedFilterPanel
-                                                    category="plannedEnd"
-                                                    label="Planned End"
-                                                    options={filterOptions.plannedEnd}
+                                                    category="status"
+                                                    label="Status"
+                                                    options={filterOptions.status}
                                                 />
                                                 <ExpandedFilterPanel
                                                     category="spi"
                                                     label="SPI"
                                                     options={filterOptions.spi}
                                                 />
+                                                <ExpandedFilterPanel
+                                                    category="hasDelayLog"
+                                                    label="Has Delay Log"
+                                                    options={filterOptions.hasDelayLog}
+                                                />
+                                                {/* Date Range filters */}
+                                                <div className="flex flex-col gap-3">
+                                                    <DateRangeFilter
+                                                        category="baselineEnd"
+                                                        label="Baseline End"
+                                                    />
+                                                    <DateRangeFilter
+                                                        category="plannedEnd"
+                                                        label="Planned End"
+                                                    />
+                                                </div>
                                             </div>
                                         ) : (
                                             // Compact dropdowns for normal mode
@@ -553,19 +673,28 @@ const SPIDrilldownModal = ({ isOpen, closeModal }) => {
                                                     options={filterOptions.type}
                                                 />
                                                 <CompactFilterDropdown
-                                                    category="baselineEnd"
-                                                    label="Baseline End"
-                                                    options={filterOptions.baselineEnd}
-                                                />
-                                                <CompactFilterDropdown
-                                                    category="plannedEnd"
-                                                    label="Planned End"
-                                                    options={filterOptions.plannedEnd}
+                                                    category="status"
+                                                    label="Status"
+                                                    options={filterOptions.status}
                                                 />
                                                 <CompactFilterDropdown
                                                     category="spi"
                                                     label="SPI"
                                                     options={filterOptions.spi}
+                                                />
+                                                {/* Date Range filters */}
+                                                <DateRangeFilter
+                                                    category="baselineEnd"
+                                                    label="Baseline End"
+                                                />
+                                                <DateRangeFilter
+                                                    category="plannedEnd"
+                                                    label="Planned End"
+                                                />
+                                                <CompactFilterDropdown
+                                                    category="hasDelayLog"
+                                                    label="Has Delay Log"
+                                                    options={filterOptions.hasDelayLog}
                                                 />
                                             </div>
                                         )
@@ -583,34 +712,37 @@ const SPIDrilldownModal = ({ isOpen, closeModal }) => {
                                             overflowY: 'auto',
                                             overflowX: 'auto'
                                         }}>
-                                            <table className="min-w-full divide-y divide-gray-200" style={{ minWidth: '1200px' }}>
+                                            <table className="min-w-full divide-y divide-gray-200" style={{ width: '100%', tableLayout: 'fixed' }}>
                                                 <thead className="bg-gray-50 sticky top-0 z-10">
                                                     <tr>
-                                                        <th scope="col" className="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '80px', width: '80px' }}>
+                                                        <th scope="col" className="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ width: '80px' }}>
                                                             WBS
                                                         </th>
-                                                        <th scope="col" className="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '400px', width: '400px' }}>
+                                                        <th scope="col" className="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ width: '300px' }}>
                                                             Title
                                                         </th>
-                                                        <th scope="col" className="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '80px', width: '80px' }}>
+                                                        <th scope="col" className="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ width: '80px' }}>
                                                             Type
                                                         </th>
-                                                        <th scope="col" className="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '120px', width: '120px' }}>
+                                                        <th scope="col" className="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ width: '100px' }}>
+                                                            Status
+                                                        </th>
+                                                        <th scope="col" className="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ width: '120px' }}>
                                                             Baseline End
                                                         </th>
-                                                        <th scope="col" className="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '120px', width: '120px' }}>
+                                                        <th scope="col" className="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ width: '120px' }}>
                                                             Planned End
                                                         </th>
-                                                        <th scope="col" className="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '100px', width: '100px' }}>
+                                                        <th scope="col" className="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ width: '100px' }}>
                                                             Planned %
                                                         </th>
-                                                        <th scope="col" className="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '100px', width: '100px' }}>
+                                                        <th scope="col" className="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ width: '100px' }}>
                                                             Actual %
                                                         </th>
-                                                        <th scope="col" className="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '80px', width: '80px' }}>
+                                                        <th scope="col" className="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap" style={{ width: '80px' }}>
                                                             SPI
                                                         </th>
-                                                        <th scope="col" className="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ minWidth: '150px', width: 'auto' }}>
+                                                        <th scope="col" className="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '150px' }}>
                                                             Delay Log
                                                         </th>
                                                     </tr>
@@ -620,7 +752,7 @@ const SPIDrilldownModal = ({ isOpen, closeModal }) => {
                                                         filteredData.map(task => renderTaskRow(task))
                                                     ) : (
                                                         <tr>
-                                                            <td colSpan="9" className="p-6 text-center text-gray-500">
+                                                            <td colSpan="10" className="p-6 text-center text-gray-500">
                                                                 No tasks match the current filters. Try adjusting your filters.
                                                             </td>
                                                         </tr>

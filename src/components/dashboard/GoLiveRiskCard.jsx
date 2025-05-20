@@ -24,10 +24,12 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
     const [showSlicers, setShowSlicers] = useState(true);
     const [filters, setFilters] = useState({
         type: [],
-        plannedPercent: [],
-        actualPercent: [],
+        baselineEnd: { start: null, end: null },
+        plannedEnd: { start: null, end: null },
         slackDays: [],
-        baselineOverdueDays: []
+        baselineOverdueDays: [],
+        status: [],
+        hasDelayLog: []
     });
 
     // Function to toggle row expansion
@@ -45,23 +47,37 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
 
     // Toggle a filter value
     const toggleFilter = (category, value) => {
-        setFilters(prev => {
-            const updated = { ...prev };
-            if (updated[category].includes(value)) {
-                updated[category] = updated[category].filter(v => v !== value);
-            } else {
-                updated[category] = [...updated[category], value];
-            }
-            return updated;
-        });
+        if (category === 'baselineEnd' || category === 'plannedEnd') {
+            setFilters(prev => ({
+                ...prev,
+                [category]: value
+            }));
+        } else {
+            setFilters(prev => {
+                const updated = { ...prev };
+                if (updated[category].includes(value)) {
+                    updated[category] = updated[category].filter(v => v !== value);
+                } else {
+                    updated[category] = [...updated[category], value];
+                }
+                return updated;
+            });
+        }
     };
 
     // Clear filters for a category
     const clearFilters = (category) => {
-        setFilters(prev => ({
-            ...prev,
-            [category]: []
-        }));
+        if (category === 'baselineEnd' || category === 'plannedEnd') {
+            setFilters(prev => ({
+                ...prev,
+                [category]: { start: null, end: null }
+            }));
+        } else {
+            setFilters(prev => ({
+                ...prev,
+                [category]: []
+            }));
+        }
     };
 
     // Sample critical path task data with updated columns
@@ -78,6 +94,7 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
             "slackDays": "0",
             "baselineOverdueDays": "0",
             "delayLog": "",
+            "status": "ON TRACK",
             "children": [
                 {
                     "id": "CP-1-1",
@@ -91,6 +108,7 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                     "slackDays": "0",
                     "baselineOverdueDays": "0",
                     "delayLog": "",
+                    "status": "ON TRACK",
                     "children": [
                         {
                             "id": "CP-1-1",
@@ -103,7 +121,8 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                             "actualPercent": "0%",
                             "slackDays": "0",
                             "baselineOverdueDays": "0",
-                            "delayLog": "",
+                            "delayLog": "Initial delay due to resource constraints",
+                            "status": "AT RISK",
                             "children": [
                                 {
                                     "id": "CP-1-1",
@@ -116,7 +135,8 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                                     "actualPercent": "0%",
                                     "slackDays": "0",
                                     "baselineOverdueDays": "0",
-                                    "delayLog": ""
+                                    "delayLog": "",
+                                    "status": "ON TRACK"
                                 }
                             ]
                         }
@@ -146,10 +166,10 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
     // Filter options
     const filterOptions = {
         type: getUniqueOptions('type'),
-        plannedPercent: ['0-25%', '26-50%', '51-75%', '76-100%'],
-        actualPercent: ['0-25%', '26-50%', '51-75%', '76-100%'],
+        status: ['COMPLETED', 'ON TRACK', 'AT RISK', 'DELAYED', 'CRITICAL'],
         slackDays: ['Negative', 'Zero', 'Positive'],
-        baselineOverdueDays: ['None', '1-5 days', '6-10 days', '10+ days']
+        baselineOverdueDays: ['more than 7 days', 'more than 14 days', 'more than 21 days', 'more than 35 days'],
+        hasDelayLog: ['Yes', 'No']
     };
 
     // Filter the tasks based on selected filters
@@ -157,22 +177,22 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
         const isTaskFiltered = (task) => {
             // Check if task passes all filters
             for (const [category, values] of Object.entries(filters)) {
+                if (category === 'baselineEnd' || category === 'plannedEnd') {
+                    if (!values.start && !values.end) continue; // Skip if no date range set
+
+                    // Parse task date (simplified for demonstration)
+                    const taskDate = new Date(task[category]);
+
+                    // Check if the date falls in the selected range
+                    if (values.start && new Date(values.start) > taskDate) return false;
+                    if (values.end && new Date(values.end) < taskDate) return false;
+
+                    continue;
+                }
+
                 if (values.length === 0) continue; // Skip if no filter for this category
 
-                if (category === 'plannedPercent' || category === 'actualPercent') {
-                    const percentValue = parseInt(task[category]);
-                    let matchesAny = false;
-
-                    for (const range of values) {
-                        if (range === '0-25%' && percentValue <= 25) matchesAny = true;
-                        else if (range === '26-50%' && percentValue > 25 && percentValue <= 50) matchesAny = true;
-                        else if (range === '51-75%' && percentValue > 50 && percentValue <= 75) matchesAny = true;
-                        else if (range === '76-100%' && percentValue > 75) matchesAny = true;
-                    }
-
-                    if (!matchesAny) return false;
-                }
-                else if (category === 'slackDays') {
+                if (category === 'slackDays') {
                     const slackValue = parseInt(task.slackDays);
                     let matchesAny = false;
 
@@ -189,15 +209,26 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                     let matchesAny = false;
 
                     for (const range of values) {
-                        if (range === 'None' && overdueValue === 0) matchesAny = true;
-                        else if (range === '1-5 days' && overdueValue > 0 && overdueValue <= 5) matchesAny = true;
-                        else if (range === '6-10 days' && overdueValue > 5 && overdueValue <= 10) matchesAny = true;
-                        else if (range === '10+ days' && overdueValue > 10) matchesAny = true;
+                        if (range === 'more than 7 days' && overdueValue > 7) matchesAny = true;
+                        else if (range === 'more than 14 days' && overdueValue > 14) matchesAny = true;
+                        else if (range === 'more than 21 days' && overdueValue > 21) matchesAny = true;
+                        else if (range === 'more than 35 days' && overdueValue > 35) matchesAny = true;
                     }
 
                     if (!matchesAny) return false;
                 }
-                else if (!values.includes(task[category])) {
+                else if (category === 'hasDelayLog') {
+                    const hasDelay = task.delayLog && task.delayLog.trim() !== '';
+                    let matchesAny = false;
+
+                    for (const option of values) {
+                        if (option === 'Yes' && hasDelay) matchesAny = true;
+                        else if (option === 'No' && !hasDelay) matchesAny = true;
+                    }
+
+                    if (!matchesAny) return false;
+                }
+                else if ((category === 'type' || category === 'status') && !values.includes(task[category])) {
                     return false;
                 }
             }
@@ -232,6 +263,67 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
         // In a real implementation, this would use a critical path algorithm
         // For this demo, we'll use the maximum delay of critical path tasks
         return '12 days';
+    };
+
+    // Date Range Filter Component
+    const DateRangeFilter = ({ category, label }) => {
+        const [isOpen, setIsOpen] = useState(false);
+        const hasFilters = filters[category].start || filters[category].end;
+
+        return (
+            <div className="relative">
+                <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className={`flex items-center justify-between px-3 py-2 text-xs rounded-md border ${hasFilters ? 'bg-blue-50 border-blue-300 text-blue-700' : 'bg-white border-gray-300 text-gray-700'}`}
+                >
+                    <div className="flex items-center">
+                        <FunnelIcon className={`h-3.5 w-3.5 mr-1.5 ${hasFilters ? 'text-blue-500' : 'text-gray-400'}`} />
+                        <span>{label}</span>
+                        {hasFilters && (
+                            <span className="ml-1.5 bg-blue-100 text-blue-800 rounded-full px-1.5 py-0.5 text-xs font-medium">
+                                Active
+                            </span>
+                        )}
+                    </div>
+                </button>
+
+                {isOpen && (
+                    <div className="absolute z-10 mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-3 min-w-[260px]">
+                        <div className="flex justify-between items-center mb-2">
+                            <h3 className="text-xs font-medium">{label} Range</h3>
+                            {hasFilters && (
+                                <button
+                                    className="text-xs text-blue-600"
+                                    onClick={() => clearFilters(category)}
+                                >
+                                    Clear
+                                </button>
+                            )}
+                        </div>
+                        <div className="space-y-2">
+                            <div>
+                                <label className="block text-xs text-gray-700 mb-1">From</label>
+                                <input
+                                    type="date"
+                                    className="w-full text-xs border border-gray-300 rounded p-1.5"
+                                    value={filters[category].start || ''}
+                                    onChange={(e) => toggleFilter(category, { ...filters[category], start: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs text-gray-700 mb-1">To</label>
+                                <input
+                                    type="date"
+                                    className="w-full text-xs border border-gray-300 rounded p-1.5"
+                                    value={filters[category].end || ''}
+                                    onChange={(e) => toggleFilter(category, { ...filters[category], end: e.target.value })}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
     };
 
     // Recursive function to render task rows
@@ -270,6 +362,11 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                     <td className="p-3 text-center whitespace-nowrap">
                         <span className="px-2 py-1 rounded-full bg-gray-100 text-xs text-gray-700">{task.type}</span>
                     </td>
+                    <td className="p-3 text-center whitespace-nowrap">
+                        <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(task.status)}`}>
+                            {task.status}
+                        </span>
+                    </td>
                     <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">{task.baselineEnd}</td>
                     <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">{task.plannedEnd}</td>
                     <td className="p-3 text-center whitespace-nowrap text-xs text-gray-600">{task.plannedPercent}</td>
@@ -284,13 +381,30 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                             {task.baselineOverdueDays}
                         </span>
                     </td>
-                    <td className="p-3 whitespace-nowrap text-xs text-gray-600">
-                        {task.delayLog}
+                    <td className="p-2 whitespace-normal text-xs">
+                        <span className="text-gray-600">{task.delayLog}</span>
                     </td>
                 </tr>
                 {hasChildren && isExpanded && task.children.map(child => renderTaskRow(child, depth + 1))}
             </React.Fragment>
         );
+    };
+
+    // Helper function to get status color
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'DELAYED':
+            case 'CRITICAL':
+                return 'bg-red-100 text-red-800';
+            case 'AT RISK':
+                return 'bg-amber-100 text-amber-800';
+            case 'ON TRACK':
+                return 'bg-green-100 text-green-800';
+            case 'COMPLETED':
+                return 'bg-blue-100 text-blue-800';
+            default:
+                return 'bg-gray-100 text-gray-800';
+        }
     };
 
     // Expanded Filter Panel for fullscreen mode
@@ -507,16 +621,18 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                                         <div></div> {/* Empty div to maintain flex spacing */}
 
                                         <div className="flex items-center space-x-2">
-                                            {Object.values(filters).some(arr => arr.length > 0) && (
+                                            {(Object.values(filters).some(arr => Array.isArray(arr) ? arr.length > 0 : (arr.start || arr.end))) && (
                                                 <button
                                                     className="text-xs text-blue-600 hover:text-blue-800 flex items-center"
                                                     onClick={() => {
                                                         setFilters({
                                                             type: [],
-                                                            plannedPercent: [],
-                                                            actualPercent: [],
+                                                            baselineEnd: { start: null, end: null },
+                                                            plannedEnd: { start: null, end: null },
                                                             slackDays: [],
-                                                            baselineOverdueDays: []
+                                                            baselineOverdueDays: [],
+                                                            status: [],
+                                                            hasDelayLog: []
                                                         });
                                                     }}
                                                 >
@@ -555,14 +671,9 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                                                     options={filterOptions.type}
                                                 />
                                                 <ExpandedFilterPanel
-                                                    category="plannedPercent"
-                                                    label="Planned %"
-                                                    options={filterOptions.plannedPercent}
-                                                />
-                                                <ExpandedFilterPanel
-                                                    category="actualPercent"
-                                                    label="Actual %"
-                                                    options={filterOptions.actualPercent}
+                                                    category="status"
+                                                    label="Status"
+                                                    options={filterOptions.status}
                                                 />
                                                 <ExpandedFilterPanel
                                                     category="slackDays"
@@ -574,6 +685,23 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                                                     label="Baseline Overdue Days"
                                                     options={filterOptions.baselineOverdueDays}
                                                 />
+                                                <ExpandedFilterPanel
+                                                    category="hasDelayLog"
+                                                    label="Has Delay Log"
+                                                    options={filterOptions.hasDelayLog}
+                                                />
+
+                                                {/* Date Range filters */}
+                                                <div className="flex flex-col gap-3">
+                                                    <DateRangeFilter
+                                                        category="baselineEnd"
+                                                        label="Baseline End"
+                                                    />
+                                                    <DateRangeFilter
+                                                        category="plannedEnd"
+                                                        label="Planned End"
+                                                    />
+                                                </div>
                                             </div>
                                         ) : (
                                             // Compact dropdowns for normal mode
@@ -584,14 +712,17 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                                                     options={filterOptions.type}
                                                 />
                                                 <CompactFilterDropdown
-                                                    category="plannedPercent"
-                                                    label="Planned %"
-                                                    options={filterOptions.plannedPercent}
+                                                    category="status"
+                                                    label="Status"
+                                                    options={filterOptions.status}
                                                 />
-                                                <CompactFilterDropdown
-                                                    category="actualPercent"
-                                                    label="Actual %"
-                                                    options={filterOptions.actualPercent}
+                                                <DateRangeFilter
+                                                    category="baselineEnd"
+                                                    label="Baseline End"
+                                                />
+                                                <DateRangeFilter
+                                                    category="plannedEnd"
+                                                    label="Planned End"
                                                 />
                                                 <CompactFilterDropdown
                                                     category="slackDays"
@@ -603,6 +734,11 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                                                     label="Baseline Overdue Days"
                                                     options={filterOptions.baselineOverdueDays}
                                                 />
+                                                <CompactFilterDropdown
+                                                    category="hasDelayLog"
+                                                    label="Has Delay Log"
+                                                    options={filterOptions.hasDelayLog}
+                                                />
                                             </div>
                                         ))
                                     }
@@ -612,54 +748,65 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                                         Showing {filteredData.length} of {criticalPathData.length} critical path items
                                     </div>
 
-                                    <div className={`border rounded-lg overflow-hidden overflow-y-auto ${isFullScreen ? 'max-h-[calc(100vh-280px)]' : 'max-h-[50vh]'}`}>
-                                        <table className="min-w-full divide-y divide-gray-200">
-                                            <thead className="bg-gray-50 sticky top-0 z-10">
-                                                <tr>
-                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        WBS
-                                                    </th>
-                                                    <th scope="col" className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Title
-                                                    </th>
-                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Type
-                                                    </th>
-                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Baseline End
-                                                    </th>
-                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Planned End
-                                                    </th>
-                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Planned %
-                                                    </th>
-                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Actual %
-                                                    </th>
-                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Slack Days
-                                                    </th>
-                                                    <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Baseline Overdue Days
-                                                    </th>
-                                                    <th scope="col" className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Delay Log
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="bg-white divide-y divide-gray-200">
-                                                {filteredData.length > 0 ? (
-                                                    filteredData.map(task => renderTaskRow(task))
-                                                ) : (
+                                    <div className="border rounded-lg overflow-hidden" style={{ minHeight: '300px' }}>
+                                        <div style={{
+                                            height: isFullScreen ? 'calc(100vh - 380px)' : '50vh',
+                                            minHeight: '300px',
+                                            maxHeight: isFullScreen ? 'calc(100vh - 380px)' : '50vh',
+                                            overflowY: 'auto',
+                                            overflowX: 'auto'
+                                        }}>
+                                            <table className="min-w-full divide-y divide-gray-200" style={{ width: '100%', tableLayout: 'fixed' }}>
+                                                <thead className="bg-gray-50 sticky top-0 z-10">
                                                     <tr>
-                                                        <td colSpan="10" className="p-6 text-center text-gray-500">
-                                                            No tasks match the current filters. Try adjusting your filters.
-                                                        </td>
+                                                        <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '80px' }}>
+                                                            WBS
+                                                        </th>
+                                                        <th scope="col" className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '300px' }}>
+                                                            Title
+                                                        </th>
+                                                        <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '100px' }}>
+                                                            Type
+                                                        </th>
+                                                        <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '100px' }}>
+                                                            Status
+                                                        </th>
+                                                        <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '120px' }}>
+                                                            Baseline End
+                                                        </th>
+                                                        <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '120px' }}>
+                                                            Planned End
+                                                        </th>
+                                                        <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '100px' }}>
+                                                            Planned %
+                                                        </th>
+                                                        <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '100px' }}>
+                                                            Actual %
+                                                        </th>
+                                                        <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '100px' }}>
+                                                            Slack Days
+                                                        </th>
+                                                        <th scope="col" className="p-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '150px' }}>
+                                                            Baseline Overdue Days
+                                                        </th>
+                                                        <th scope="col" className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '150px' }}>
+                                                            Delay Log
+                                                        </th>
                                                     </tr>
-                                                )}
-                                            </tbody>
-                                        </table>
+                                                </thead>
+                                                <tbody className="bg-white divide-y divide-gray-200">
+                                                    {filteredData.length > 0 ? (
+                                                        filteredData.map(task => renderTaskRow(task))
+                                                    ) : (
+                                                        <tr>
+                                                            <td colSpan="11" className="p-6 text-center text-gray-500">
+                                                                No tasks match the current filters. Try adjusting your filters.
+                                                            </td>
+                                                        </tr>
+                                                    )}
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
 
                                     <div className="mt-4 flex flex-wrap gap-3">
@@ -668,16 +815,20 @@ const GoLiveImpactDrilldownModal = ({ isOpen, closeModal }) => {
                                             <span>Delayed Tasks</span>
                                         </div>
                                         <div className="flex items-center text-xs text-gray-500">
-                                            <div className="w-3 h-3 rounded-full bg-red-500 mr-1"></div>
-                                            <span>Negative Slack</span>
-                                        </div>
-                                        <div className="flex items-center text-xs text-gray-500">
-                                            <div className="w-3 h-3 rounded-full bg-yellow-500 mr-1"></div>
-                                            <span>Zero Slack</span>
+                                            <div className="w-3 h-3 rounded-full bg-blue-500 mr-1"></div>
+                                            <span>Completed</span>
                                         </div>
                                         <div className="flex items-center text-xs text-gray-500">
                                             <div className="w-3 h-3 rounded-full bg-green-500 mr-1"></div>
-                                            <span>Positive Slack</span>
+                                            <span>On Track</span>
+                                        </div>
+                                        <div className="flex items-center text-xs text-gray-500">
+                                            <div className="w-3 h-3 rounded-full bg-amber-500 mr-1"></div>
+                                            <span>At Risk</span>
+                                        </div>
+                                        <div className="flex items-center text-xs text-gray-500">
+                                            <div className="w-3 h-3 rounded-full bg-red-500 mr-1"></div>
+                                            <span>Delayed/Critical</span>
                                         </div>
                                     </div>
                                 </div>
