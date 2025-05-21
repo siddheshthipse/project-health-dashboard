@@ -272,7 +272,7 @@ const RiskExposureCard = () => {
             <div className="mb-4 mt-5">
                 <div className="flex justify-between items-center mb-1">
                     <span className="text-sm font-medium text-gray-700">Risk Mitigation Rate</span>
-                    <span className="text-sm font-medium text-red-600">70%</span>
+                    <span className="text-sm font-medium text-yellow-600">70%</span>
                 </div>
                 <div className="text-xs text-gray-500 mb-2">
                     (Mitigated risks / Identified risks) × 100%

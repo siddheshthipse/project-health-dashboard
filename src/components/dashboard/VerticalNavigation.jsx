@@ -36,9 +36,6 @@ const VerticalNavigation = ({ isFullScreen, toggleFullScreen }) => {
     const [collapsed, setCollapsed] = useState(true);
     const [headerExpanded, setHeaderExpanded] = useState(true);
 
-    // Tailwind blue color that matches #1890FF (or close to it)
-    // #1890FF is close to Tailwind's blue-500 with custom styling
-
     return (
         <div className="flex flex-col h-screen">
             {/* Vertical Navigation */}
@@ -152,7 +149,7 @@ const VerticalNavigation = ({ isFullScreen, toggleFullScreen }) => {
                     {/* User Profile at bottom */}
                     <div className="p-4 border-t border-gray-100">
                         <div className="flex items-center">
-                            <div className="inline-flex overflow-hidden relative justify-center items-center w-10 h-10 bg-orange-100 rounded-full">
+                            <div className="inline-flex overflow-hidden relative justify-center items-center w-8 h-8 bg-orange-100 rounded-full">
                                 <span className="font-medium text-sm text-orange-500">CS</span>
                             </div>
                             {!collapsed && (
@@ -197,7 +194,7 @@ const VerticalNavigation = ({ isFullScreen, toggleFullScreen }) => {
                                                 {/* Program header - selectable but styled differently */}
                                                 <Menu.Item>
                                                     {({ active }) => (
-                                                        <a className={`${active ? 'bg-blue-50 text-blue-900' : 'text-gray-900'} block px-4 py-2 text-xs ${active ? 'bg-blue-50' : ''}`}>
+                                                        <a className={`${active ? 'bg-blue-50 text-blue-900' : 'text-gray-900'} block px-4 py-2 text-sm ${active ? 'bg-blue-50' : ''}`}>
                                                             Program: Quantum Leap
                                                         </a>
                                                     )}
